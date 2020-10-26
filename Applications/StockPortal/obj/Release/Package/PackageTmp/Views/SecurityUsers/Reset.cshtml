@@ -1,0 +1,61 @@
+﻿@model StockPortal.ViewModel.objPass
+
+@{
+    ViewBag.Title = "المستخدمين";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <div class="">
+        <div class="page-title">
+            <div class="title_right">
+                <h3>
+                    @ViewBag.Title<small> - إعادة كلمة المرور</small>
+                </h3>
+            </div>
+
+        </div><div class="ln_solidTitle"></div>
+        @using (Html.BeginForm())
+        {
+            <div class="clearfix"></div>
+            <div class="row">
+
+                <div class="col-md-12">
+                    <div class="x_content">
+                        <div class="form-horizontal form-label-left">
+
+                            @*<div class="item form-group">
+                                @Html.LabelFor(a => a.OldPassword, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-5">
+
+                                    @Html.EditorFor(a => a.OldPassword, new { htmlAttributes = new { @class = "form-control col-md-7 col-xs-12" } })
+                                    @Html.ValidationMessageFor(a => a.OldPassword, "", new { @class = "text-danger" })
+
+                                </div>
+                            </div>*@
+                            @*<div class="item form-group">
+                                @Html.LabelFor(a => a.NewPassword, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-5">
+
+                                    @Html.EditorFor(a => a.NewPassword, new { htmlAttributes = new { @class = "form-control col-md-7 col-xs-12" } })
+                                    @Html.ValidationMessageFor(a => a.NewPassword, "", new { @class = "text-danger" })
+
+                                </div>
+                            </div>*@
+                            <div class="ln_solid"></div>
+                            <div class="form-group">
+                                <div class="col-md-6 col-md-offset-3">
+
+                                    @Html.AntiForgeryToken()
+                                    <span>هل متاكد من اعاده كلمه المرور</span>
+                                    <input type="submit" value="نعم" class="btn btn-default" />
+                                    @Html.ActionLink("إلغاء", "Index", "SecurityUsers", null, new { @class = "btn btn-default" })
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+       

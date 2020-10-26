@@ -1,0 +1,49 @@
+﻿@model IEnumerable<StockDB.Model.color>
+
+@{
+    ViewBag.Title = "الالوان";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>بيانات الالوان</h2>
+
+<div id="Details" class="d-none">
+
+</div>
+<div id="DeletShaplonDiv" class="d-none"></div>
+<p>
+    @Html.ActionLink("اضافة لون جديد", "Create")
+</p>
+<table class="table">
+    <tr>
+       <th>
+           م
+       </th>
+        <th>
+            @Html.DisplayNameFor(model => model.color_name)
+        </th>
+        <th></th>
+    </tr>
+    @{
+        var counter = 0;
+    }
+    @foreach (var item in Model)
+    {
+        counter++;
+
+        <tr>
+            <td>
+                @counter
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.color_name)
+            </td>
+            <td>
+                @Html.ActionLink("تعديل", "Edit", new { id = item.color_id }) |
+                @Ajax.ActionLink("حذف", "Delete", "colors", null, null, null,
+        new { id = item.color_id }, new AjaxOptions { HttpMethod = "GET", UpdateTargetId = "DeletShaplonDiv", InsertionMode = InsertionMode.Replace, OnSuccess = "$('.modal').modal('toggle')", OnFailure = "alert('Not available Details')" }, new { @class = "Detilslink" })
+            </td>
+        </tr>
+    }
+
+</table>

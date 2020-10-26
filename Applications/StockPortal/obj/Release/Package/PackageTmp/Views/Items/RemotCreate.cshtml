@@ -1,0 +1,201 @@
+﻿@model StockViewModel.ItemVM
+
+@{
+    Layout = null;
+    ViewBag.Title = "Create";
+    var msg = "";
+    if (ViewBag.ErrorExist != null)
+    {
+        msg = (string)ViewBag.ErrorExist;
+    }
+}
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+
+
+
+<form id="ADDNEWITEMFORM" method="post">
+
+    <div class="form-horizontal">
+        @Html.HiddenFor(x => x.Name, new { @id = "HiddenName" })
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.Label("اسم الصنف", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3 col-10 col-sm-8">
+                @Html.Editor("Naaa", new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+            </div>
+            @Html.Label("نوع الخامه", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3 col-10 col-sm-8">
+                @Html.DropDownListFor(x => x.MatTypeId, ViewBag.Mattypid as IEnumerable<SelectListItem>, "اختار نوع الخامه", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.MatTypeId, "", new { @class = "text-danger" })
+            </div>
+            @Html.Label("لون الخامه", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3 col-10 col-sm-8">
+                @Html.DropDownListFor(x => x.ColorID, ViewBag.Colorid as IEnumerable<SelectListItem>, "اختار لون الخامه", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.ColorID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("كود الصنف", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3 col-10 col-sm-8">
+                @Html.EditorFor(model => model.SerialNum, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.SerialNum, "", new { @class = "text-danger" })
+            </div>
+            @Html.Label("المقاس", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3 col-10 col-sm-8">
+                @Html.EditorFor(model => model.Size, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Size, "", new { @class = "text-danger" })
+            </div>
+            @Html.Label("السمك", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3 col-10 col-sm-8">
+                @Html.EditorFor(model => model.Thickness, new { htmlAttributes = new { @class = "form-control", type = "number" } })
+                @Html.ValidationMessageFor(model => model.Thickness, "", new { @class = "text-danger" })
+            </div>
+
+        </div>
+
+
+
+
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="اضافه" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+    @Scripts.Render("~/Scripts/jquery.validate.js")
+    @Scripts.Render("~/Scripts/jquery.validate.unobtrusive.js")
+    <script src="~/Scripts/toastr.min.js"></script>
+
+    <script>
+        function Concatnation(Mattyp, colortyp, size, Thickness) {
+            return Mattyp + "-" + colortyp + "-" + size + "-(" + Thickness + ")";
+        }
+        function GetOptionName(ListId, Value) {
+            if (Value == "") {
+                return "";
+            }
+            var Determin = "[value='" + Value + "']";
+            return $("#" + ListId + " option" + Determin).text();
+        }
+            $("#Size").val("");
+            $("#Thickness").val("");
+
+
+                var ErrorMsg = '@msg';
+            if (ErrorMsg != '') {
+
+            toastr.error('', ErrorMsg, { timeOut: 3000 });
+            }
+            var HidenName = $("#HiddenName");
+            var ReadOnlyInput = $("[readonly='readonly']");
+            $("input").keyup(function () {
+                var name = $(this).attr('name');
+                var value = $(this).val();
+
+                if (name == "Size") {
+                    var Mattypidvalue = $("#MatTypeId").val();
+                    var ColorIdvalue = $("#ColorID").val();
+                    var Thicknessvalue = $("#Thickness").val();
+                    var NameValue = Concatnation(GetOptionName("MatTypeId", Mattypidvalue), GetOptionName("ColorID", ColorIdvalue), value, Thicknessvalue);
+                    HidenName.val(NameValue);
+                    ReadOnlyInput.val(NameValue);
+                }
+                else if (name == "Thickness") {
+
+                    var Mattypidvalue = $("#MatTypeId").val();
+                    var ColorIdvalue = $("#ColorID").val();
+                    var sizevalue = $("#Size").val();
+                    var NameValue = Concatnation(GetOptionName("MatTypeId", Mattypidvalue), GetOptionName("ColorID", ColorIdvalue), sizevalue, value);
+                    HidenName.val(NameValue);
+                    ReadOnlyInput.val(NameValue);
+                }
+                else {
+
+                }
+            });
+            $("select").change(function () {
+                var name = $(this).attr('name');
+                var value = $(this).val();
+                if (name == "MatTypeId") {
+                    var ColorIdvalue = $("#ColorID").val();
+                    var sizevalue = $("#Size").val();
+                    var Thicknessvalue = $("#Thickness").val();
+
+                    var NameValue = Concatnation(GetOptionName("MatTypeId", value), GetOptionName("ColorID", ColorIdvalue), sizevalue, Thicknessvalue);
+                    HidenName.val(NameValue);
+                    ReadOnlyInput.val(NameValue);
+                }
+                else if (name == "ColorID") {
+                    var Mattypidvalue = $("#MatTypeId").val();
+                    var sizevalue = $("#Size").val();
+                    var Thicknessvalue = $("#Thickness").val();
+                    var NameValue = Concatnation(GetOptionName("MatTypeId", Mattypidvalue), GetOptionName("ColorID", value), sizevalue, Thicknessvalue);
+                    HidenName.val(NameValue);
+                    ReadOnlyInput.val(NameValue);
+                }
+
+            })
+
+        // Handel When Form Submitt
+                $("#ADDNEWITEMFORM").submit(function (e) {
+            if ($("#ADDNEWITEMFORM").valid()) {
+                e.preventDefault();
+                $.ajax({
+                    type: "post",
+                    url: '@Url.Action("RemotCreate","items")',
+                    data: $("#ADDNEWITEMFORM").serialize(),
+                    dataType: "json",
+                    success: function (respons) {
+                        if (respons.success) {
+                            SucessFun(respons.value, respons.text);
+                        }
+                        else {
+                            toastr.error('عمليه غير ناجحه', respons.responseText, { timeOut: 1000 });
+
+                        }
+                        
+                    },
+
+                    fail: function (xhr, msg, errorThrown) {
+                        toastr.error('عمليه غير ناجحه', ErrorMsg, { timeOut: 1000 });
+
+                    },
+                    error: function (xhr, statusText, errorThrown) {
+                        toastr.error('عمليه غير ناجحه', { timeOut: 1000 });
+
+                        // Work out what the error was and display the appropriate message
+                    }
+                    
+
+                });
+            }
+        })
+
+        //function Work when Item added sucessfully
+        function SucessFun(value, text) {
+            //close Model
+            debugger;
+            $("#deletetransaction").css("z-index", "-1")
+            $("#ItemMoal").css("z-index", "99999")
+            $('#ItemMoal').modal("hide");
+            $("#Item_id").append('<option value="' + value + '">' + text + '</option>');
+            $("#Item_id").val(value);
+
+                    $("#Item_id").trigger('chosen:updated');
+                       $("#Item_id ").trigger('chosen:close');
+            $("#Item_id_chosen .chosen-drop .chosen-results").append('<li class="active-result result-selected">' + text + ' </li>');
+                        $("#Item_id").val(value);
+
+                        toastr.success('تمت اضافه  الصنف بنجاح', 'عمليه اضافه ناجحه', { timeOut: 1000 });
+        }
+
+    </script>
+
+

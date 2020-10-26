@@ -1,0 +1,58 @@
+﻿@*@model StockDB.Model.supplier
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>supplier</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.sup_name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.sup_name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.sup_mobile)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.sup_mobile)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.sup_mail)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.sup_mail)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.contact_name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.contact_name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.WhatsApp)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.WhatsApp)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.sup_id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>*@

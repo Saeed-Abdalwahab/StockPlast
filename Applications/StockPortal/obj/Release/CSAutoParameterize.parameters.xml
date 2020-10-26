@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="StockModel-Web.config Connection String" description="StockModel Connection String used in web.config by the application to access the database." defaultValue="data source=.;initial catalog=StockPlast;Integrated Security=True" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="F:\\ArmyTechProject\\StockPlast\\Stock\\Applications\\StockPortal\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='StockModel']/@connectionString" />
+  </parameter>
+  <parameter name="ReportServerURL-Web.config Connection String" description="ReportServerURL Connection String used in web.config by the application to access the database." defaultValue="http://desktop-a4ubu4h:80/ReportServer" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="F:\\ArmyTechProject\\StockPlast\\Stock\\Applications\\StockPortal\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='ReportServerURL']/@connectionString" />
+  </parameter>
+  <parameter name="ReportServerUser-Web.config Connection String" description="ReportServerUser Connection String used in web.config by the application to access the database." defaultValue="samir_hussein" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="F:\\ArmyTechProject\\StockPlast\\Stock\\Applications\\StockPortal\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='ReportServerUser']/@connectionString" />
+  </parameter>
+  <parameter name="ReportServerPass-Web.config Connection String" description="ReportServerPass Connection String used in web.config by the application to access the database." defaultValue="sh@12345" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="F:\\ArmyTechProject\\StockPlast\\Stock\\Applications\\StockPortal\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='ReportServerPass']/@connectionString" />
+  </parameter>
+  <parameter name="ReportServerDomin-Web.config Connection String" description="ReportServerDomin Connection String used in web.config by the application to access the database." defaultValue="ST" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="F:\\ArmyTechProject\\StockPlast\\Stock\\Applications\\StockPortal\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='ReportServerDomin']/@connectionString" />
+  </parameter>
+</parameters>

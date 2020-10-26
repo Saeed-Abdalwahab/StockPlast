@@ -1,0 +1,11 @@
+@model MasterDetails.Models.ReportInfo
+
+
+@Html.DevExpress().DocumentViewer(settings => {
+    settings.ToolbarItems.Add(new ReportToolbarButton(ReportToolbarItemKind.PrintPage, true));
+    settings.Name = "Report";
+    settings.CallbackRouteValues = new { Controller = "Reports", Action = "ViewReport", id = Model.ID };
+    settings.ExportRouteValues = new { Controller = "Reports", Action = "ExportReport", id = Model.ID };
+	settings.Report = Model.Report;
+	settings.ToolbarMode = DocumentViewerToolbarMode.StandardToolbar;
+}).GetHtml()

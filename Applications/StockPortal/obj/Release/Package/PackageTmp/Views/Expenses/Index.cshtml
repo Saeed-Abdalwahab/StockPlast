@@ -1,0 +1,239 @@
+﻿
+
+@model StockViewModel.ExpensesVM
+
+@{
+    ViewBag.Title = "المصروفات";
+
+}
+<link href="~/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+
+<div class="text-center">
+    <h3 class="center info">المصروفات</h3>
+</div>
+
+@*Creat apopup Modal For Add And Edit*@
+<div class="modal fade" id="MyModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="#" class="close" data-dismiss="modal">&times;</a>
+                <h4 id="Modaltitle"></h4>
+            </div>
+            <div class="modal-body" style="height:138px">
+                <form id="form">
+
+                    @Html.HiddenFor(m => m.exp_id, new { @id = "ExpenseID" })
+                    <div class="form-group">
+                        @Html.Label("المصروف", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(m => m.exp_name, new { @class = "form-control", @placeholder = "المصروف" })
+                            @Html.ValidationMessageFor(model => model.exp_name, "", new { @class = "text-danger" })
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="text-left">
+                    <a href="#" class="btn btn-primary" id="SaveExpense">اضافه</a>
+                    <a href="#" class="btn btn-primary" data-dismiss="modal">الغاء</a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Creat Popup For Delete*@
+<div id="DeletDiv" class="d-none">
+
+</div>
+
+<div class="container" style="margin-top:3%">
+    <button class="btn btn-primary" onclick="AddExpense(0)">أضافه مصروف </button>
+    <table class="table table-striped" id="ExpenseTable">
+        <thead>
+            <tr>
+                <th>م</th>
+                <th>الاسم</th>
+                <th>تعديل</th>
+                <th>حذف</th>
+            </tr>
+        </thead>
+
+
+    </table>
+</div>
+
+
+@section scripts
+{
+    <script src="~/DataTables/datatables.min.js"></script>
+    <script src="~/Scripts/toastr.min.js"></script>
+
+    <script>
+        function Save() {
+            if ($("#form").valid()) {
+
+                var data = $("#form").serialize();
+                $.ajax({
+                    type: "post",
+                    url:  '@Url.Action("SaveExpinse","Expenses")' ,
+                    data: data,
+                    success: function (response) {
+                        if (response.msg == false) {
+                            toastr.error('الاسم مسجل بالفعل', 'حدث خطأ اثناء الاضافه برجاء المحاوله مره اخري ', { timeOut: 3000 });
+                            AddExpense(0);
+                        }
+
+                        else if (data.split("&")[0] == "exp_id=0") {
+                             $("#ExpenseTable").DataTable().ajax.reload();
+                            toastr.success('تم حفظ نوع المصروف', 'اشعار', { timeOut: 4000 });
+                            AddExpense(0);
+                        }
+                        else {
+                            $("#ExpenseTable").DataTable().ajax.reload();
+                        toastr.success('تم تعديل نوع المصروف', 'اشعار', { timeOut: 4000 });
+                            $("#MyModal").modal("hide")
+                        }
+                    },
+                    fail: function () {
+                        toastr.error('الاسم مسجل بالفعل', 'حدث خطأ اثناء الاضافه برجاء المحاوله مره اخري ', { timeOut: 3000 });
+                    },
+                    error: function () {
+                        toastr.error('عمليه غير ناجحه', 'حدث خطأ اثناء الاضافه برجاء المحاوله مره اخري ', { timeOut: 3000 });
+                    }
+                });
+            }
+            else {
+                toastr.error('برجاءادخال الحقول', 'اشعار', { timeOut: 3000 });
+            }
+        }
+        function AddExpense(exp_id) {
+            $("#form")[0].reset();
+            $("#Modaltitle").html("إضافه نوع مصروف");
+            $("#ExpenseID").val("0");
+            $("#MyModal").modal()
+            $("#exp_name").focus();
+        }
+
+        function EditExpense(exp_id) {
+            var url = '@Url.Action("getExpense","Expenses")' + '?exp_id=' + exp_id;
+            $("#Modaltitle").html("تعديل نوع المصروف");
+            $.ajax({
+                type: "GET",
+                url: url,
+                success: function (rs) {
+                    $("#MyModal").modal();
+                    $("#ExpenseID").val(rs.data.exp_id);
+                    $("#exp_name").val(rs.data.exp_name);
+                }
+            })
+    }
+
+        function DeleteExpense(exp_id) {
+            var url = '@Url.Action("GetDelete","Expenses")' + '?exp_id=' + exp_id; 
+            $("#MyModal").modal("hide");
+            $.ajax({
+                type: "GET",
+                dataType: 'html',
+                url: url,
+                success: function (data) {
+                    $('#DeletDiv').html(data);
+                    $('#DeletDiv .modal').modal('show');
+                },
+                fail: function (xhr, textStatus, errorThrown) {
+                            toastr.error('لا يمكن حذف النوع', 'حدث خطأ اثناء الاضافه برجاء المحاوله مره اخري ', { timeOut: 3000 });
+                }
+            })
+        }
+
+        function DeletSuccess() {
+            $('#DeletDiv .modal').modal('hide');
+            $("#ExpenseTable").DataTable().ajax.reload();
+                            toastr.success('تم حذف نوع المصروف', 'اشعار', { timeOut: 4000 });
+        }
+
+
+        $('#exp_name').on('keydown', function (e) {
+            if (e.which == 13) {
+                e.preventDefault();
+                Save();
+            }
+        });
+
+        $("#SaveExpense").click(function () {
+            Save();
+        });
+
+
+        //datatable function
+        $(document).ready(function () {
+            var t = $('#ExpenseTable').DataTable({
+                "ajax": {
+                    'url': '@Url.Action("Getexpenses","Expenses")' ,
+                    'type': "GET"
+                },
+                "columns": [
+                    {
+                        "data": null, "render": function (data, type, full, meta) {
+                            return meta.row + 1;
+                        }
+                    },
+
+                    { "data": "exp_name" },
+                    {
+                        "data": "exp_id", "render": function (data) {
+                            return "<botton class='btn btn-primary ED' style='margin-top:3px' onclick='EditExpense(" + data + ")'><span class='glyphicon glyphicon-pencil'></span></botton>"
+                        }
+                    },
+                    {
+                        "data": "exp_id", "render": function (data) {
+                            return "<botton class='btn btn-danger ED' style='margin-top:3px' onclick='DeleteExpense(" + data + ")'><span class='glyphicon glyphicon-trash'></span></botton>"
+                        }
+                    },
+
+
+                ],
+                "language": {
+                                     "sEmptyTable":     "ليست هناك بيانات متاحة في الجدول",
+	"sLoadingRecords": "جارٍ التحميل...",
+	"sProcessing":   "جارٍ التحميل...",
+	"sLengthMenu":   "أظهر _MENU_ مدخلات",
+	"sZeroRecords":  "لم يعثر على أية سجلات",
+	"sInfo":         "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+	"sInfoEmpty":    "يعرض 0 إلى 0 من أصل 0 سجل",
+	"sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+	"sInfoPostFix":  "",
+	"sSearch":       "ابحث:",
+	"sUrl":          "",
+	"oPaginate": {
+		"sFirst":    "الأول",
+		"sPrevious": "السابق",
+		"sNext":     "التالي",
+		"sLast":     "الأخير"
+	},
+	"oAria": {
+		"sSortAscending":  ": تفعيل لترتيب العمود تصاعدياً",
+		"sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+	}
+                },
+                info: false,
+
+            })
+            t.on('order.dt search.dt', function () {
+                t.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+
+        });
+
+    </script>
+}
+
+
+
+

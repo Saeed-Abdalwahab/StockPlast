@@ -1,0 +1,29 @@
+﻿@model dynamic
+
+@{
+  ViewBag.Title = "غير مصرح لك بدخول هذه الصفحة";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="">
+    <div class="page-title">
+        <div class="title_right">
+            <h3>@ViewBag.Title</h3>
+        </div>
+
+    </div><div class="ln_solidTitle"></div>
+    <div class="clearfix"></div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="x_panel">
+                <div class="x_content" style="color: red; font-size: 14pt; padding-top: 10px; text-align: center;">
+                    <img src="@Href("~/Content/images/locked-512.png")" width="256" height="256" alt="Unauthorized" />
+                    <br />
+                    غير مصرح لك بدخول هذه الصفحة - يرجى الرجوع إلى مدير المنظومة
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

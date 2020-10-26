@@ -1,0 +1,80 @@
+﻿@using StockPortal.Models
+@model LoginViewModel
+@{
+    ViewBag.Title = "منظومة البلاستيك";
+}
+@{
+    Layout = null;
+}
+<title>منظومة البلاستيك</title>
+<link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+@Styles.Render("~/Content/login/css/googleapis.css")
+@Styles.Render("~/Content/login/bootstrap/css/bootstrap.min.css")
+@Styles.Render("~/Content/login/font-awesome/css/font-awesome.min.css")
+@Styles.Render("~/Content/login/css/form-elements.css")
+@Styles.Render("~/Content/login/css/style.css")
+
+<!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+
+<div class="top-content">
+
+    <div class="inner-bg">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-8 col-sm-offset-2 text">
+                    <h1>@ViewBag.Title</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6 col-sm-offset-3 form-box">
+                    <div class="form-top">
+                        <div class="form-top-left">
+                            <h3 style="font-size: 26px;color: #2A3F54">تسجيل الدخول</h3>
+                            <p style="color: black">يرجى إدخال إسم المستخدم وكلمة المرور للعمل على المنظومة</p>
+                        </div>
+                        <div class="form-top-right">
+                            <i class="fa fa-lock"></i>
+                        </div>
+                    </div>
+                    <div class="form-bottom">
+                        @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "login-form", role = "form", autocomplete = "off" }))
+                        {
+                            @Html.AntiForgeryToken()
+
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.UserName, new { @class = "sr-only" })
+                                @Html.TextBoxFor(m => m.UserName, new { @class = "form-username form-control", placeholder = "إسم الدخول" })
+                                @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
+
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Password, new { @class = "sr-only" })
+                                @Html.PasswordFor(m => m.Password, new { @class = "form-password form-control", placeholder = "كلمة المرور" })
+                                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+
+                            </div>
+                            @*<input type="submit" value="دخول" class="btn" />*@
+                            <button type="submit" class="btn">دخول</button>
+                        }
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+@Scripts.Render("~/Content/login/js/jquery-1.11.1.min.js")
+@Scripts.Render("~/Content/login/bootstrap/js/bootstrap.min.js")
+@Scripts.Render("~/Content/login/js/jquery.backstretch.min.js")
+@Scripts.Render("~/Content/login/js/scripts.js")
+<!--[if lt IE 10]>
+    @Scripts.Render("~/Content/login/js/placeholder.js")
+<![endif]-->

@@ -1,0 +1,48 @@
+﻿
+@model   List<StockPortal.ViewModel.BasicClass>
+ [@foreach (var item in Model.ToList())
+ {
+     if (Model.ToList().Count() > 0)
+     {
+        <text>
+            {
+            text: "@item.Name", id:"@item.ID",
+            @{
+                var eee = Model.Where(item2 => item2.parentId == item.ID).ToList();
+
+            }
+            @nodeList(eee)
+          
+            },
+        </text>
+                    }
+                }]
+
+@helper   nodeList(List<StockPortal.ViewModel.BasicClass> items)
+{
+    @:nodes:[
+foreach (var subItem in items)
+{
+    if (subItem != null)
+    {
+            <text>
+                {
+                text: "@subItem.Name", id: "@subItem.ID"
+                },
+
+                @{
+                    var eee = Model.Where(item2 => item2.parentId == subItem.ID).ToList();
+
+                }
+                @if (eee.Count() > 0)
+                {
+                    @nodeList(eee)
+                }
+               
+
+            </text>
+                        }
+                    }
+                    @:]
+}
+

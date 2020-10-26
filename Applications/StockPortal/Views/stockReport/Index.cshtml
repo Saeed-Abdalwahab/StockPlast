@@ -1,0 +1,533 @@
+﻿
+@{
+    ViewBag.Title = "تقرير المخازن";
+}
+
+<link href="~/DataTables/datatables.min.css" rel="stylesheet" />
+
+
+<style>
+
+    table tbody {
+        line-height: 4;
+    }
+
+        table tbody tr td {
+            text-align: center;
+        }
+
+    table thead tr th {
+        text-align: center;
+    }
+
+
+
+    .btn {
+        cursor: pointer;
+    }
+
+    .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter, .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_processing, .dataTables_wrapper .dataTables_paginate {
+        margin-right: 20px;
+    }
+
+    .dataTables_wrapper .dataTables_length {
+        padding-right: 140px;
+    }
+
+    .dataTables_wrapper .dataTables_paginate {
+        margin-right: 39%;
+        margin-top: 2%;
+    }
+
+    table.dataTable tbody th, table.dataTable tbody td {
+        padding: 0px;
+    }
+
+    @@media (min-width: 992px) {
+        .modal-lg {
+            width: 100%;
+        }
+    }
+
+    @@media (min-width: 768px) {
+        .modal-dialog {
+            width: 90%;
+        }
+    }
+
+    @@media (min-width: 768px) {
+        .modal-sm {
+            width: 300px;
+        }
+    }
+
+    .modal-body {
+        height: auto;
+    }
+
+    .nav-tabs > li {
+        cursor: pointer;
+    }
+</style>
+
+<div class="text-center">
+    <h3 class="center info"> المتاح في المخازن</h3>
+</div>
+
+
+
+<ul class="nav nav-tabs navbar-right">
+
+    <li class="active"><a data-toggle="tab" href="#finish">مخازن التام</a></li>
+    <li><a data-toggle="tab" href="#Raw">مخازن الخام</a></li>
+    <li><a data-toggle="tab" href="#expired">مخازن التالف</a></li>
+
+</ul>
+
+<div class="tab-content navbar-right" style="width:100%;margin-top:30px;">
+    <div id="finish" class="tab-pane fade active in">
+        <div id="FinishstoreContent">
+            <div class="col-md-12">
+                @Html.Label("المخزن", htmlAttributes: new { @class = "control-label col-md-1" })
+                <div class="col-md-3">
+                    <input class="form-control" name="1" placeholder="بحث عن المخزن" />
+                </div>
+                @Html.Label("اسم الشغل", htmlAttributes: new { @class = "control-label col-md-1" })
+                <div class="col-md-3">
+                    <input class="form-control" name="2" placeholder="بحث عن اسم الشغل" />
+                </div>
+
+                @Html.Label("العميل", htmlAttributes: new { @class = "control-label col-md-1" })
+                <div class="col-md-3">
+                    <input class="form-control" name="3" placeholder="بحث عن العميل" />
+                </div>
+            </div>
+            <div class="col col-md-12" style="margin-top:30px;">
+
+
+                <fieldset style="border:1px solid #DDD">
+                    <div style="margin-top:0px;padding-bottom:20px;">
+                        <table id="finishtable" class="display table-responsive-md" style="width:100%;">
+                            <thead>
+                                <tr>
+                                    <th>م</th>
+                                    <th>المخزن</th>
+                                    <th>اسم الشغل</th>
+                                    <th>العميل</th>
+                                    <th>اجمالي (كيلو)</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="4" style="text-align:center">الاجمالي</th>
+                                    <th style="text-align:center"></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+    <div id="Raw" class="tab-pane fade">
+        <div id="Rawstorescontent">
+            <div class="col-md-12">
+                @Html.Label("المخزن", htmlAttributes: new { @class = "control-label col-md-1" })
+                <div class="col-md-3">
+                    <input class="form-control" name="1" placeholder="بحث عن المخزن" />
+                </div>
+                @Html.Label("الصنف", htmlAttributes: new { @class = "control-label col-md-1" })
+                <div class="col-md-3">
+                    <input class="form-control" name="2" placeholder="بحث عن الصنف" />
+                </div>
+
+                @Html.Label("المورد", htmlAttributes: new { @class = "control-label col-md-1" })
+                <div class="col-md-3">
+                    <input class="form-control" name="3" placeholder="بحث عن المورد" />
+                </div>
+            </div>
+            <div class="col col-md-12" style="margin-top:30px;">
+                <fieldset style="border:1px solid #DDD">
+                    <div style="margin-top:0px;padding-bottom:20px;">
+                        <table id="RawTable" class="display table-responsive-md" style="width:100%;">
+                            <thead>
+                                <tr>
+                                    <th>م</th>
+                                    <th>المخزن</th>
+                                    <th>الصنف</th>
+                                    <th>المورد</th>
+                                    <th>اجمالي (بكر)</th>
+                                    <th>فئه الوزن</th>
+                                    <th>اجمالي (كيلو)</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="4" style="text-align:center">الاجمالي</th>
+                                    <th style="text-align:center"></th>
+                                    <th style="text-align:center"></th>
+                                    <th style="text-align:center"></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+    <div id="expired" class="tab-pane fade  ">
+        <div id="expiredstorescontent">
+            <div class="col-md-12">
+                @Html.Label("المخزن", htmlAttributes: new { @class = "control-label col-md-1" })
+                <div class="col-md-3">
+                    <input class="form-control" name="1" placeholder="بحث عن المخزن" />
+                </div>
+                @Html.Label("الصنف", htmlAttributes: new { @class = "control-label col-md-1" })
+                <div class="col-md-3">
+                    <input class="form-control" name="2" placeholder="بحث عن الصنف" />
+                </div>
+
+                @*@Html.Label("المورد", htmlAttributes: new { @class = "control-label col-md-1" })
+                <div class="col-md-3">
+                    <input class="form-control" name="3" placeholder="بحث عن المورد" />
+                </div>*@
+            </div>
+            <div class="col col-md-12" style="margin-top:30px;">
+                <fieldset style="border:1px solid #DDD">
+                    <div style="margin-top:0px;padding-bottom:20px;">
+                        <table id="expiredtable" class="display table-responsive-md" style="width:100%;">
+                            <thead>
+                                <tr>
+                                    <th>م</th>
+                                    <th>المخزن</th>
+                                    <th>الصنف</th>
+                                    @*<th>المورد</th>*@
+                                    <th>اجمالي (بكر)</th>
+                                    <th>فئه الوزن</th>
+                                    <th>اجمالي (كيلو)</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="3" style="text-align:center">الاجمالي</th>
+                                    <th style="text-align:center"></th>
+                                    <th style="text-align:center"></th>
+                                    <th style="text-align:center"></th>
+
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script src="~/DataTables/datatables.min.js"></script>
+
+    <script>
+
+        $(document).ready(function () {
+            var ExpiredTable = "";
+            var FinishedTable = "";
+            var rawTable = "";
+
+                 $.ajax({
+                type: "GET",
+                url: '@Url.Action("avilable","stockReport",new { storetypeid=(int)PlasticStatic.Enums.StoreType.expired})',
+                dataType: "html",
+                success: function (respons) {
+                    $("#expiredstorescontent .col fieldset div #expiredtable tbody").html(respons);
+               ExpiredTable=     $('#expiredtable').DataTable({
+                        "footerCallback": function (row, data, start, end, display) {
+                            var api = this.api(), data;
+
+                            var intVal = function (i) {
+
+                                return typeof i === 'string' ?
+                                    i.replace(/[\$,]/g, '') * 1 :
+                                    typeof i === 'number' ?
+                                        i : 0;
+                            };
+
+                            totalfornoitem = api
+                                .column(3, { page: 'current' })
+                                .data()
+                                .reduce(function (a, b) {
+                                    return intVal(a) + intVal(b);
+                                }, 0);
+
+
+                            totalforweight = api
+                                .column(5, { page: 'current' })
+                                .data()
+                                .reduce(function (a, b) {
+                                    return intVal(a) + intVal(b);
+                                }, 0);
+
+
+
+
+                            $(api.column(3).footer()).html(
+                                totalfornoitem + ' ' + 'بكره'
+                            );
+
+
+
+
+                            $(api.column(5).footer()).html(
+                                totalforweight + ' ' + 'كيلو'
+                            );
+
+
+
+
+                        },
+
+                        "columnDefs": [{
+                            "orderable": false,
+                            "targets": [1, 2,3],
+
+                        }],
+                        "language": {
+	"sEmptyTable":     "ليست هناك بيانات متاحة في الجدول",
+	"sLoadingRecords": "جارٍ التحميل...",
+	"sProcessing":   "جارٍ التحميل...",
+	"sLengthMenu":   "أظهر _MENU_ مدخلات",
+	"sZeroRecords":  "لم يعثر على أية سجلات",
+	"sInfo":         "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+	"sInfoEmpty":    "يعرض 0 إلى 0 من أصل 0 سجل",
+	"sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+	"sInfoPostFix":  "",
+	"sSearch":       "ابحث:",
+	"sUrl":          "",
+	"oPaginate": {
+		"sFirst":    "الأول",
+		"sPrevious": "السابق",
+		"sNext":     "التالي",
+		"sLast":     "الأخير"
+	},
+	"oAria": {
+		"sSortAscending":  ": تفعيل لترتيب العمود تصاعدياً",
+		"sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+	}
+
+                        },
+                        info: false,
+                    });
+
+                },
+
+                fail: function (xhr, msg, errorThrown) {
+                    //toastr.error('عمليه غير ناجحه', , { timeOut: 1000 });
+
+                },
+                error: function (xhr, statusText, errorThrown) {
+                    //toastr.error('عمليه غير ناجحه', { timeOut: 1000 });
+                }
+
+
+            });
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("avilable","stockReport",new { storetypeid=(int)PlasticStatic.Enums.StoreType.Raw})',
+                dataType: "html",
+                success: function (respons) {
+                    $("#Rawstorescontent .col fieldset div #RawTable tbody").html(respons);
+              rawTable=      $('#RawTable').DataTable({
+                        "footerCallback": function (row, data, start, end, display) {
+                            var api = this.api(), data;
+
+                            var intVal = function (i) {
+
+                                return typeof i === 'string' ?
+                                    i.replace(/[\$,]/g, '') * 1 :
+                                    typeof i === 'number' ?
+                                        i : 0;
+                            };
+
+                            totalfornoitem = api
+                                .column(4, { page: 'current' })
+                                .data()
+                                .reduce(function (a, b) {
+                                    return intVal(a) + intVal(b);
+                                }, 0);
+
+
+                            totalforweight = api
+                                .column(6, { page: 'current' })
+                                .data()
+                                .reduce(function (a, b) {
+                                    return intVal(a) + intVal(b);
+                                }, 0);
+
+
+                            $(api.column(4).footer()).html(
+                                totalfornoitem + ' ' + 'بكره'
+                            );
+
+
+
+
+                            $(api.column(6).footer()).html(
+                                totalforweight + ' ' + 'كيلو'
+                            );
+
+
+
+
+                        },
+
+                        "columnDefs": [{
+                            "orderable": false,
+                            "targets": [0,1, 2,3],
+
+                        }],
+                        "language": {
+
+	"sEmptyTable":     "ليست هناك بيانات متاحة في الجدول",
+	"sLoadingRecords": "جارٍ التحميل...",
+	"sProcessing":   "جارٍ التحميل...",
+	"sLengthMenu":   "أظهر _MENU_ مدخلات",
+	"sZeroRecords":  "لم يعثر على أية سجلات",
+	"sInfo":         "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+	"sInfoEmpty":    "يعرض 0 إلى 0 من أصل 0 سجل",
+	"sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+	"sInfoPostFix":  "",
+	"sSearch":       "ابحث:",
+	"sUrl":          "",
+	"oPaginate": {
+		"sFirst":    "الأول",
+		"sPrevious": "السابق",
+		"sNext":     "التالي",
+		"sLast":     "الأخير"
+	},
+	"oAria": {
+		"sSortAscending":  ": تفعيل لترتيب العمود تصاعدياً",
+		"sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+	}
+
+                        },
+                        info: false,
+                    });
+
+                },
+
+                fail: function (xhr, msg, errorThrown) {
+                    //toastr.error('عمليه غير ناجحه', , { timeOut: 1000 });
+
+                },
+                error: function (xhr, statusText, errorThrown) {
+                    //toastr.error('عمليه غير ناجحه', { timeOut: 1000 });
+                }
+
+
+            });
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("avilableInFinshStore", "stockReport",new { storetypeid=(int)PlasticStatic.Enums.StoreType.finished})',
+                dataType: "html",
+                success: function (respons) {
+                    $("#FinishstoreContent .col fieldset div #finishtable tbody").html(respons);
+              FinishedTable =      $('#finishtable').DataTable({
+                        "footerCallback": function (row, data, start, end, display) {
+                            var api = this.api(), data;
+
+                            var intVal = function (i) {
+
+                                return typeof i === 'string' ?
+                                    i.replace(/[\$,]/g, '') * 1 :
+                                    typeof i === 'number' ?
+                                        i : 0;
+                            };
+
+                          
+
+
+                            totalforweight = api
+                                .column(4, { page: 'current' })
+                                .data()
+                                .reduce(function (a, b) {
+                                    return intVal(a) + intVal(b);
+                                }, 0);
+
+
+
+
+                            $(api.column(4).footer()).html(
+                                totalforweight + ' ' + 'كيلو'
+                            );
+
+
+
+
+                        },
+
+                        "columnDefs": [{
+                            "orderable": false,
+                            "targets": [0,1, 2,3],
+
+                        }],
+                        "language": {
+
+	"sEmptyTable":     "ليست هناك بيانات متاحة في الجدول",
+	"sLoadingRecords": "جارٍ التحميل...",
+	"sProcessing":   "جارٍ التحميل...",
+	"sLengthMenu":   "أظهر _MENU_ مدخلات",
+	"sZeroRecords":  "لم يعثر على أية سجلات",
+	"sInfo":         "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+	"sInfoEmpty":    "يعرض 0 إلى 0 من أصل 0 سجل",
+	"sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+	"sInfoPostFix":  "",
+	"sSearch":       "ابحث:",
+	"sUrl":          "",
+	"oPaginate": {
+		"sFirst":    "الأول",
+		"sPrevious": "السابق",
+		"sNext":     "التالي",
+		"sLast":     "الأخير"
+	},
+	"oAria": {
+		"sSortAscending":  ": تفعيل لترتيب العمود تصاعدياً",
+		"sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+	}
+
+                        },
+                        info: false,
+                    });
+
+                },
+
+                fail: function (xhr, msg, errorThrown) {
+                    //toastr.error('عمليه غير ناجحه', , { timeOut: 1000 });
+
+                },
+                error: function (xhr, statusText, errorThrown) {
+                    //toastr.error('عمليه غير ناجحه', { timeOut: 1000 });
+                }
+
+
+            });
+            $("#Rawstorescontent input").on('keyup', function () {
+                var colnum = parseInt($(this).attr('name'));
+                    rawTable.column(colnum).search( this.value ).draw();
+            });
+
+                        $("#FinishstoreContent input").on('keyup', function () {
+                var colnum = parseInt($(this).attr('name'));
+                    FinishedTable.column(colnum).search( this.value ).draw();
+            });
+            $("#expiredstorescontent input").on('keyup', function () {
+                var colnum = parseInt($(this).attr('name'));
+                    ExpiredTable.column(colnum).search( this.value ).draw();
+            });
+
+
+
+        });
+    </script>
+}

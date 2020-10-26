@@ -1,0 +1,193 @@
+﻿@model StockDB.Model.Shaplona
+
+@{
+    ViewBag.Title = "السريل";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var msg = "";
+    var Error = "";
+    if (ViewBag.ErrorExist != null)
+    {
+        msg = (string)ViewBag.ErrorExist;
+    }
+    if (ViewBag.Msg != null)
+    {
+        Error = (string)ViewBag.Msg;
+    }
+}
+@Styles.Render("~/Content/jquery")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/Content/vendors/bootstrap/dist/js/bootstrap.min.js")
+@Scripts.Render("~/Content/chosenJavaScript")
+@Styles.Render("~/Content/chosenCSS")
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+
+
+<h2 class="mb-5">تعديل @Model.shap_name </h2>
+
+@using (Html.BeginForm("Edit", "Shaplonas", null, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal col-md-8">
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.HiddenFor(x => x.shap_id)
+            @Html.HiddenFor(x => x.shap_pic)
+            <label class="control-label col-md-2">رقم السريل</label>
+            <div class="col-md-6">
+                @Html.EditorFor(model => model.ShapSerial, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.ShapSerial, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">اسم العميل</label>
+            <div class="col-md-6">
+                @Html.DropDownListFor(x => x.cust_id, ViewBag.Customers as SelectList, "حدد اسم العميل ", htmlAttributes: new { @class = "form-control CustCss validateAlways", style = "visibility: hidden;position: absolute;display:inline !important" })
+                @Html.ValidationMessageFor(model => model.cust_id, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">اسم السريل</label>
+            <div class="col-md-6">
+                @Html.EditorFor(model => model.shap_name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.shap_name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2" for="shap_startDate">تاريخ الدخول</label>
+            <div class="col-md-2">
+                @Html.EditorFor(model => model.shap_startDate, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.shap_startDate, "", new { @class = "text-danger" })
+            </div>
+            <label class="control-label col-md-2">تاريخ الخروج</label>
+            <div class="col-md-2">
+                @Html.EditorFor(model => model.shap_endDate, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.shap_endDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <input class="form-control" style="display:none" id="file-input" accept="image/*,.pdf" name="shap_pic" type="file">
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-5">
+                <input type="submit" value="تعديل" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="image-upload">
+            <label for="file-input" id="LableChangPicparnt">
+                @{
+
+                    if (Model.shap_pic != null)
+                    {
+                                
+                        <img  id="ShaplonImg" style="max-width:100%;max-height:100%">
+                    }
+                    else
+                    {
+                        <img id="ShaplonImg" src="/images/shaplon/blankimg.png" style="max-width:100%;max-height:100%" />
+                    }
+
+
+                }
+                <label for="file-input" id="LableChangpicChild" class="btn btn-link mt-1 text-center">تغير الصوره</label>
+            </label>
+
+        </div>
+
+    </div>
+}
+
+<div>
+    @Html.ActionLink("الرجوع للقاثمه", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/toastr.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            //Change Shaplon Pic
+            $("input[type='File']").change(function () {
+                var input = this;
+                var url = $(this).val();
+                var ext = url.substring(url.lastIndexOf('.') + 1).toLowerCase();
+                if (input.files && input.files[0] && (ext == "gif" || ext == "png" || ext == "jpeg" || ext == "jpg")) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        $('#ShaplonImg').attr('src', e.target.result);
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
+                else {
+
+                    $('#ShaplonImg').attr('src', "~/images/shaplon/blankimg.png");
+                }
+            });
+
+
+
+
+
+            $("input[type='submit']").click(function () {
+                $("input[type='File']").removeAttr("aria-describedby");
+                $("input[type='File']").removeAttr("aria-invalid");
+            })
+
+            // if Cust With Serial num exist befor
+                        var ErrorMsg = '@msg';
+            if (ErrorMsg != '') {
+
+            toastr.error('', ErrorMsg, { timeOut: 3000 });
+            }
+                        var Error = '@Error';
+
+                        if (Error != '') {
+
+            toastr.error('', Error, { timeOut: 3000 });
+            }
+
+                        $(".CustCss").chosen({
+                width: '100%',
+                no_results_text: "لايوجد عميل بهذا الاسم",
+                search_contains: true
+            });
+
+            $(function () {
+                $("input[type='datetime']").datepicker({
+                    dateFormat: 'yy/mm/dd',
+                    minView: 2,
+                });
+
+
+            });
+
+              $("option[value='']").attr("disabled", "disabled");
+            $("#cust_id").css("display", "");
+            var imgurl = "@Url.Content("~/images/shaplon/")" + "@Model.shap_id"+"/" + "@Model.shap_pic";
+
+            $("#ShaplonImg").attr("src", imgurl)
+        });
+    </script>
+}
+
+@section styles{
+    <style>
+        #LableChangPicparnt {
+            position: relative;
+        }
+
+        #LableChangpicChild {
+            position: absolute;
+            bottom: -38px;
+            left: 31%;
+        }
+    </style>
+}

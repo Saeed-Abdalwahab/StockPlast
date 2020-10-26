@@ -1,0 +1,183 @@
+﻿@model IEnumerable<StockViewModel.SalesReturnVM>
+
+@{
+    ViewBag.Title = "مرتجع مبيعات";
+}
+<link href="~/DataTables/datatables.css" rel="stylesheet" />
+@section styles{
+    <style>
+.modal-body{
+        height: auto;
+
+}
+    </style>
+    }
+
+<div class="text-center font-weight-bold   mb-md-5 " style="font-size:large;margin-bottom:20px">
+    <h2>فواتير ارتجاع(@Model.FirstOrDefault().cutomername)</h2>
+</div>
+<p>
+
+    @Html.ActionLink("اضافه  مرتجع", "Create", "SalesReturn", new { fromstockid = Model.FirstOrDefault().FromStockId }, null)
+</p>
+<table class="display table-responsive-md" style="width:100%;">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayName("رقم الارتجاع")
+            </th>
+
+            <th>
+                @Html.DisplayName("تاريخ")
+
+            </th>
+            <th>
+                @Html.DisplayName("الملاحظات")
+            </th>
+            <th>
+                @Html.DisplayName("تكلفه")
+
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.InvoiceSerial)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.InvoiceDate)
+                </td>
+
+
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Notes)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                @{
+                    if (item.InvoiceStatus == PlasticStatic.Enums.InvoiceStatus.NotFinish)
+                    {
+                        <td>
+                            @Html.ActionLink("تعديل", "Edit", "SalesReturn", new { tostockid = item.ID }, null) |
+                            @Html.ActionLink("حذف", "Delete", null, new { Href = "#", onclick = "ConfirmDelet(" + item.ID + ")" })
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            @Html.ActionLink("تفاصيل", "Details", "SalesReturn", new { tostockid = item.ID }, null)
+                        </td>
+                    }
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+@section scripts{
+    <script src="~/DataTables/datatables.min.js"></script>
+    <script>
+          function ConfirmDelet(id) {
+
+            bootbox.confirm({
+                title: "عملية حذف ",
+                message: "هل انت متاكد من عملية الحذف ؟",
+                size: 'small',
+                buttons: {
+                    cancel: {
+                        label: '<i class="fa fa-times"></i> رجوع',
+                        className: 'btn-info'
+                    },
+                    confirm: {
+                        label: '<i class="fa fa-check"></i> تاكيد',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result == true) {
+                        deleteRecord(id)
+                    }
+                    else {
+                        return true;
+                    }
+                }
+            });
+        }
+                function deleteRecord(id) {
+            $.ajax({
+                type: "post",
+                url: '@Url.Action("Delete","SalesReturn")' + '?tostockid=' + id,
+
+                success: function (respons) {
+                    if (respons.success) {
+
+                        toastr.success('تمت حذف  المرتجع', respons.msg, { timeOut: 3000 });
+                        location.reload();
+                    }
+                    else {
+                    toastr.error('عمليه غير ناجحه', respons.msg, { timeOut: 1000 });
+
+                    }
+
+                },
+
+                fail: function (xhr, msg, errorThrown) {
+                    toastr.error('عمليه غير ناجحه', msg, { timeOut: 1000 });
+
+                },
+                error: function (xhr, statusText, errorThrown) {
+                    toastr.error('عمليه غير ناجحه','هناك بيانات معتمده علي هذا الامر  لايمكن حذفه حاليا ' ,{ timeOut: 1000 });
+                }
+
+
+            });
+
+        }
+
+        $(document).ready(function () {
+
+                  $('table').DataTable({
+
+                        "columnDefs": [{
+                            "orderable": false,
+                            "targets": [0,1, 2,3],
+
+                        }],
+                        "language": {
+
+	"sEmptyTable":     "ليست هناك بيانات متاحة في الجدول",
+	"sLoadingRecords": "جارٍ التحميل...",
+	"sProcessing":   "جارٍ التحميل...",
+	"sLengthMenu":   "أظهر _MENU_ مدخلات",
+	"sZeroRecords":  "لم يعثر على أية سجلات",
+	"sInfo":         "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+	"sInfoEmpty":    "يعرض 0 إلى 0 من أصل 0 سجل",
+	"sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+	"sInfoPostFix":  "",
+	"sSearch":       "ابحث:",
+	"sUrl":          "",
+	"oPaginate": {
+		"sFirst":    "الأول",
+		"sPrevious": "السابق",
+		"sNext":     "التالي",
+		"sLast":     "الأخير"
+	},
+	"oAria": {
+		"sSortAscending":  ": تفعيل لترتيب العمود تصاعدياً",
+		"sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+	}
+
+                        },
+                        info: false,
+                    });
+
+        });
+    </script>
+}

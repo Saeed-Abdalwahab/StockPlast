@@ -1,0 +1,71 @@
+﻿@model StockDB.Model.Shaplona
+
+@{
+    ViewBag.Title = "السريل";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Shaplona</h4>
+    <hr />
+    <ul class="list-unstyled">
+
+        <li>اسم العميل : <span>@Html.DisplayFor(model => model.Customer.cust_name)</span> </li>
+    </ul>
+    @*<dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Customer.cust_name)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Customer.cust_name)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.shap_name)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.shap_name)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.shap_pic)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.shap_pic)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.shap_startDate)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.shap_startDate)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.ShapSerial)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.ShapSerial)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.shap_endDate)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.shap_endDate)
+            </dd>
+
+        </dl>*@
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.shap_id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

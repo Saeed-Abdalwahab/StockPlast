@@ -1,0 +1,112 @@
+﻿@model IEnumerable<StockDB.Model.Employe>
+
+@{
+    ViewBag.Title = "الموظفين";
+}
+<link href="~/DataTable/datatables.min.css" rel="stylesheet" />
+
+<h2>بيانات الموظفين</h2>
+<div id="Details" class="d-none">
+
+</div>
+<div id="DeletShaplonDiv" class="d-none">
+
+</div>
+<p>
+    @Html.ActionLink("اضافة موظف جديد", "CreateEmploye")
+</p>
+<table id="empdata" class="table">
+    <thead>
+        <tr>
+            <th>
+                م
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.emp_name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Job_id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.emp_mobile)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.emp_mail)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var countr = 0;
+        }
+        @foreach (var item in Model)
+        {
+            countr++;
+            <tr>
+                <td>
+                    @countr
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.emp_name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Job.job_name)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.emp_mobile)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.emp_mail)
+                </td>
+                <td>
+                    @Html.ActionLink("تعديل", "EditEmploye", new { id = item.emp_id }) |
+                    @*@Html.ActionLink("Details", "Details", new { id=item.emp_id }) |*@
+                    @*@Html.ActionLink("حذف", "DeleteEmploye", new { id = item.emp_id })*@
+                    @Ajax.ActionLink("حذف", "DeleteEmploye", "Employes", null, null, null,
+               new { id = item.emp_id }, new AjaxOptions { HttpMethod = "GET", UpdateTargetId = "DeletShaplonDiv", InsertionMode = InsertionMode.Replace, OnSuccess = "$('.modal').modal('toggle')", OnFailure = "alert('Not available Details')" }, new { @class = "Detilslink" })
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section scripts{
+    <script src="~/DataTables/datatables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var table = $("#empdata").DataTable({
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": [5],
+
+                }],
+                "language": {
+                                     "sEmptyTable":     "ليست هناك بيانات متاحة في الجدول",
+	"sLoadingRecords": "جارٍ التحميل...",
+	"sProcessing":   "جارٍ التحميل...",
+	"sLengthMenu":   "أظهر _MENU_ مدخلات",
+	"sZeroRecords":  "لم يعثر على أية سجلات",
+	"sInfo":         "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+	"sInfoEmpty":    "يعرض 0 إلى 0 من أصل 0 سجل",
+	"sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+	"sInfoPostFix":  "",
+	"sSearch":       "ابحث:",
+	"sUrl":          "",
+	"oPaginate": {
+		"sFirst":    "الأول",
+		"sPrevious": "السابق",
+		"sNext":     "التالي",
+		"sLast":     "الأخير"
+	},
+	"oAria": {
+		"sSortAscending":  ": تفعيل لترتيب العمود تصاعدياً",
+		"sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+	}
+                },
+            });
+        });
+    </script>
+}

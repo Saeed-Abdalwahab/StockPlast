@@ -1,0 +1,405 @@
+﻿@model StockViewModel.CustomerPaymentVM
+@{
+    ViewBag.Title = "دفعات العملاء";
+
+}
+@section styles{
+    <style>
+        .modal-body {
+            height: auto;
+        }
+    </style>
+}
+<link href="~/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+<div class="text-center">
+    <h3 class="center info">دفعات العملاء</h3>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="MyModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="#" class="close" data-dismiss="modal">&times;</a>
+                <h4 id="Modaltitle"></h4>
+            </div>
+            <div class="modal-body" style="height:auto;overflow-y:hidden">
+                <form id="form">
+                    <div class="form-horizontal">
+
+                        @Html.HiddenFor(m => m.ID)
+                        <div class="form-group">
+                            @Html.Label("العميل", htmlAttributes: new { @class = "control-label col-md-2 col-sm-12" })
+                            <div class="col-md-4 col-sm-12">
+                                @Html.DropDownListFor(m => m.Customer_ID, ViewBag.customers as SelectList, "--اختر العميل--", new { @class = "form-control validateAlways", style = "visibility: hidden;position: absolute;display:inline !important" })
+                                @Html.ValidationMessageFor(model => model.Customer_ID, "", new { @class = "text-danger" })
+                            </div>
+
+                            @Html.Label("رقم الايصال", htmlAttributes: new { @class = "control-label col-md-2 col-sm-12" })
+                            <div class="col-md-4 col-sm-12">
+
+                                @Html.EditorFor(model => model.PaymentNumber, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.PaymentNumber, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.Label("تاريخ الايصال", htmlAttributes: new { @class = "control-label col-md-2 col-sm-12" })
+                            <div class="col-md-4 col-sm-12">
+
+                                @Html.EditorFor(model => model.PaymentDate, new { htmlAttributes = new { @class = "form-control" } })
+
+                                @Html.ValidationMessageFor(model => model.PaymentDate, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.Label("قيمه الايصال", htmlAttributes: new { @class = "control-label col-md-2 col-sm-12" })
+                            <div class="col-md-4 col-sm-12">
+
+                                @Html.EditorFor(model => model.PaymentValue, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.PaymentValue, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+                        <div class="form-group">
+                            @Html.Label("الخزينه", htmlAttributes: new { @class = "control-label col-md-2 col-sm-12" })
+                            <div class="col-md-4 col-sm-12">
+
+                                @Html.DropDownListFor(m => m.Safe_ID, ViewBag.safes as SelectList, "--اختر الخزينه--", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Safe_ID, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.Label("الملاحظـات", htmlAttributes: new { @class = "control-label col-md-2 col-sm-12" })
+                            <div class="col-md-4 col-sm-12">
+
+                                @Html.EditorFor(model => model.Notes, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Notes, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="text-left">
+                    <a href="#" class="btn btn-primary" id="SAVEREC">حفظ</a>
+                    <a href="#" class="btn btn-primary" data-dismiss="modal">الغاء</a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="margin-top:3%">
+    <button class="btn btn-primary" id="ADDNEWREC">اضافه دفعه جديد</button>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>
+                    م
+                </th>
+                <th>
+                    @Html.Name("العميل")
+                </th>
+              
+                <th>
+                    @Html.Name("رقم الايصال")
+                </th>
+                <th>
+                    @Html.Name("تاريخ الايصال")
+                </th>
+                <th>
+                    @Html.Name("قيمه الايصال")
+                </th>
+          
+                <th>
+                    @Html.Name("الخزينه")
+                </th>
+                <th>
+                    @Html.Name("ملاحظات")
+                </th>
+        
+                @*<th style="width:80px"> @Html.Name("العمليه")</th>*@
+            </tr>
+        </thead>
+        <tbody>
+       
+        </tbody>
+    </table>
+</div>
+@section scripts
+{
+    @Scripts.Render("~/Content/chosenJavaScript")
+    @Styles.Render("~/Content/chosenCSS")
+    <script src="~/DataTables/datatables.min.js"></script>
+    <script src="~/Scripts/toastr.min.js"></script>
+
+    <script>
+        var DATATABLE = "";
+        var MaxSerial =@((int)ViewBag.MaxSerial);
+                //Show Delet Msg Confirmation
+    function DeleteConfirmation(id) {
+        bootbox.confirm({
+            title: "عملية حذف ",
+            message: "هل انت متاكد من عملية الحذف ؟",
+            size: 'small',
+            buttons: {
+                cancel: {
+                    label: '<i class="fa fa-times"></i> رجوع',
+                    className: 'btn-info'
+                },
+                confirm: {
+                    label: '<i class="fa fa-check"></i> تاكيد',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function (result) {
+                if (result == true) {
+                    deleteRecord(id)
+                }
+                else {
+                    return true;
+                }
+            }
+        });
+
+    }
+         function deleteRecord(id) {
+            $.ajax({
+                type: "post",
+                url: '@Url.Action("Delete","CustomerPayment")' + '?id=' + id,
+
+                success: function (respons) {
+                    if (respons.success=="true") {
+                        MaxSerial = respons.maxserial;
+                        toastr.success('تمت  الحذف بنجاح','', { timeOut: 3000 });
+                        DATATABLE.ajax.reload();
+
+                    }
+                    else {
+                        toastr.error(respons.success,{ timeOut: 1000 });
+
+                    }
+
+                },
+
+                fail: function (xhr, msg, errorThrown) {
+                    toastr.error('عمليه غير ناجحه', msg, { timeOut: 1000 });
+
+                },
+                error: function (xhr, statusText, errorThrown) {
+                    toastr.error('عمليه غير ناجحه','هناك بيانات معتمده علي هذا الامر  لايمكن حذفه حاليا ' ,{ timeOut: 1000 });
+                }
+
+
+            });
+
+        }
+
+
+        function GetDate(data) {
+            debugger
+            var date = new Date(parseInt(data.substr(6)));
+            var month = date.getMonth() + 1
+            return date.getFullYear() + "/" + month + "/" + date.getDate();
+        }
+            function Save() {
+                if ($("#form").valid()) {
+                    debugger
+                var data = $("#form").serialize();
+                $.ajax({
+                    type: "post",
+                    url: "@Url.Action("Save", "CustomerPayment")",
+                    data: data,
+                    success: function (response) {
+                        if (response.msg == "true") {
+
+                            DATATABLE.ajax.reload();
+                            MaxSerial = response.maxserial
+                            toastr.success('تم الحفظ  ', 'اشعار', { timeOut: 4000 });
+                            $("#MyModal").modal("hide");
+                        
+                        }
+                        else if (response.msg == "false") {
+                            toastr.error('عمليه غير ناجحه', 'حدث خطأ اثناء الاضافه برجاء المحاوله مره اخري ', { timeOut: 3000 });
+
+
+                        }
+                        else {
+                            toastr.error('عمليه غير ناجحه', response.msg, { timeOut: 3000 });
+
+                        }
+                    },
+                    fail: function () {
+                        toastr.error('الاسم مسجل بالفعل', 'حدث خطأ اثناء الاضافه برجاء المحاوله مره اخري ', { timeOut: 3000 });
+                    },
+                    error: function () {
+                        toastr.error('عمليه غير ناجحه', 'حدث خطأ اثناء الاضافه برجاء المحاوله مره اخري ', { timeOut: 3000 });
+                    }
+                });
+            }
+            else {
+                toastr.error('برجاءادخال الحقول', 'اشعار', { timeOut: 3000 });
+            }
+        }
+
+
+            function AddNew(ID) {
+                $("#form")[0].reset();
+                $("#Customer_ID").trigger("chosen:updated");
+            $("#Modaltitle").html("إضافه  دفعه عميل");
+                $("#ID").val("0");
+                $("#PaymentNumber").val(MaxSerial);
+                $("#PaymentDate").datepicker("setDate", new Date());
+            $("#MyModal").modal()
+        }
+
+                function Edit(id) {
+            var url = "@Url.Action("GetbyID", "CustomerPayment")"+"?id=" + id;
+            $("#Modaltitle").html("تعديل الايراد يومي");
+            $.ajax({
+                type: "GET",
+                url: url,
+                success: function (rs) {
+                    debugger
+                    $("#ID").val(rs.data.ID);
+                    $("#Customer_ID").val(rs.data.Customer_ID);
+                    $("#Customer_ID").trigger("chosen:updated");
+                    $("#PaymentNumber").val(rs.data.PaymentNumber);
+                    $("#PaymentDate").val(GetDate(rs.data.PaymentDate));
+                    $("#PaymentValue").val(rs.data.PaymentValue);
+                    $("#Safe_ID").val(rs.data.Safe_ID);
+                    $("#Notes").val(rs.data.Notes);
+                    $("#MyModal").modal();
+                }
+            })
+        }
+
+        //Remotly Add New Bank
+
+        function AddBank() {
+            debugger
+            var BankName = $("#BANKLIST #Bank_ID_chosen .chosen-drop .chosen-search input").val()
+        var ul = $("#Bank_ID_chosen .chosen-drop .chosen-results");
+            $.ajax({
+                type: "post",
+                url: "@Url.Action("RemoteCreate", "Banks")",
+                data: { Name:BankName },
+                success: function (res) {
+
+                    $("#Bank_ID").append('<option value="' + res.data+ '">' + BankName + '</option>');
+                    $("#Bank_ID").val(res.data);
+
+                    $("#Bank_ID").trigger('chosen:updated');
+                       $("#Bank_ID").trigger('chosen:close');
+
+                    ul.append('<li class="active-result result-selected">' + BankName + ' </li>');
+
+                    toastr.success('تمت ااضافه البنك', 'عمليه اضافه ناجحه', { timeOut: 3000 });
+                },
+                fail: function () {
+                    toastr.error('عمليه غير ناجحه', 'حدث خطأ اثناء الاضافه برجاء المحاوله مره اخري ', { timeOut: 3000 });
+                }
+            });
+    }
+
+
+
+
+        //datatable function
+    $(document).ready(function () {
+
+        $("#ADDNEWREC").click(function () {
+            AddNew(0);
+        });
+                $('#PaymentDate').datepicker({
+                    dateFormat: 'yy/mm/dd',
+                    minView: 2,
+                });
+
+             DATATABLE = $('table').DataTable({
+                "ajax": {
+                    'url': "@Url.Action("Getall", "CustomerPayment")",
+                    'type': "GET"
+                },
+                "columns": [
+                    {
+                        "data": null, "render": function (data, type, full, meta) {
+                            return meta.row + 1;
+                        }
+                    },
+
+                    { "data": "CustomerName" },
+                    { "data": "PaymentNumber" },
+                    {
+                        "data": "PaymentDate",
+                        "render": function (data) {
+                            var date = new Date(parseInt(data.substr(6)));
+                            var month = date.getMonth() + 1
+                            return date.getFullYear() + "/" + month + "/" + date.getDate();
+                        }
+                        },
+                    { "data": "PaymentValue" },
+                    { "data": "SafeName" },
+                    { "data": "Notes" },
+                    //{
+                    //    "data": "ID", "render": function (data) {
+
+                    //        return "<botton class='btn btn-primary ED' style='margin-top:3px' onclick='Edit(" + data + ")'><span class='glyphicon glyphicon-pencil'></span></botton>" + "<botton class='btn btn-danger ED' style='margin-topitem.BankName):3px' onclick='DeleteConfirmation(" + data + ")'><span class='glyphicon glyphicon-trash'></span></botton>"
+                    //    }
+                    //},
+
+
+
+                ],
+                "language": {
+                    "sEmptyTable": "ليست هناك بيانات متاحة في الجدول",
+                    "sLoadingRecords": "جارٍ التحميل...",
+                    "sProcessing": "جارٍ التحميل...",
+                    "sLengthMenu": "أظهر _MENU_ مدخلات",
+                    "sZeroRecords": "لم يعثر على أية سجلات",
+                    "sInfo": "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+                    "sInfoEmpty": "يعرض 0 إلى 0 من أصل 0 سجل",
+                    "sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+                    "sInfoPostFix": "",
+                    "sSearch": "ابحث:",
+                    "sUrl": "",
+                    "oPaginate": {
+                        "sFirst": "الأول",
+                        "sPrevious": "السابق",
+                        "sNext": "التالي",
+                        "sLast": "الأخير"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": تفعيل لترتيب العمود تصاعدياً",
+                        "sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+                    }
+                },
+                info: false,
+
+            })
+            DATATABLE.on('order.dt search.dt', function () {
+                DATATABLE.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+
+                $("#SAVEREC").click(function () {
+            Save();
+                });
+              $("#Bank_ID").chosen({
+            width: '100%',
+            no_results_text: '<input class="btn btn-info" type="button" value="اضافه بنك جديد" onclick="AddBank()" />',
+            search_contains: true
+              });
+        $("#Bank_ID").css("display", "");
+
+            $("#Customer_ID").chosen({
+            width: '100%',
+            no_results_text: 'لا يوجد عميل بهذا الاسم',
+            search_contains: true
+              });
+        $("#Customer_ID").css("display", "");
+
+    });
+
+
+    </script>
+}

@@ -1,0 +1,31 @@
+﻿@using System.Web.Mvc.Html;
+@helper GetTreeView(List<StockDB.Model.AspNetModule> securityModules)
+
+{
+    <li>
+        <span class="collapse collapsible">&nbsp;</span>
+        <span>
+            وحدات المنظومة
+        </span>
+        <ul>
+            @foreach (var item in securityModules)
+            {
+                <li>
+                    @{ var submenu = securityModules.Count; }
+                    @if (submenu > 0)
+                    {
+                        <span class="collapse collapsible">&nbsp;</span> @*collapsible*@
+                    }
+                    else
+                    {
+                        <span style="width: 15px; display: inline-block">&nbsp;</span>
+                    }
+                    <span>
+                        <a href="#">@item.Name</a>
+                    </span>
+                </li>
+            }
+        </ul>
+    </li>
+
+}

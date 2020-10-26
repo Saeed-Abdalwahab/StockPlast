@@ -1,0 +1,394 @@
+﻿@using PlasticStatic
+
+@{ string title = ViewBag.Title == null ? "منظومة البلاستيك" : ViewBag.Title as string ;
+    var cookie = HttpContext.Current.Request.Cookies;
+    
+        }
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@title</title>
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    @Styles.Render("~/Content/jquery-ui.css")
+    @Styles.Render("~/Content/vendors/bootstrap/dist/css/bootstrap.min.css")
+    @Styles.Render("~/Content/vendors/font-awesome/css/font-awesome.min.css")
+    @Styles.Render("~/Content/vendors/nprogress/nprogress.css")
+    @Styles.Render("~/Content/vendors/iCheck/skins/flat/green.css")
+    @Styles.Render("~/Content/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css")
+    @Styles.Render("~/Content/vendors/jqvmap/dist/jqvmap.min.css")
+    @Styles.Render("~/Content/build/css/custom-rtl.css")
+    @Styles.Render("~/Content/bootstrap-timepicker.min.css")
+    @Styles.Render("~/Content/bootstrap-datetimepicker.min.css")
+    @Styles.Render("~/Content/jquery-confirm.css")
+    <link href="~/Content/toastr.min.css" rel="stylesheet" />
+    @Scripts.Render("~/bundles/modernizr")
+    <!-- jQuery -->
+    @Scripts.Render("~/Content/vendors/jquery/dist/jquery.min.js")
+    @Scripts.Render("~/Content/vendors/jquery/dist/jquery-ui.js")
+
+    <!-- Bootstrap -->
+    @Scripts.Render("~/Content/vendors/bootstrap/dist/js/bootstrap.min.js")
+    <!-- FastClick -->
+    @Scripts.Render("~/Content/vendors/fastclick/lib/fastclick.js")
+    <!-- NProgress -->
+    @Scripts.Render("~/Content/vendors/nprogress/nprogress.js")
+    <!-- bootstrap-datetimepicker -->
+    @Scripts.Render("~/Scripts/bootstrap-datetimepicker.min.js")
+
+    @Scripts.Render("~/Scripts/jquery.validate.js")
+    @Scripts.Render("~/Scripts/jquery.validate.unobtrusive.js")
+    @Scripts.Render("~/Scripts/jquery.unobtrusive-ajax.min.js")
+
+    @Scripts.Render("~/Scripts/jquery-confirm.js")
+    <style>
+        .nav-md .container.body .left_col {
+            min-height: 600px;
+        }
+
+        .nav-sm .container.body .left_col {
+            min-height: 600px;
+        }
+
+        .nav-sm ul.nav.child_menu {
+            left: 0px;
+            right: 71px;
+            padding-right: 0px;
+        }
+
+            .nav-sm ul.nav.child_menu li a {
+                text-align: right !important;
+            }
+
+        .nav-sm footer {
+            margin-left: 0px !important;
+            margin-right: 70px;
+        }
+    </style>
+
+    @RenderSection("styles", required: false)
+</head>
+
+<body id="mainBody" class="nav-md">
+
+    @*onbeforeunload="doUnload()" onmousedown="somefunction()"*@
+    <div class="container body">
+        <div class="main_container">
+            <div class="col-md-3 right_col">
+                <div class="right_col scroll-view">
+                    <div class="navbar nav_title" style="border: 0;">
+                            <img id="HomeLogoImg"  style="width:100%;height:100%" />
+                      
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <!-- sidebar menu -->
+                    <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+                        <div class="menu_section">
+                      
+                            <div>
+
+                                <ul class="nav side-menu">
+                                    @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin)
+                                      || ((cookie["UserRoles"] != null) && ((cookie["UserRoles"].Value.Contains("الالوان")) || (cookie["UserRoles"].Value.Contains("المخازن")) || cookie["UserRoles"].Value.Contains("الخزائن")) || (cookie["UserRoles"].Value.Contains("سريل")) || (cookie["UserRoles"].Value.Contains("الخامات")) || (cookie["UserRoles"].Value.Contains("العملاء")) || (cookie["UserRoles"].Value.Contains("الموردين")) || (cookie["UserRoles"].Value.Contains("الاصناف")) || (cookie["UserRoles"].Value.Contains("الموظفين")) || (cookie["UserRoles"].Value.Contains("الوظائف")) || (cookie["UserRoles"].Value.Contains("التخصص الوظيفي")) || (cookie["UserRoles"].Value.Contains("انواع اليد")) || (cookie["UserRoles"].Value.Contains("انواع المصروفات")) || (cookie["UserRoles"].Value.Contains("انواع الايرادات"))))
+
+                                    {
+                                        <li>
+                                            <a><i class="fa fa-cog"></i> الاكواد الاساسية <span class="fa fa-chevron-down"></span></a>
+                                            <ul class="nav child_menu">
+
+                                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin) || (cookie["UserRoles"] != null && cookie["UserRoles"].Value.Contains("الالوان")))
+                                                {
+                                                    <li> @Html.ActionLink("الالوان", "GetAllColors", "Colors")</li>
+                                                }
+                                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin) || (cookie["UserRoles"] != null && cookie["UserRoles"].Value.Contains("المخازن")))
+                                                {
+                                                    <li> @Html.ActionLink("المخازن", "index", "Stores")</li>
+                                                }
+                                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin) || (cookie["UserRoles"] != null && cookie["UserRoles"].Value.Contains("الخزائن")))
+                                                {
+                                                    <li> @Html.ActionLink("الخزائن", "index", "Safes")</li>
+                                                }
+                                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin) || (cookie["UserRoles"] != null && cookie["UserRoles"].Value.Contains("سريل")))
+                                                {
+                                                    <li> @Html.ActionLink("سريل", "index", "Shaplonas")</li>
+                                                }
+                                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin) || (cookie["UserRoles"] != null && cookie["UserRoles"].Value.Contains("الخامات")))
+                                                {
+                                                    <li>@Html.ActionLink("الخامات", "Index", "MaterialType")</li>
+                                                }
+                                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin) || (cookie["UserRoles"] != null && cookie["UserRoles"].Value.Contains("العملاء")))
+                                                {
+                                                    <li> @Html.ActionLink("العملاء", "Index", "Customers")</li>
+                                                }
+                                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin) || (cookie["UserRoles"] != null && cookie["UserRoles"].Value.Contains("الموردين")))
+                                                {
+                                                    <li> @Html.ActionLink("الموردين", "Index", "suppliers")</li>
+
+                                                }
+                                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin) || (cookie["UserRoles"] != null && cookie["UserRoles"].Value.Contains("الاصناف")))
+                                                {
+                                                    <li> @Html.ActionLink("الاصناف", "Index", "items")</li>
+                                                }
+                                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin) || (cookie["UserRoles"] != null && cookie["UserRoles"].Value.Contains("الموظفين")))
+                                                {
+                                                    <li> @Html.ActionLink("الموظفين", "IndexEmploye", "Employes")</li>
+                                                }
+                                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin) || (cookie["UserRoles"] != null && cookie["UserRoles"].Value.Contains("الوظائف")))
+                                                {
+                                                    <li> @Html.ActionLink("الوظائف", "Index", "job")</li>
+                                                }
+                                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin) || (cookie["UserRoles"] != null && cookie["UserRoles"].Value.Contains("التخصص الوظيفي")))
+                                                {
+                                                    <li> @Html.ActionLink("التخصص الوظيفي", "Index", "JobDescription")</li>
+                                                }
+                                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin) || (cookie["UserRoles"] != null && cookie["UserRoles"].Value.Contains("انواع اليد")))
+                                                {
+                                                    <li> @Html.ActionLink("انواع اليد", "Index", "HandTypes")</li>
+                                                }
+                                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin) || (cookie["UserRoles"] != null && cookie["UserRoles"].Value.Contains("انواع المصروفات")))
+                                                {
+                                                    <li> @Html.ActionLink("انواع المصروفات", "Index", "Expenses")</li>
+                                                }
+                                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin) || (cookie["UserRoles"] != null && cookie["UserRoles"].Value.Contains("انواع الايرادات")))
+                                                {
+                                                    <li> @Html.ActionLink("انواع الايرادات", "Index", "Income")</li>
+
+                                            }  
+                                          
+                                            <li> </li>
+
+                                            </ul>
+                                        </li>
+                                    }
+
+
+                                @if (
+                                   cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin)
+
+                                        || ((cookie["UserRoles"] != null) && (cookie["UserRoles"].Value.Contains("أوامر الشغل")) || (cookie["UserRoles"].Value.Contains("أوامر التشغيل")) || (cookie["UserRoles"].Value.Contains("الايرادات اليوميه")) || (cookie["UserRoles"].Value.Contains("المصروفات اليوميه")))
+                                        )
+                                    {
+                                        <li>
+                                            <a><i class="fa fa-cog"></i> العمليات <span class="fa fa-chevron-down"></span></a>
+                                            <ul class="nav child_menu">
+                                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin) || (cookie["UserRoles"] != null && cookie["UserRoles"].Value.Contains("أوامر الشغل")))
+                                                {
+                                                    <li> @Html.ActionLink("أوامر الشغل", "index", "DemondOrders")</li>
+                                                }
+                                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin) || (cookie["UserRoles"] != null && cookie["UserRoles"].Value.Contains("أوامر التشغيل")))
+                                                {
+                                                    <li> @Html.ActionLink("أوامر التشغيل", "index", "FromStocks")</li>
+                                                }
+                                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin) || (cookie["UserRoles"] != null && cookie["UserRoles"].Value.Contains("الايرادات اليوميه")))
+                                                {
+                                                    <li> @Html.ActionLink("الايرادات اليوميه", "Index", "IncomeDetails")</li>
+
+                                                }
+                                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin) || (cookie["UserRoles"] != null && cookie["UserRoles"].Value.Contains("المصروفات اليوميه")))
+                                                {
+                                                    <li> @Html.ActionLink("المصروفات اليوميه", "Index", "ExpenseDetails")</li>
+
+                                                }
+                                                <li> @Html.ActionLink("دفعات العملاء", "Index", "CustomerPayment")</li>
+                                                <li> @Html.ActionLink("دفعات الموردين", "Index", "SupplierPayment")</li>
+                                            </ul>
+                                    </li>
+                                }
+                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin)
+
+                                                                || ((cookie["UserRoles"] != null) && (cookie["UserRoles"].Value.Contains("فاتوره المشتريات"))))
+                                    {
+                                        <li>
+                                            <a><i class="fa fa-cog"></i> المشتريات <span class="fa fa-chevron-down"></span></a>
+                                            <ul class="nav child_menu">
+                                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin) || (cookie["UserRoles"] != null && cookie["UserRoles"].Value.Contains("فاتوره المشتريات")))
+                                                {
+                                                    <li> @Html.ActionLink("فاتوره المشتريات", "Index", "PurchaseInvoice")</li>
+
+                                                    <li> @Html.ActionLink("مرتجع مشتريات", "Index", "PurchasesReturn")</li>
+                                                }
+                                            </ul>
+                                        </li>
+                                    }
+                                    @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin)
+
+                                                    || ((cookie["UserRoles"] != null) && (cookie["UserRoles"].Value.Contains("فاتوره المبيعات"))))
+                                    {
+                                        <li>
+                                            <a><i class="fa fa-cog"></i> المبيعات <span class="fa fa-chevron-down"></span></a>
+                                            <ul class="nav child_menu">
+                                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin) || (cookie["UserRoles"] != null && cookie["UserRoles"].Value.Contains("فاتوره المبيعات")))
+                                                {
+                                                    <li> @Html.ActionLink("فاتوره المبيعات", "Index", "sales")</li>
+                                                }
+                                            </ul>
+                                        </li>
+                                    }
+                                    @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin)
+
+                                       || ((cookie["UserRoles"] != null) && (cookie["UserRoles"].Value.Contains("بيانات العملاء")) || (cookie["UserRoles"].Value.Contains("تقارير المخازن")))
+                                       )
+                                    {
+                                        <li>
+                                            <a><i class="fa fa-cog"></i>التقارير<span class="fa fa-chevron-down"></span></a>
+                                            <ul class="nav child_menu">
+                                               
+                                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin) || (cookie["UserRoles"] != null && cookie["UserRoles"].Value.Contains("تقارير المخازن")))
+                                                {
+                                                    <li> @Html.ActionLink("تقارير المخازن", "Index", "stockReport")</li>
+                                                    <li> @Html.ActionLink(" اوامر الشغل", "DemondOrderParam", "StockReports")</li>
+                                                    <li> @Html.ActionLink(" اوامر التشغيل", "WorkerReportParam", "StockReports")</li>
+                                                    <li> @Html.ActionLink("2 اوامر التشغيل", "WorkingReportByIDs", "StockReports")</li>
+                                                    <li> @Html.ActionLink("ارصدة العملاء", "CustomersReport", "StockReports")</li>
+                                                    <li> @Html.ActionLink(" ارصده الموردين", "SupplierReport", "StockReports")</li>
+                                                }
+                                               
+                                                
+                                            </ul>
+                                        </li>
+                                    }
+                                    @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin)
+
+                                             || ((cookie["UserRoles"] != null) && (cookie["UserRoles"].Value.Contains("وحدات المنظومة")) || (cookie["UserRoles"].Value.Contains("صفحات المنظومة")) || (cookie["UserRoles"].Value.Contains("المستخدمين")) || (cookie["UserRoles"].Value.Contains("أنواع المستخدمين")) || (cookie["UserRoles"].Value.Contains("أدوار المستخدمين")))
+                                             )
+                                    {
+                                        <li>
+                                            <a><i class="fa fa-lock"></i> نظام الحماية <span class="fa fa-chevron-down"></span></a>
+                                            <ul class="nav child_menu">
+                                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin) || (cookie["UserRoles"] != null && cookie["UserRoles"].Value.Contains("وحدات المنظومة")))
+                                                {
+                                                    <li>@Html.ActionLink("وحدات المنظومة", "Index", "SecurityModules")</li>
+                                                }
+                                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin) || (cookie["UserRoles"] != null && cookie["UserRoles"].Value.Contains("صفحات المنظومة")))
+                                                {
+                                                    <li>@Html.ActionLink("صفحات المنظومة", "Index", "SecurityRoles")</li>
+                                                }
+                                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin) || (cookie["UserRoles"] != null && cookie["UserRoles"].Value.Contains("أنواع المستخدمين")))
+                                                {
+                                                    <li>@Html.ActionLink("أنواع المستخدمين", "Index", "SecurityUserType")</li>
+                                                }
+                                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin) || (cookie["UserRoles"] != null && cookie["UserRoles"].Value.Contains("المستخدمين")))
+                                                {
+                                                    <li>@Html.ActionLink("المستخدمين", "Index", "SecurityUsers")</li>
+                                                }
+                                                @if (cookie["UserTypeId"].Value == Enums.EnumString.GetStringValue(Enums.AspNetUserType.SuperAdmin) || (cookie["UserRoles"] != null && cookie["UserRoles"].Value.Contains("أدوار المستخدمين")))
+                                                {
+                                                    <li>@Html.ActionLink("أدوار المستخدمين", "Index", "SecurityUserRoles")</li>
+                                                }
+
+                                            </ul>
+                                        </li>
+                                    }
+
+                                </ul>
+                            </div>
+                              @*}*@  
+                        </div>
+
+                    </div>
+                    <!-- /sidebar menu -->
+
+                </div>
+            </div>
+            <!-- top navigation -->
+            <div class="top_nav">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+                        <div class="toggle" style="width: 450px; color: #515356 !important; font-size: 19px">
+                        </div>
+                        <ul class="nav navbar-nav navbar-left">
+
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+
+                                    @cookie["EmployeeName"].Value
+                                    @*mohamed ibrahim*@
+                                    <span class=" fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-left">
+                                    <li><a href="@Url.Action("MyAccount", "Home")">حسابى الخاص</a></li>
+
+                                    <li><a href="@Url.Action("LogOff", "Account")"><i class="fa fa-sign-out pull-left"></i> خروج</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- /top navigation -->
+            <!-- page content -->
+            <div class="left_col" role="main">
+                @{ Html.RenderPartial("_Alerts"); }
+                <div class="" id="alert" style="position:absolute;right:5px;top:10px;display:none;width:500px;z-index:9999999999">
+                    <button type="button" class="close" data-dismiss="alert">x</button>
+                </div>
+
+                @RenderBody()
+            </div>
+            <!-- /page content -->
+            <!-- footer content -->
+            <footer class="text-center">
+                <div class="pull-left" style="width:100%">
+                    <p>ArmyTechGroup - @DateTime.Now.Year &copy;</p>
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+            <!-- /footer content -->
+        </div>
+    </div>
+
+    <!-- Custom Theme Scripts -->
+    @Scripts.Render("~/Content/build/js/custom.min.js")
+
+
+
+    @Scripts.Render("~/bundles/jqueryval")
+    <!--Add By Saeed-->
+    <script src="~/Scripts/bootbox.min.js"></script>
+    <script src="~/Scripts/toastr.min.js"></script>
+    @RenderSection("scripts", required: false)
+
+
+    @*<script language="javascript" type="text/javascript">
+            $(document).ready(function () {
+                $('#divPartialAlert').fadeTo(2000, 500).slideUp(2000, function () {
+                    $("#divPartialAlert").hide();
+                });
+            });
+        </script>*@
+
+
+<script language="javascript" type="text/javascript">
+        var HomeLogoImg = "@Url.Content("~/images/logo/Logo (2).jpg")";
+
+    $("#HomeLogoImg").attr("src", HomeLogoImg)
+        function showAlert(type, message) {
+            debugger
+            $("#alert").removeClass();
+            $("#alert").addClass("alert");
+            $("#alert").addClass("alert-" + type);
+            $("#alert").text(message);
+            $("#alert").show();
+            window.setTimeout(function () {
+                $("#alert").hide();
+            }, 3000);
+        }
+
+
+//        $(document).ready(function(){
+//  $('#color').attr('target', '_blank');
+//});
+
+</script>
+
+
+</body>
+
+
+</html>

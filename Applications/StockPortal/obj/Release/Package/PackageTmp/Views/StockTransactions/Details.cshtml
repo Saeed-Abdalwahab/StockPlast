@@ -1,0 +1,114 @@
+﻿@model StockDB.Model.StockTransaction
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>StockTransaction</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.DemondOrderDetail.colorname)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DemondOrderDetail.colorname)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FromStock.Serial)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FromStock.Serial)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ItemSupplier.ID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ItemSupplier.ID)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Store.st_SerialNum)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Store.st_SerialNum)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ToStock.InvoiceSerial)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ToStock.InvoiceSerial)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UnitType.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UnitType.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UnitType1.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UnitType1.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.OperationType)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.OperationType)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NoItem)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NoItem)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Quantity)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Quantity)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.GardFlag)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.GardFlag)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ItemPrice)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ItemPrice)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

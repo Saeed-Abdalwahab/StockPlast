@@ -1,0 +1,172 @@
+﻿@model StockDB.Model.AspNetUserWorker
+
+@{
+    ViewBag.Title = "المستخدمين";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="">
+    <div class="page-title">
+        <div class="title_right">
+            <h3>@ViewBag.Title<small> - تعديل</small></h3>
+        </div>
+
+    </div><div class="ln_solidTitle"></div>
+    <div class="clearfix"></div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="x_content">
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+                <div class="form-horizontal form-label-left">
+                    <div class="item form-group">
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            @Html.HiddenFor(model => model.ManagmentSpecializedId)
+                            @Html.HiddenFor(model => model.CompanyId)
+                            @Html.HiddenFor(model => model.WorkerId)
+                        </div>
+                    </div>
+                    <div class="item form-group">
+                        @Html.Label("WorkerName", "إسم الموظف", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <label id="lblWorkerName" name="lblWorkerName">@ViewBag.Workername</label>
+                        </div>
+                    </div>
+                    <div class="item form-group">
+                        @Html.Label("اسم المستخدم", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            @Html.DisplayFor(model => model.AspNetUser.UserName)
+                        </div>
+                    </div>
+                    <div class="item form-group">
+                        @Html.Label("البريد الالكترونى", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-5">
+                            @Html.EditorFor(model => model.AspNetUser.Email, new { htmlAttributes = new { @class = "form-control col-md-7 col-xs-12" } })
+                            @Html.ValidationMessageFor(model => model.AspNetUser.Email, "", new { @class = "text-danger" })
+
+                        </div>
+                    </div>
+                    @*<div class="item form-group">
+                        @Html.LabelFor(model => model.AspNetUser.PasswordHash, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-5">
+
+                            @Html.Editor("OldPass", new { htmlAttributes = new { @class = "form-control col-md-7 col-xs-12" } })
+                            @Html.ValidationMessageFor(model => model.AspNetUser.PasswordHash, "", new { @class = "text-danger" })
+
+                        </div>
+                    </div>
+                    <div class="item form-group">
+                        @Html.LabelFor(model => model.AspNetUser.PasswordHash, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-5">
+
+                            @Html.Editor("NewPass", new { htmlAttributes = new { @class = "form-control col-md-7 col-xs-12" } })
+                            @Html.ValidationMessageFor(model => model.AspNetUser.PasswordHash, "", new { @class = "text-danger" })
+
+                        </div>
+                    </div>*@
+                    <div class="item form-group">
+                        @Html.Label("رقم التليفون", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-5">
+
+                            @Html.EditorFor(model => model.AspNetUser.PhoneNumber, new { htmlAttributes = new { @class = "form-control col-md-7 col-xs-12" } })
+                            @Html.ValidationMessageFor(model => model.AspNetUser.PhoneNumber, "", new { @class = "text-danger" })
+
+                        </div>
+                    </div>
+                    <div class="item form-group">
+                        @Html.LabelFor(model => model.UserTypeId, "نوع المستخدم", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-5">
+                            @Html.DropDownList("UserTypeId",ViewBag.UserTypeId as SelectList, "أختر نوع المستخدم", htmlAttributes: new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.UserTypeId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="item form-group">
+                        @Html.Label("مفعل/غيرمفعل", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-5">
+
+                            @Html.EditorFor(model => model.IsActivte)
+                            <label>مفعل</label>
+                            @Html.ValidationMessageFor(model => model.IsActivte, "", new { @class = "text-danger" })
+
+                        </div>
+                    </div>
+                    <div class="ln_solid"></div>
+                    <div class="form-group">
+                        <div class="col-md-6 col-md-offset-3">
+                            <input type="submit" value="حفظ" class="btn btn-default" />
+                            &nbsp;
+                            @Html.ActionLink("إلغاء", "Index", "SecurityUsers", null, new { @class = "btn btn-default" })
+                        </div>
+                    </div>
+                </div>
+                }
+                </div>
+                
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>AspNetUserWorker</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.UserId)
+
+        @Html.HiddenFor(model => model.WorkerId)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.UserTypeId, "UserTypeId", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("UserTypeId", null, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.UserTypeId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.IsActivte, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.EditorFor(model => model.IsActivte)
+                    @Html.ValidationMessageFor(model => model.IsActivte, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ManagmentSpecializedId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.ManagmentSpecializedId, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.ManagmentSpecializedId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CompanyId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CompanyId, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.CompanyId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

@@ -1,0 +1,267 @@
+﻿@model StockViewModel.DemondOrderDetailsVM
+
+@{
+    Layout = "~/Views/Shared/_EmptyLayout.cshtml";
+}
+
+@Styles.Render("~/Content/jquery")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/Content/vendors/bootstrap/dist/js/bootstrap.min.js")
+@Scripts.Render("~/Content/chosenJavaScript")
+@Styles.Render("~/Content/chosenCSS")
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+
+<style>
+    body {
+        background-color: white;
+    }
+</style>
+<h2>تعديل</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(x => x.demoOrdDet_id)
+    @Html.HiddenFor(x => x.demoOrd_id)
+
+<div class="form-horizontal">
+    <h4>أسماء امر الشغل</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.LabelFor(model => model.shap_id, htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-5" id="ShaplonList">
+            @Html.DropDownListFor(x => x.shap_id, ViewBag.shap_id as SelectList, "--اختر السريل --", htmlAttributes: new { @class = "form-control ShapCSS validateAlways", style = "visibility: hidden;position: absolute;display:inline !important" })
+            @Html.ValidationMessageFor(model => model.shap_id, "", new { @class = "text-danger" })
+        </div>
+
+
+        @Html.LabelFor(model => model.Item_id, htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-5">
+            @Html.DropDownListFor(x => x.Item_id, ViewBag.Item_Id as SelectList, "--اختر الصنف --", htmlAttributes: new { @class = "form-control ItemCss validateAlways", style = "visibility: hidden;position: absolute;display:inline !important" })
+            @Html.ValidationMessageFor(model => model.Item_id, "", new { @class = "text-danger" })
+        </div>
+
+    </div>
+    <div class="form-group">
+
+        @Html.LabelFor(model => model.HandTypeId, htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-3">
+            @Html.DropDownListFor(x => x.HandTypeId, ViewBag.HandTypeId as SelectList, "--اختر نوع اليد--", htmlAttributes: new { @class = "form-control HandTypeCss validateAlways", style = "visibility: hidden;position: absolute;display:inline !important" })
+            @Html.ValidationMessageFor(model => model.HandTypeId, "", new { @class = "text-danger" })
+        </div>
+
+        @Html.LabelFor(model => model.Hand_Count, htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-3">
+            @Html.EditorFor(model => model.Hand_Count, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Hand_Count, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.Hand_Price, htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-3">
+            @Html.EditorFor(model => model.Hand_Price, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Hand_Price, "", new { @class = "text-danger" })
+        </div>
+
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.demondQuantity, htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-3">
+            @Html.EditorFor(model => model.demondQuantity, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.demondQuantity, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.colorcount, htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-3">
+            @Html.EditorFor(model => model.colorcount, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.colorcount, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.colorname, htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-3">
+            @Html.EditorFor(model => model.colorname, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.colorname, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+
+        @Html.LabelFor(model => model.size, htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-3">
+            @Html.EditorFor(model => model.size, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.size, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.Selling_Price, htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-3">
+            @Html.EditorFor(model => model.Selling_Price, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Selling_Price, "", new { @class = "text-danger" })
+        </div>
+        @Html.Label("لون اليد", htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-3">
+            @Html.DropDownListFor(x => x.HandColorID, ViewBag.Colors as SelectList, "--اختر لون اليد --", htmlAttributes: new { @class = "form-control ItemCss validateAlways", style = "visibility: hidden;position: absolute;display:inline !important" })
+            @Html.ValidationMessageFor(model => model.HandColorID, "", new { @class = "text-danger" })
+        </div>
+
+
+    </div>
+    <div class="form-group">
+        @Html.Label("ملاحظات", htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-11">
+            @Html.EditorFor(model => model.Notes, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-10">
+        </div>
+        <div class="col-md-2">
+            <input type="submit" value="حفظ" class="btn btn-default" style="width:100%" />
+        </div>
+    </div>
+</div>
+}
+@{
+    var demOrdIdVal = Request.Params["demOrdId"];
+}
+<div>
+    @Html.ActionLink("عرض اسماء الشغل", "Index", new { demOrdId = Model.demoOrd_id })
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/toastr.min.js"></script>
+
+    <script type="text/javascript">
+    //Function to determin Input Value
+    function shaploninput() {
+        return $("#ShaplonList #shap_id_chosen .chosen-drop .chosen-search input");
+    }
+    //function to Add shiplon
+    function AddShip(info) {
+
+        var shiplonname = shaploninput().val();
+        var WithDate = info;
+        var cust_id = '@Model.Cust_id';
+        var ul = $("#shap_id_chosen .chosen-drop .chosen-results");
+        if (WithDate == true) {
+            $.ajax({
+                type: "post",
+                               url: "@Url.Action("AddShiplon", "Shaplonas")",
+
+                data: { cust_id:cust_id,Shap_nam:shiplonname,Check:WithDate },
+                success: function (res) {
+
+                    $("#shap_id").append('<option value="' + res.data+ '">' + shiplonname + '</option>');
+                    $("#shap_id").val(res.data);
+
+                    $(".ShapCSS").trigger('chosen:updated');
+                       $(".ShapCSS").trigger('chosen:close');
+
+                    ul.append('<li class="active-result result-selected">' + shiplonname + ' </li>');
+
+                    toastr.success('تمت اضافه السريل بتاريخ اليوم', 'عمليه اضافه ناجحه', { timeOut: 3000 });
+                },
+                fail: function () {
+                    toastr.error('عمليه غير ناجحه', 'حدث خطأ اثناء الضافه برجاء المحاوله مره اخري ', { timeOut: 3000 });
+                }
+            });
+
+        }
+        else {
+                        $.ajax({
+                type: "post",
+                                url: "@Url.Action("AddShiplon", "Shaplonas")",
+
+                data: { cust_id:cust_id,Shap_nam:shiplonname,Check:WithDate },
+                            success: function (res) {
+                    $("#shap_id").append('<option value="' + res.data+ '">' + shiplonname + '</option>');
+                    $("#shap_id").val(res.data);
+
+                    $(".ShapCSS").trigger('chosen:updated');
+                       $(".ShapCSS").trigger('chosen:close');
+
+                    ul.append('<li class="active-result result-selected">' + shiplonname + ' </li>');
+
+                    toastr.success( 'تمت اضافه السريل بدون تاريخ اليوم', 'عمليه اضافه ناجحه',{ timeOut: 3000 });
+
+                            },
+                            fail: function () {
+                                toastr.error('عمليه غير ناجحه', 'حدث خطأ اثناء الضافه برجاء المحاوله مره اخري ', { timeOut: 3000 });
+                            }
+
+            });
+
+        }
+    }
+
+    $(document).ready(function () {
+
+
+                        $("#HandTypeId").val('@Model.HandTypeId');
+                        $("#shap_id").val('@Model.shap_id');
+
+        $("#Item_id").val('@Model.Item_id');
+        $("form").submit(function (event) {
+
+            var handCount = parseInt($("#Hand_Count").val());
+            var handPrice = parseFloat($("#Hand_Price").val());
+            if (!isNaN(handCount) || !isNaN(handPrice)) {
+                if (isNaN(handCount)) {
+                    $("span[data-valmsg-for='Hand_Count']").text("مطلوب").show();
+                    event.preventDefault();
+                }
+                else if (isNaN(handPrice)) {
+                    $("span[data-valmsg-for='Hand_Price']").text("مطلوب").show();
+                    event.preventDefault();
+
+                }
+                else if ($(this).valid()) {
+                    return;
+                }
+
+            }
+            else if (this.valid()) {
+                return;
+            }
+            else {
+                event.preventDefault();
+
+            }
+        });
+
+
+        $(".ShapCSS").chosen({
+            width: '100%',
+            no_results_text: '<input class="btn btn-info" type="button" value="اضافه السريل" onclick="AddShip(false)" /><input class="btn btn-info" type="button" value="اضافه السريل بتاريخ" style="margin-right: 38%" onclick="AddShip(true)" />',
+            search_contains: true
+        });
+        $(".HandTypeCss").chosen({
+            width: '100%',
+            no_results_text: "لايوجد يد بهذا الاسم",
+            search_contains: true
+        });
+        $("#HandTypeId").val('@Model.HandTypeId');
+
+                $(".ItemCss").chosen({
+            width: '100%',
+            no_results_text: "لايوجد صنف بهذا الاسم",
+            search_contains: true
+                });
+
+
+
+
+
+                    $("#HandTypeId").css("display", "");
+        $("#shap_id").css("display", "");
+        $("#Item_id").css("display", "");
+
+
+        $("#HandColorID").chosen({
+            width: '100%',
+            no_results_text: 'لا يوجد لون بهذا الاسم',
+            search_contains: true
+        });
+
+        $("#HandColorID").css("display", "");
+
+
+    });
+    </script>
+}

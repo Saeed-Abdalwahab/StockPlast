@@ -1,0 +1,369 @@
+﻿@model StockViewModel.purchasesreturnVM
+
+@{
+    ViewBag.Title = "تعديل مرتجع مشتريات ";
+    var counter = 0;
+}
+
+<link href="~/DataTables/datatables.css" rel="stylesheet" />
+@section styles{
+    <style>
+        .modal-body {
+            height: auto;
+        }
+    </style>
+}
+
+
+
+
+@Styles.Render("~/Content/chosenCSS")
+
+
+
+<div class="text-center font-weight-bold   mb-md-5 " style="font-size:large;margin-bottom:20px">
+    <span class=" ">تعديل مرتجع مشتريات</span>
+</div>
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(x => x.toStockid)
+    @Html.HiddenFor(x => x.ID)
+    <div class="form-horizontal">
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.Label("رقم المرتجع", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-5">
+                @Html.EditorFor(x => x.Serial, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+            @Html.Label("اجمالي الارتجاع", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-5">
+                @Html.EditorFor(x => x.invoicecost, new { htmlAttributes = new { @class = "form-control", @value = "0", @readonly = "readonly" } })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.Label("ملاحظات", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-5">
+                @Html.EditorFor(x => x.notes, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+            @Html.Label("تاريخ الارتجاع", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-5">
+                @Html.EditorFor(x => x.TransDate, new { htmlAttributes = new { @class = "form-control", type = "datetime" } })
+
+                @Html.ValidationMessageFor(model => model.TransDate, "", new { @class = "text-danger" })
+            </div>
+
+        </div><div class="form-group">
+            @Html.Label("الحاله", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-5">
+                @Html.EnumDropDownListFor(model => model.InvoiceStatus, "--اختر حاله الاذن--", htmlAttributes: new { @class = "form-control", value = "" })
+                @Html.ValidationMessageFor(model => model.InvoiceStatus, "", new { @class = "text-danger" })
+            </div>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <table class="table" style="border:1px solid">
+                <thead>
+                    <tr>
+                        <th>م</th>
+                        <th>اسم الصنف</th>
+                        <th>عدد (بكر)	</th>
+                        <th>فئه وزن(كيلو)	</th>
+                        <th>اجمالي وزن(كيلو)	</th>
+                        <th>سعر الشراء	</th>
+                        <th>عدد المرتجع(بكر)</th>
+                        <th>سعر الارتجاع</th>
+                        <th>تكلفه المرتجع</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var Avilable in Model.avaliableiteminstores)
+                    {
+                        counter++;
+                        var total = Avilable.Noitem * Avilable.weight;
+                        <tr id="@Avilable.ID">
+                            <td>@counter</td>
+                            <td>@Html.DisplayFor(x => Avilable.itemname)</td>
+                            <td>@Html.DisplayFor(x => Avilable.Noitem)</td>
+                            <td>@Html.DisplayFor(x => Avilable.weight)</td>
+                            <td>@total</td>
+                            <td>@Html.DisplayFor(x => Avilable.ItemPrice)</td>
+                            <td>
+                                <input type="number" name="Noitem" style="max-width:100%; width:70%" placeholder="عدد المرتجع" id="returnNoitem_@counter" value="@Avilable.ReturnedNoitem" />
+                                <span style="display:block" class="error text-danger"></span>
+                            </td>
+                            <td>
+                                <input type="hidden" value="@Avilable.storeid" id="StoreID_@counter" />
+                                <input type="hidden" value="@Avilable.weight" id="Weight_@counter" />
+                                <input type="hidden" value="@Avilable.Noitem" id="OrignalNoItem_@counter" />
+                                <input type="hidden" value="@Avilable.itemsuplierid" id="ItemSupplierID_@counter" />
+                                <input type="number" name="ItemPrice" style="max-width:100%; width:70%" placeholder="سعر الارتجاع" id="ReturnItemPrice_@counter" value="@Avilable.ReturnedItemPrice" />
+                                <span style="display:block" class="error text-danger"></span>
+                            </td>
+                            <td> <input type="number" style="max-width:100%; width:70%" id="total_@counter" value="@(Avilable.ReturnedItemPrice*Avilable.ReturnedNoitem*Avilable.weight)" readonly /></td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+
+        </div>
+
+
+
+
+        <div class="form-group text-left">
+            <div class="col-md-12">
+                <input type="submit" value="حفظ الفاتوره" class="btn btn-default" />
+                @Html.ActionLink("رجوع", "Create", "PurchasesReturn", new { @class = "btn btn-default" })
+                @*@Html.ActionLink("رجوع الي المشتريات", "Index", "PurchaseInvoice", null, new { @class = "btn btn-default" })*@
+
+            </div>
+
+        </div>
+    </div>
+
+}
+
+
+<div class="text-left">
+</div>
+@section scripts{
+
+    <script src="~/DataTables/datatables.min.js"></script>
+    @Scripts.Render("~/Content/chosenJavaScript")
+
+<script>
+                        var Totalitemprice = 0;
+        function Calctotalinvoice() {
+
+                    var invoictotal = 0;
+                    var sumtotal = 0;
+            $("input[id^='total_']").each(function (i, value) {
+                if (!isNaN(parseFloat($(this).val())))
+                        sumtotal += parseFloat($(this).val());
+                    });
+
+                        invoictotal = sumtotal;
+                        $("#invoicecost").val(invoictotal);
+        }
+
+        function Collectallitems() {
+
+                    var customstocktransactionlist = [];
+                    $("table tbody tr").each(function (index, item) {
+
+                        var itemsupplierID = parseFloat($(this).children().find('input[id^="ItemSupplierID_"]').val());
+                        var returnedNoitem = parseFloat($(this).children().find('input[id^="returnNoitem_"]').val());
+                        var Weight = parseFloat($(this).children().find('input[id^="Weight_"]').val());
+                        var itemprice = parseFloat($(this).children().find('input[id^="ReturnItemPrice_"]').val());
+                        var storeID = parseInt($(this).children().find('input[id^="StoreID_"]').val());
+                        var ID = $(this).attr("id");
+                        if (returnedNoitem > 0 && itemprice>0) {
+                            customstocktransactionlist.push({
+                                ID:ID,
+                                NoItem: returnedNoitem,
+                                StoreId: storeID,
+                                ItemSupplierId: itemsupplierID,
+                                Weight: Weight,
+                                ItemPrice: itemprice,
+
+                            });
+                        }
+                    });
+                        return customstocktransactionlist;
+                }
+    function checkvalidation() {
+        var flag = false;
+            $("table tbody tr td input[id^='total_']").each(function (index, item) {
+
+                var Total = parseFloat($(this).val());
+                //var itemprice = parseFloat($(this).parent().find('input[id^="originalNoItem_"]').val();)
+                if (Total < 0) {
+                    flag = true;
+                    return false;
+                }
+            });
+            return flag;
+        }
+        $(document).ready(function () {
+
+            $("#TransDate").datepicker({
+                dateFormat: 'yy/mm/dd',
+                minView: 2,
+                minDate: $("#PurchesesDate").val()
+            });
+
+            $(".table").DataTable({
+                "columnDefs": [{
+                    "orderable": false,
+
+                }],
+                "language": {
+                    "sEmptyTable": "ليست هناك اصناف  في المخزن لهذا المورد ",
+                    "sLoadingRecords": "جارٍ التحميل...",
+                    "sProcessing": "جارٍ التحميل...",
+                    "sLengthMenu": "أظهر _MENU_ مدخلات",
+                    "sZeroRecords": "لم يعثر على أية سجلات",
+                    "sInfo": "",
+                    "sInfoEmpty": "",
+                    "sInfoFiltered": "",
+                    "sInfoPostFix": "",
+                    "sSearch": "ابحث:",
+                    "sUrl": "",
+                    "oPaginate": {
+                        "sFirst": "",
+                        "sPrevious": "",
+                        "sNext": "",
+                        "sLast": ""
+                    },
+                    "oAria": {
+                        "sSortAscending": ": تفعيل لترتيب العمود تصاعدياً",
+                        "sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+                    }
+                }
+            });
+            $("#DataTables_Table_0_length").html("");
+            $("#DataTables_Table_0_filter").html("");
+            $("#DataTables_Table_0_paginate").html("");
+            $("form").submit(function (e) {
+
+                e.preventDefault();
+                if (!$(this).valid()) {
+
+                    return false;
+                }
+
+
+
+                else if (Collectallitems().length == 0) {
+                    toastr.error('برجاء تحديد صنف واحد ع الاقل ف الفاتوره', { timeOut: 1000 });
+                    return false;
+                }
+                else if (checkvalidation()) {
+                    toastr.error('برجاء تحديد صنف واحد ع الاقل ف الفاتوره', { timeOut: 1000 });
+
+                    //toastr.error('هناك قيم مرتجع غير صحيحه', { timeOut: 1000 });
+                    return false;
+                }
+
+                else {
+
+                    var list = { 'stocktransactions': Collectallitems() }
+                    var datatosent = $('form').serialize() + "&" + $.param(list);
+                    $.ajax({
+                        dataType: 'json',
+
+                        type: 'POST',
+                        url: '@Url.Action("Create", "PurchasesReturn")',
+                        data: datatosent,
+                        success: function (respons) {
+                            if (respons.success) {
+                                toastr.success('تم حفظ الفاتورة بنجاح', { timeOut: 1000 });
+
+                                window.location.href = '@Url.Action("index", "PurchasesReturn",new { tostockid=Model.toStockid})';
+
+                            }
+                            else {
+                                toastr.error('عمليه غير ناجحه', { timeOut: 1000 });
+
+                            }
+
+                        },
+
+                        fail: function (xhr, msg, errorThrown) {
+                            toastr.error('عمليه غير ناجحه', { timeOut: 1000 });
+
+                        },
+                        error: function (xhr, statusText, errorThrown) {
+                            toastr.error('عمليه غير ناجحه', { timeOut: 1000 });
+
+                        }
+
+
+                    });
+
+                }
+
+            });
+
+            //Decleration variables Zone
+            var CustID = $("#cust_ID");
+            var DemondorderDetailsid = $("#DemondorderDetailid");
+            var HiddenTable = $("#Table");
+            var DemondorderDetailsids = DemondorderDetailsid.val();
+            var custphonenumber = $("#CustPhone");
+            var cusaddress = $("#CustAdress");
+            var saletax = $("#sale_tax");
+            var customstocktransactionlist = [];
+
+            $("input[id^='returnNoitem_']").keyup(function () {
+
+                var spanerror = $(this).next();
+                $(this).css('border', '');
+                spanerror.text("");
+
+                var ReturnedNoItem = parseFloat($(this).val());
+
+                if (isNaN(ReturnedNoItem) || ReturnedNoItem <= 0) {
+                    bootbox.alert({
+                        title: "تنبيه!",
+
+                        message: "سيتم حذف الصنف من فاتورة الارتجاع!",
+                        size: "small",
+                        locale: 'ar'
+                    });
+                    $(this).val("");
+                    $("#total_" + $(this).attr('id').split('_')[1]).val("");
+                    Calctotalinvoice();
+                    return false;
+                }
+
+                var OrignalNoItem = $(this).parent().parent().find('input[id^="OrignalNoItem_"]').val();
+                var Weight = $(this).parent().parent().find('input[id^="Weight_"]').val();
+
+                if (ReturnedNoItem > OrignalNoItem) {
+                    toastr.error(ReturnedNoItem, 'لا يمكن ارتجاع قيمه اكبر من المتاحفي المخزن', { timeOut: 1000 });
+                    spanerror.text("قيمه غير صحيحه").show().fadeOut(2000);
+
+                    $(this).css('border', ' 1px solid red');
+                    $(this).val("");
+                    $("#total_" + $(this).attr('id').split('_')[1]).val("");
+                    Calctotalinvoice()
+                    return false;
+                }
+                var price = isNaN(parseFloat($(this).parent().parent().find('input[id^="ReturnItemPrice_"]').val())) ? 0 : parseFloat($(this).parent().parent().find('input[id^="ReturnItemPrice_"]').val());
+                $("#total_" + $(this).attr('id').split('_')[1]).val(price * ReturnedNoItem * parseFloat(Weight));
+                Calctotalinvoice();
+            });
+            $("input[id^='ReturnItemPrice_']").keyup(function () {
+
+                var spanerror = $(this).next();
+                $(this).css('border', '');
+                spanerror.text("");
+
+                var itemPrice = parseFloat($(this).val());
+                if (itemPrice < 0) {
+                    toastr.error('برجاء ادخال رقم ', { timeOut: 1000 });
+                    $(this).val("");
+                    $("#total_" + $(this).attr('id').split('_')[1]).val("");
+                    Calctotalinvoice();
+                    return false;
+                }
+                var ReturnedNoItem = parseFloat($(this).parent().parent().find('input[id^="returnNoitem_"]').val());
+                var Weight = $(this).parent().find('input[id^="Weight_"]').val();
+
+                var Noitem = isNaN(ReturnedNoItem) ? 0 : ReturnedNoItem;
+                $("#total_" + $(this).attr('id').split('_')[1]).val(itemPrice * Noitem * parseFloat(Weight));
+                Calctotalinvoice();
+            });
+
+        });
+
+
+
+</script>
+}

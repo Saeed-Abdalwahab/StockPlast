@@ -1,0 +1,39 @@
+﻿@model StockDB.Model.supplier
+
+@{
+    ViewBag.Title = "Delete";
+    Layout = null;
+}
+
+
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header ">
+                <h5 class="modal-title" id="exampleModalLongTitle">حذف</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="height:auto">
+                هل انت متاكد من حذف هذا المورد؟
+
+            </div>
+            <div class="modal-footer">
+
+                @using (Ajax.BeginForm("Delete", "suppliers", new { id = Model.sup_id }, new AjaxOptions { OnSuccess = "location.reload(true);", OnFailure = "alert('لا يمكن حذف هذا المورد')" }, null))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-actions no-color">
+
+                        <input type="submit" value="حذف" class="btn btn-danger" />
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">رجوع</button>
+
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+

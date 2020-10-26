@@ -1,0 +1,86 @@
+﻿@using PlasticStatic
+
+
+
+@Styles.Render("~/Content/jquery")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/Content/vendors/bootstrap/dist/js/bootstrap.min.js")
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#EmployeeSearchText").autocomplete({
+
+            source: function (request, response) {
+               // var getCompanyIdDDL = document.getElementById("CompanyDDL");
+
+                var getCompanyIdValue = @Sessions.CompanyId;
+                var radioValue = "0";
+                $.ajax({
+                    url: "../api/GetAllEmpByCompanyNew",
+                    type: "GET",
+                    dataType: "json",
+
+                    data: {
+                        cID: getCompanyIdValue,
+                        SText: request.term,
+                        kind: radioValue,
+                    },
+                    success: function(data) {
+                        response($.map(data,
+                            function(item) {
+                                return { label: item.Name, value: item.Name, ss: item.ID };
+                            }));
+                    }
+
+                });
+            },
+            select: function (event, ui) {
+                $('#WorkerIdHF').val(ui.item.ss);
+            }
+        });
+
+    });
+</script>
+
+
+
+    <div class="form-horizontal">
+        
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            <div class="col-md-2">
+                @*@Html.LabelFor(model => model.PworkerID, htmlAttributes: new { @class = "control-label col-md-2" })*@
+                الموظف
+            </div>
+            
+            <div class="col-md-8">
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <label>
+                            <input id="EmpSearch" name="EmpSearch" type="radio" value="0" checked="checked">
+                            يحتوي علي
+                        </label>
+                        <label>
+                            <input id="EmpSearch" name="EmpSearch" type="radio" value="1">
+                            يبدأ ب
+                        </label>
+                    </div>
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" placeholder="-- بحث بإسم الموظف --" id="EmployeeSearchText" style="text-align: right" />
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-2">
+                <input type="hidden" id="WorkerIdHF" name="WorkerIdHF" value="0"/>
+                @*@Html.HiddenFor(model => model.PworkerID, new {id = "WorkerIdHF"})*@
+               
+
+            </div>
+        </div>
+    </div>
+
+
+

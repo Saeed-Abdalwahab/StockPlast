@@ -1,0 +1,128 @@
+﻿@model StockPortal.ViewModel.SecurityUserData
+
+@{
+    ViewBag.Title = "أدوار المستخدمين";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/Scripts/Gijgo/conditional-validation.js")
+    @Scripts.Render("~/Scripts/Gijgo/gijgo.js")
+    @Styles.Render("~/Scripts/Gijgo/gijgo.css")
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var Usertree = "";
+            var tree = "";
+            var userId = $("#hdnSelectedWorkerUserId").val();
+            var urlPath = '@Url.Action("GetRolesHierarchy","SecurityUserRoles")';
+            $.ajax({
+                type: 'get',
+                dataType: 'json',
+                cache: false,
+                url: urlPath,
+                data: { 'id': userId },
+                success: function (records, textStatus, jqXHR) {
+                    Usertree = $('#Usertree').tree({
+                        primaryKey: 'Id',
+                        checkedField: 'ischecked',
+                        dataSource: records,
+                        dragAndDrop: false,
+                        checkboxes: true,
+                        iconsLibrary: 'glyphicons'
+                        //uiLibrary: 'bootstrap'
+                    });
+
+                    $('#btnSvae').click(function (e) {
+                        var result = Usertree.getCheckedNodes();
+                        if (result == "") {
+                            alert("Please Select Node..!!");
+                            return false;
+                        }
+                        else {
+                            $("#hdnCheckedRoles").val(result.join());
+                            return true;
+                            //alert("Selected Node id is= " + $("#hdnCheckedRoles").val());
+                        }
+                    });
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert('Error - ' + errorThrown);
+                }
+            });
+        });
+    </script>
+
+}
+<div class="">
+    <div class="page-title">
+        <div class="title_right">
+            <h3>
+                @ViewBag.Title<small> - تحديد الصلاحيات</small>
+            </h3>
+        </div>
+
+    </div>
+    <div class="ln_solidTitle"></div>
+    <div class="clearfix"></div>
+    <div class="row">
+
+        <div class="col-md-12">
+            <div class="x_content">
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="form-horizontal form-label-left">
+
+                        <div class="item form-group">
+                            <div class="col-md-3 col-sm-12 col-xs-12">
+                                @Html.LabelFor(model => model.WorkerName)
+                            </div>
+                            <div class="col-md-3 col-sm-12 col-xs-12">
+                                @Html.LabelFor(model => model.UserName)
+                            </div>
+                            <div class="col-md-3 col-sm-12 col-xs-12">
+                                @Html.LabelFor(model => model.UserTypeName)
+                            </div>
+
+                            <div class="col-md-3 col-sm-12 col-xs-12">
+                                @Html.LabelFor(model => model.AccountStatus)
+                            </div>
+                        </div>
+                        <div class="item form-group">
+                            <div class="col-md-3 col-sm-12 col-xs-12">
+                                @Html.DisplayFor(model => model.WorkerName)
+                            </div>
+                            <div class="col-md-3 col-sm-12 col-xs-12">
+                                @Html.DisplayFor(model => model.UserName)
+                            </div>
+                            <div class="col-md-3 col-sm-12 col-xs-12">
+                                @Html.DisplayFor(model => model.UserTypeName)
+                            </div>
+                            <div class="col-md-3 col-sm-12 col-xs-12">
+                                @Html.DisplayFor(model => model.AccountStatus)
+                            </div>
+                            <input type="Hidden" id="hdnSelectedWorkerUserId" name="hdnSelectedWorkerUserId" value="@ViewBag.UserId"/>
+                        </div>
+                        <div class="ln_solid"></div>
+                        <div class="item form-group">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div id="Usertree"></div>
+                            </div>
+                        </div>
+                        <div class="ln_solid"></div>
+                        <div class="form-group">
+                            <div class="col-md-6 col-md-offset-3">
+                                <input type="Hidden" id="hdnCheckedRoles" name="hdnCheckedRoles" />
+                                <input id="btnSvae" type="submit" value="حفظ" class="btn btn-default" />
+                                @Html.ActionLink("إلغاء", "Index", "SecurityUserRoles", null, new { @class = "btn btn-default" })
+                                @Html.ActionLink("المستخدمين", "Index", "SecurityUsers", null, new { @class = "btn btn-default" })
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,107 @@
+﻿
+@model StockDB.Model.supplier
+
+@{
+    ViewBag.Title = "Create";
+}
+<form id="AddSupForm">
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.sup_name, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.sup_name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.sup_name, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.sup_mobile, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.sup_mobile, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.sup_mobile, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.sup_mail, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.sup_mail, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.sup_mail, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.contact_name, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.contact_name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.contact_name, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.WhatsApp, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.WhatsApp, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.WhatsApp, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="اضافة" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form>
+
+@Scripts.Render("~/Scripts/jquery.validate.js")
+@Scripts.Render("~/Scripts/jquery.validate.unobtrusive.js")
+<script src="~/Scripts/toastr.min.js"></script>
+
+<script>
+                    function SucessFun(value, text) {
+            //close Model
+            debugger;
+            $('#ItemMoal').modal("hide");
+            $("#SupId").append('<option value="' + value + '">' + text + '</option>');
+            $("#SupId").val(value);
+
+                    $("#SupId").trigger('chosen:updated');
+                       $("#SupId ").trigger('chosen:close');
+            $("#SupId_chosen .chosen-drop .chosen-results").append('<li class="active-result result-selected">' + text + ' </li>');
+                        $("#SupId").val(value);
+
+                        toastr.success('تمت اضافه  المورد بنجاح', 'عمليه اضافه ناجحه', { timeOut: 1000 });
+        }
+
+                $("#AddSupForm").submit(function (e) {
+                if ($("#AddSupForm").valid()) {
+                    e.preventDefault();
+                    $.ajax({
+                        type: "post",
+                        url: '@Url.Action("RemotCreate","suppliers")',
+                        data: $("#AddSupForm").serialize(),
+                        dataType: "json",
+                        success: function (respons) {
+                            if (respons.success) {
+                                SucessFun(respons.value, respons.text);
+                            }
+                            else {
+                                toastr.error('عمليه غير ناجحه', respons.responseText, { timeOut: 1000 });
+
+                            }
+
+                        },
+
+                        fail: function (xhr, msg, errorThrown) {
+                            toastr.error('عمليه غير ناجحه', ErrorMsg, { timeOut: 1000 });
+
+                        },
+                        error: function (xhr, statusText, errorThrown) {
+                            toastr.error('عمليه غير ناجحه', { timeOut: 1000 });
+
+                        }
+
+
+                    });
+                }
+                else {
+                    return false;
+                }
+            });
+
+</script>

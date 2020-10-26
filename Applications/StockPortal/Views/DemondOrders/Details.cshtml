@@ -1,0 +1,67 @@
+﻿@model StockDB.Model.DemondOrder
+
+@{
+    ViewBag.Title = "تفاصيل";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>DemondOrder</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Customer.cust_name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Customer.cust_name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Safe.safe_name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Safe.safe_name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.demoOrd_serailNum)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.demoOrd_serailNum)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.demoOrd_date)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.demoOrd_date)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.demoOrd_notes)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.demoOrd_notes)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.demoOrd_deposit)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.demoOrd_deposit)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.demoOrd_id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

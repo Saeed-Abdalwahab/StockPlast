@@ -1,0 +1,5 @@
+F:\ArmyTechProject\StockPlast\Stock\PlasticStatic\bin\Release\PlasticStatic.dll
+F:\ArmyTechProject\StockPlast\Stock\PlasticStatic\bin\Release\PlasticStatic.pdb
+F:\ArmyTechProject\StockPlast\Stock\PlasticStatic\obj\Release\PlasticStatic.csproj.CoreCompileInputs.cache
+F:\ArmyTechProject\StockPlast\Stock\PlasticStatic\obj\Release\PlasticStatic.dll
+F:\ArmyTechProject\StockPlast\Stock\PlasticStatic\obj\Release\PlasticStatic.pdb

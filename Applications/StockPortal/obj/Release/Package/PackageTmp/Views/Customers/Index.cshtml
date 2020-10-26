@@ -1,0 +1,132 @@
+﻿@model IEnumerable<StockDB.Model.Customer>
+
+@{
+    ViewBag.Title = "العملاء";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+    <link href="~/DataTable/datatables.min.css" rel="stylesheet" />
+
+<h2>العملاء</h2>
+
+<p>
+    @Html.ActionLink("اضافة عميل جديد", "Create", new {@class = "btn-primary"})
+</p>
+
+
+<div id="Details" class="d-none">
+
+</div>
+<div id="DeletShaplonDiv" class="d-none">
+
+</div>
+<table id="customerdata" class="table">
+    <thead>
+        <tr>
+            <th>
+                م
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.custSerial)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.cust_name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.cust_mobile)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.cust_mail)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.contact_name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.cust_address)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.WhatsApp)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var counter = 0;
+        }
+
+        @foreach (var item in Model)
+        {
+            counter++;
+            <tr>
+                <td>
+                    @counter
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.custSerial)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.cust_name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.cust_mobile)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.cust_mail)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.contact_name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.cust_address)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.WhatsApp)
+                </td>
+                <td>
+                    @Html.ActionLink("تعديل", "Edit", new { id = item.cust_id }) |
+                    @*@Html.ActionLink("عرض بيانات العميل", "Details", new { id=item.cust_id }) |*@
+                    @Ajax.ActionLink("حذف", "Delete", "Customers", null, null, null,
+             new { id = item.cust_id }, new AjaxOptions { HttpMethod = "GET", UpdateTargetId = "DeletShaplonDiv", InsertionMode = InsertionMode.Replace, OnSuccess = "$('.modal').modal('toggle')", OnFailure = "alert('Not available Details')" }, new { @class = "Detilslink" })
+                    |  @Html.ActionLink("الحساب", "Index","CustomerAccountReport", new { ID = item.cust_id },null)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section scripts{
+    <script src="~/DataTables/datatables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var table = $("#customerdata").DataTable({
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": [8],
+                }],
+                "language": {
+                                    "sEmptyTable":     "ليست هناك بيانات متاحة في الجدول",
+	"sLoadingRecords": "جارٍ التحميل...",
+	"sProcessing":   "جارٍ التحميل...",
+	"sLengthMenu":   "أظهر _MENU_ مدخلات",
+	"sZeroRecords":  "لم يعثر على أية سجلات",
+	"sInfo":         "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+	"sInfoEmpty":    "يعرض 0 إلى 0 من أصل 0 سجل",
+	"sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+	"sInfoPostFix":  "",
+	"sSearch":       "ابحث:",
+	"sUrl":          "",
+	"oPaginate": {
+		"sFirst":    "الأول",
+		"sPrevious": "السابق",
+		"sNext":     "التالي",
+		"sLast":     "الأخير"
+	},
+	"oAria": {
+		"sSortAscending":  ": تفعيل لترتيب العمود تصاعدياً",
+		"sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+	}
+                },
+            });
+        });
+    </script>
+}

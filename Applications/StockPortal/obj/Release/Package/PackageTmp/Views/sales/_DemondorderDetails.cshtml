@@ -1,0 +1,235 @@
+﻿@model IEnumerable<StockDB.Model.StockTransaction>
+@{ var counter = 0;}
+
+<link href="~/DataTables/datatables.css" rel="stylesheet" />
+
+
+<table class="table" style="border:1px solid">
+    <thead>
+        <tr>
+            <th>اسم الشغل</th>
+            <th>عدد الالوان</th>
+            <th>السمك</th>
+            <th>الالوان</th>
+            <th>اليد</th>
+            <th>الوزن</th>
+            <th>سعر الكيلو</th>
+            <th>عدد اليد</th>
+            <th>سعر اليد</th>
+            <th>الاجمالي</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            foreach (var item in Model)
+            {
+              
+                var selingprice = item.DemondOrderDetail.Selling_Price==null?0.0: item.DemondOrderDetail.Selling_Price;
+                var handprice = item.DemondOrderDetail.Hand_Price==null?0.0: item.DemondOrderDetail.Hand_Price;
+                var Quantity = item.Quantity==null?0.0: item.Quantity;
+                var HandCount = item.DemondOrderDetail.Hand_Count == null ? -1 : item.DemondOrderDetail.Hand_Count;
+        <tr id="@item.ID">
+            <td>@Html.DisplayFor(x => item.DemondOrderDetail.Shaplona.shap_name)</td>
+            <td>@Html.DisplayFor(x => item.DemondOrderDetail.colorcount)</td>
+            <td>@Html.DisplayFor(x => item.DemondOrderDetail.Item.Thickness)</td>
+            <td>@Html.DisplayFor(x => item.DemondOrderDetail.colorname)</td>
+            <td>@Html.DisplayFor(x => item.DemondOrderDetail.HandType.HandType_name)</td>
+            <td id="weight_@item.ID">@Html.DisplayFor(x => item.Quantity)</td>
+            <td> <input type="number" style="max-width:100%; width:50%" placeholder="سعر البيع" id="itemprice_@item.ID" value="@item.DemondOrderDetail.Selling_Price" /><span id="span_@counter" style="display:none" class="error text-danger"></span></td>
+
+            @{ if (item.DemondOrderDetail.Hand_Count >= 0 && item.DemondOrderDetail.Hand_Price >= 0)
+                {
+                    @*<td id="HandCount_@item.ID">@Html.DisplayFor(x => item.DemondOrderDetail.Hand_Count)</td>*@
+
+                    <td> <input type="number" style="max-width:100%; width:50%" placeholder="عدد اليد" id="HandCount_@item.ID" value="@item.DemondOrderDetail.Hand_Count" /><span id="spanHandCount_@counter" style="display:none" class="error text-danger"></span></td>
+                    <td> <input type="number" style="max-width:100%; width:50%" placeholder="سعر البيع" id="HandPrice_@item.ID" value="@item.DemondOrderDetail.Hand_Price" /><span id="spanHandTyp_@counter" style="display:none" class="error text-danger"></span></td>
+
+                }
+                else
+                {
+                    <td>-</td>
+                    <td>-</td>
+                }
+            }
+
+
+            <td> <input type="number" style="max-width:100%; width:50%" id="total_@item.ID" value="@((selingprice * Quantity)+(HandCount*handprice))" readonly /></td>
+        </tr>
+                counter++;
+            }
+        }
+    </tbody>
+</table>
+<script src="~/DataTables/datatables.min.js"></script>
+
+<script>
+
+    $(document).ready(function () {
+                 if ("@(ViewBag.Details)" == "True") {
+            $("input").attr("ReadOnly", "ReadOnly");
+        }
+            $(".table").DataTable({
+                         "columnDefs": [{
+                    "orderable": false,
+                    "targets": [1,2,3,4],
+
+                }],
+            "language": {
+                "sEmptyTable": "ليست هناك اسماء شغل  منتهيه لهذا العميل ",
+                "sLoadingRecords": "جارٍ التحميل...",
+                "sProcessing": "جارٍ التحميل...",
+                "sLengthMenu": "أظهر _MENU_ مدخلات",
+                "sZeroRecords": "لم يعثر على أية سجلات",
+                "sInfo": "",
+                "sInfoEmpty": "",
+                "sInfoFiltered": "",
+                "sInfoPostFix": "",
+                "sSearch": "ابحث:",
+                "sUrl": "",
+                "oPaginate": {
+                    "sFirst": "",
+                    "sPrevious": "",
+                    "sNext": "",
+                    "sLast": ""
+                },
+                "oAria": {
+                    "sSortAscending": ": تفعيل لترتيب العمود تصاعدياً",
+                    "sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+                }
+            }
+            });
+                $("#DataTables_Table_0_length").html("");
+                $("#DataTables_Table_0_filter").html("");
+                $("#DataTables_Table_0_paginate").html("");
+                Calctotalinvoice();
+                collectalldemonorderdetails();
+                    //$("#TotalCost").val(Totalitemprice);
+        });
+
+
+    $("input[id^='itemprice_']").keyup(function () {
+        debugger
+        var thisitemprice = $(this).val();
+        var parentid = $(this).parent().parent().attr('id');
+        var wight = $('#weight_' + parentid).text();
+
+        var totalForItemPrice = parseFloat(wight) * thisitemprice;
+
+        var Handprice = parseFloat($("input[id^='HandPrice_" + parentid + "']").val());
+        var Handcount = parseFloat($("input[id^='HandCount_" + parentid + "']").val());
+
+        if (parseFloat(thisitemprice) > 0) {
+            $("span[id^='span_']").text("")
+            $("span[id^='span_']").css("display", "none")
+
+            if (Handcount > 0 && Handprice > 0) {
+                $("#total_" + parentid).val((Handprice * Handcount) + totalForItemPrice);
+
+            }
+            else {
+                $("#total_" + parentid).val(totalForItemPrice);
+            }
+
+            Calctotalinvoice();
+            collectalldemonorderdetails();
+        }
+        else {
+            if (Handcount > 0 && Handprice > 0) {
+                $("#total_" + parentid).val((Handprice * Handcount));
+
+            }
+            else {
+                $("#total_" + parentid).val("");
+
+            }
+
+        }
+        Calctotalinvoice();
+        collectalldemonorderdetails()
+    });
+
+    $("input[id^='HandPrice_']").keyup(function () {
+        debugger
+        var thisHandPrice = $(this).val();
+        var parentid = $(this).parent().parent().attr('id');
+        var HandCount = $('#HandCount_' + parentid).val();
+        var totalForHandTyp = parseFloat(HandCount) * thisHandPrice;
+
+
+        var wight = parseFloat($('#weight_' + parentid).text());
+        var itemprice = parseFloat($("input[id^='itemprice_" + parentid + "']").val());
+
+        if (parseFloat(thisHandPrice) > 0) {
+            $("span[id^='spanHandTyp_']").text("")
+            $("span[id^='spanHandTyp_']").css("display", "none")
+
+
+            if (wight > 0 && itemprice>0) {
+
+                $("#total_" + parentid).val((wight * itemprice) + totalForHandTyp);
+            }
+            else {
+                $("#total_" + parentid).val(totalForHandTyp);
+
+            }
+
+            Calctotalinvoice();
+        }
+        else {
+            if (wight > 0 && itemprice > 0) {
+
+                $("#total_" + parentid).val((wight * itemprice));
+            }
+            else {
+                $("#total_" + parentid).val("");
+
+            }
+
+        }
+        Calctotalinvoice();
+        collectalldemonorderdetails();
+    });
+    $("input[id^='HandCount_']").keyup(function () {
+        debugger
+        var HandCount = parseInt($(this).val())
+        var parentid = $(this).parent().parent().attr('id');
+        var thisHandPrice = $('#HandPrice_' + parentid).val();
+        var totalForHandTyp = parseInt(HandCount) * thisHandPrice;
+
+
+        var wight = parseFloat($('#weight_' + parentid).text());
+        var itemprice = parseFloat($("input[id^='itemprice_" + parentid + "']").val());
+
+        if (HandCount > 0) {
+            $("span[id^='spanHandCount_']").text("")
+            $("span[id^='spanHandCount_']").css("display", "none")
+
+
+            if (wight > 0 && itemprice>0) {
+
+                $("#total_" + parentid).val((wight * itemprice) + totalForHandTyp);
+            }
+            else {
+                $("#total_" + parentid).val(totalForHandTyp);
+
+            }
+
+            Calctotalinvoice();
+        }
+        else {
+            if (wight > 0 && itemprice > 0) {
+
+                $("#total_" + parentid).val((wight * itemprice));
+            }
+            else {
+                $("#total_" + parentid).val("");
+
+            }
+
+        }
+        Calctotalinvoice();
+        collectalldemonorderdetails();
+
+    });
+</script>

@@ -1,0 +1,18 @@
+﻿
+@model dynamic
+@using ReportViewerForMvc;
+
+@{
+    Layout = null;
+
+}
+
+<style>
+    iframe {
+        width: 100% !important;
+    }
+</style>
+
+
+@Html.ReportViewer(ViewBag.ReportViewer as Microsoft.Reporting.WebForms.ReportViewer, new { @class = "col-md-12" })
+

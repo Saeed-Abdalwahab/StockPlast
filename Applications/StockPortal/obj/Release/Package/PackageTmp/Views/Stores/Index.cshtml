@@ -1,0 +1,182 @@
+﻿@model IEnumerable<StockDB.Model.Store>
+
+@{
+    ViewBag.Title = "المخازن";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+@Styles.Render("~/Content/jquery")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/Content/chosenJavaScript")
+@Styles.Render("~/Content/chosenCSS")
+<link href="~/DataTable/datatables.min.css" rel="stylesheet" />
+@section styles{
+    <style>
+        .modal-body {
+            height: auto;
+        }
+    </style>
+}
+<h2>المخازن</h2>
+
+<div id="DeletDiv" class=""></div>
+
+
+<p>
+    @Html.ActionLink("اضافة مخزن جديد", "Create")
+</p>
+<table id="storedt" class="table">
+    <thead>
+        <tr>
+            <th>
+                م
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.st_SerialNum)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.st_name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StoreType_ID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.emp_id)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.st_address)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var counter = 0;
+        }
+        @foreach (var item in Model)
+        {
+            counter++;
+            <tr>
+                <td>
+                    @counter
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.st_SerialNum)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.st_name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StoreType.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Employe.emp_name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.st_address)
+                </td>
+                <td>
+                    <a class="btn btn-primary ED" href="@Url.Action( "Edit","Stores", new { id = item.st_id })"><span class='glyphicon glyphicon-pencil'></span></a>
+                    <botton class='btn btn-danger ED' style='margin-top:3px' onclick='DeleteJob(@item.st_id )'><span class='glyphicon glyphicon-trash'></span></botton>
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section scripts{
+    <script src="~/DataTables/datatables.min.js"></script>
+    <script>
+            //Show Delet Msg Confirmation
+    function DeleteJob(job_id) {
+        bootbox.confirm({
+            title: "عملية حذف ",
+            message: "هل انت متاكد من عملية الحذف ؟",
+            size: 'small',
+            buttons: {
+                cancel: {
+                    label: '<i class="fa fa-times"></i> رجوع',
+                    className: 'btn-info'
+                },
+                confirm: {
+                    label: '<i class="fa fa-check"></i> حذف',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function (result) {
+                if (result == true) {
+                    deleteRecord(job_id)
+                }
+                else {
+                    return true;
+                }
+            }
+        });
+
+    }
+
+                 function deleteRecord(id) {
+                 $.ajax({
+                     type: "post",
+                     url: '@Url.Action("Delete","Stores")' + '?id=' + id,
+
+                     success: function (respons) {
+                         if (respons.success) {
+
+                             toastr.success('تمت حذف المخزن', respons.msg, { timeOut: 3000 });
+                             location.reload();
+                         }
+                         else {
+                             toastr.error('عمليه غير ناجحه', 'هناك بيانات معتمده علي هذاه التخصص  لايمكن الحذف حاليا ', { timeOut: 1000 });
+                         }
+
+                     },
+
+                     fail: function (xhr, msg, errorThrown) {
+                         toastr.error('عمليه غير ناجحه', msg, { timeOut: 1000 });
+
+                     },
+                     error: function (xhr, statusText, errorThrown) {
+                         toastr.error('عمليه غير ناجحه', 'هناك بيانات معتمده علي هذا التخصص  لايمكن حذفه حاليا ', { timeOut: 1000 });
+                     }
+
+
+                 });
+
+        }
+
+        $(document).ready(function () {
+            var table = $("#storedt").DataTable({
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": [6],
+                }],
+                "language": {
+                                     "sEmptyTable":     "ليست هناك بيانات متاحة في الجدول",
+	"sLoadingRecords": "جارٍ التحميل...",
+	"sProcessing":   "جارٍ التحميل...",
+	"sLengthMenu":   "أظهر _MENU_ مدخلات",
+	"sZeroRecords":  "لم يعثر على أية سجلات",
+	"sInfo":         "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+	"sInfoEmpty":    "يعرض 0 إلى 0 من أصل 0 سجل",
+	"sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+	"sInfoPostFix":  "",
+	"sSearch":       "ابحث:",
+	"sUrl":          "",
+	"oPaginate": {
+		"sFirst":    "الأول",
+		"sPrevious": "السابق",
+		"sNext":     "التالي",
+		"sLast":     "الأخير"
+	},
+	"oAria": {
+		"sSortAscending":  ": تفعيل لترتيب العمود تصاعدياً",
+		"sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+	}
+                },
+            });
+        });
+    </script>
+}

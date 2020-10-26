@@ -1,0 +1,75 @@
+﻿@*@model StockDB.Model.Customer
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>عرض بيانات العميل</h2>
+
+<div>
+    <h4>Customer</h4>
+    <hr />
+    <dl class="d-lg-table">
+        <dt>
+            @Html.DisplayNameFor(model => model.custSerial)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.custSerial)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.cust_name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.cust_name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.cust_mobile)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.cust_mobile)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.cust_mail)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.cust_mail)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.contact_name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.contact_name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.cust_address)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.cust_address)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.WhatsApp)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.WhatsApp)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("تعديل", "Edit", new { id = Model.cust_id }) |
+    @Html.ActionLink(" الرجوع للقائمة السابقة", "Index")
+</p>*@

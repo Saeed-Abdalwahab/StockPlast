@@ -1,0 +1,87 @@
+﻿@model StockDB.Model.DemondOrderDetail
+@using (Ajax.BeginForm("Create", "DemondOrderDetails", null, new AjaxOptions { OnSuccess = "location.reload(true);", OnFailure = "alert('لا يمكن حذف السريل')" }, null))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(m => m.demoOrdDet_id, new { @id = "demoOrdDet_id" })
+    <div class="form-horizontal">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            </div>
+
+            @Html.LabelFor(model => model.Material_TypeId, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.DropDownList("Material_TypeId", null, htmlAttributes: new { @class = "form-control MatDetCss" })
+                @Html.ValidationMessageFor(model => model.Material_TypeId, "", new { @class = "text-danger" })
+            </div>
+
+            @Html.LabelFor(model => model.Arrangement, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.Arrangement, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Arrangement, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.colorcount, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.colorcount, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.colorcount, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.colorname, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.colorname, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.colorname, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.Thickness, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.Thickness, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.colorname, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.HandTypeId, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.DropDownList("HandTypeId", null, htmlAttributes: new { @class = "form-control HandTypeCss" })
+                @Html.ValidationMessageFor(model => model.HandTypeId, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.size, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.size, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.size, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.shap_id, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.DropDownList("shap_id", null, htmlAttributes: new { @class = "form-control ShapCSS" })
+                @Html.ValidationMessageFor(model => model.shap_id, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.demondQuantity, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.demondQuantity, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.demondQuantity, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.ActualQuantity, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.ActualQuantity, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.ActualQuantity, "", new { @class = "text-danger" })
+            </div>
+
+        </div>
+        <div class="form-actions no-color" style="text-align:end">
+
+            <input type="submit" value="حفظ" id="SaveChanges" class="btn btn-primary" />
+            <button type="button" class="btn btn-primary" data-dismiss="modal">رجوع</button>
+
+        </div>
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+
+    });
+</script>

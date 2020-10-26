@@ -1,0 +1,294 @@
+﻿
+@model IEnumerable<StockDB.Model.DemondOrder>
+
+@{
+    ViewBag.Title = "أوامر الشغل";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string DemondorderStatus = "";
+}
+<link href="~/DataTables/datatables.min.css" rel="stylesheet" />
+    <style>
+
+        table tbody {
+            line-height: 4;
+            color: black;
+        }
+
+
+            table tbody tr td {
+                text-align: center;
+            }
+
+        table thead tr th {
+            text-align: center;
+        }
+
+
+
+        .btn {
+            cursor: pointer;
+        }
+
+        .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter, .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_processing, .dataTables_wrapper .dataTables_paginate {
+            margin-right: 20px;
+        }
+
+        .dataTables_wrapper .dataTables_length {
+            padding-right: 140px;
+        }
+
+        .dataTables_wrapper .dataTables_paginate {
+            margin-right: 39%;
+            margin-top: 2%;
+        }
+
+        table.dataTable tbody th, table.dataTable tbody td {
+            padding: 0px;
+        }
+
+        @@media (min-width: 992px) {
+            .modal-lg {
+                width: 100%;
+            }
+        }
+
+        @@media (min-width: 768px) {
+            .modal-dialog {
+                width: 90%;
+            }
+        }
+
+        @@media (min-width: 768px) {
+            .modal-sm {
+                width: 300px;
+            }
+        }
+
+        .modal-body {
+            height: auto;
+        }
+
+        .nav-tabs > li {
+            cursor: pointer;
+        }
+    </style>
+@section styles{
+
+
+
+}
+<div class="form-horizontal">
+    <div class="col-md-8 col-sm-6">
+        <h2>أوامر الشغل</h2>
+        <p>
+            @Html.ActionLink("إضافة امر شغل", "Create")
+        </p>
+    </div>
+        <label class="col-md-1 col-sm-1">الحاله</label>
+    <div class="col-md-3 col-sm-5">
+        <select id="statusList" class="form-control">
+            <option value="">الكل</option>
+            <option selected value="لم تنتهي">لم تنتهي</option>
+            <option value="انتهت">انتهت</option>
+        </select>
+    </div>
+</div>
+
+
+<table class="display table-responsive-md" style="width:100%;">
+    <thead>
+
+    <tr>
+        <th>م</th>
+
+        <th>
+            @Html.DisplayName("العميل")
+        </th>
+        <th>
+            @Html.DisplayName("رقم الامر")
+        </th>
+        <th>
+            @Html.DisplayName("تاريخ الامر")
+        </th>
+        <th>
+            @Html.DisplayName("العربون")
+        </th>
+        <th>
+            @Html.DisplayName("الخزينه")
+        </th>
+        <th>
+            @Html.DisplayName("ملاحظات")
+        </th>
+        <th>الحاله</th>
+        <th></th>
+    </tr>
+
+    </thead>
+    @{ var Counter = 0;}
+    <tbody>
+
+    @foreach (var item in Model)
+    {
+        Counter++;
+        <tr id="@item.demoOrd_id">
+            <td>@Counter</td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Customer.cust_name)
+            </td>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.demoOrd_serailNum)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.demoOrd_date)
+            </td>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.demoOrd_deposit)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Safe.safe_name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.demoOrd_notes)
+            </td>
+            <td>
+               @{ 
+                   try
+                   {
+                       if (item.DemondOrderDetails.Count > 0)
+                       {
+                           var check = item.DemondOrderDetails.Any(x => x.status == (int)PlasticStatic.Enums.demondorderdetailstatus.NotStarted || x.status == (int)PlasticStatic.Enums.demondorderdetailstatus.Underconstruction || x.status == (int)PlasticStatic.Enums.demondorderdetailstatus.Duringdelivery);
+                           DemondorderStatus = check == true ? "لم تنتهي" : "انتهت";
+                       }
+                       else
+                       {
+                           DemondorderStatus = "لم تنتهي";
+                       }
+                   }
+                   catch
+                   {
+                       DemondorderStatus = "لم تنتهي";
+
+                   }
+
+               }
+                @DemondorderStatus
+            </td>
+            <td>
+
+                @Html.ActionLink("عرض", "Edit", new { orderD = item.demoOrd_id }) |
+                @Html.ActionLink("طباعه", "DemondOrder", "StockReports", new { DemondOrderID = item.demoOrd_id },null) |
+
+                @Html.ActionLink("حذف", "Delete", null, new { Href = "#", onclick = "ConfirmDelet(" + item.demoOrd_id + ")" })
+            </td>
+        </tr>
+    }
+    </tbody>
+
+</table>
+@section scripts{
+    <script src="~/DataTables/datatables.min.js"></script>
+
+    <script>
+        function ConfirmDelet(id) {
+
+            bootbox.confirm({
+                title: "عملية حذف ",
+                message: "هل انت متاكد من عملية الحذف ؟",
+                size: 'small',
+                buttons: {
+                    cancel: {
+                        label: '<i class="fa fa-times"></i> رجوع',
+                        className: 'btn-info'
+                    },
+                    confirm: {
+                        label: '<i class="fa fa-check"></i> تاكيد',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result == true) {
+                        deleteRecord(id)
+                    }
+                    else {
+                        return true;
+                    }
+                }
+            });
+        }
+        function deleteRecord(id) {
+            $.ajax({
+                type: "post",
+                url: '@Url.Action("Delete","DemondOrders")' + '?id=' + id,
+
+                success: function (respons) {
+                    if (respons.success) {
+                        $("#" + id).remove();
+                        toastr.success('تمت حذف امر الشغل',respons.msg , { timeOut: 3000 });
+                    }
+                    else {
+                    toastr.error('عمليه غير ناجحه', respons.msg, { timeOut: 1000 });
+
+                    }
+
+                },
+
+                fail: function (xhr, msg, errorThrown) {
+                    alert("S");
+                    toastr.error('عمليه غير ناجحه', msg, { timeOut: 1000 });
+
+                },
+                error: function (xhr, statusText, errorThrown) {
+                    toastr.error('عمليه غير ناجحه','هناك بيانات معتمده علي هذا الامر  لايمكن حذفه حاليا ' ,{ timeOut: 1000 });
+                }
+
+
+            });
+
+        }
+
+        $(document).ready(function () {
+            var MyTable = $('table').DataTable({
+
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": [0, 1, 2, 3],
+
+                }],
+                "language": {
+
+                    "sEmptyTable": "ليست هناك بيانات متاحة في الجدول",
+                    "sLoadingRecords": "جارٍ التحميل...",
+                    "sProcessing": "جارٍ التحميل...",
+                    "sLengthMenu": "أظهر _MENU_ مدخلات",
+                    "sZeroRecords": "لم يعثر على أية سجلات",
+                    "sInfo": "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+                    "sInfoEmpty": "يعرض 0 إلى 0 من أصل 0 سجل",
+                    "sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+                    "sInfoPostFix": "",
+                    "sSearch": "ابحث:",
+                    "sUrl": "",
+                    "oPaginate": {
+                        "sFirst": "الأول",
+                        "sPrevious": "السابق",
+                        "sNext": "التالي",
+                        "sLast": "الأخير"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": تفعيل لترتيب العمود تصاعدياً",
+                        "sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+                    }
+
+                },
+                info: false,
+            });
+            MyTable.column(7).search($("#statusList").val()).draw();
+
+            $("#statusList").change(function () {
+                MyTable.column(7).search($("#statusList").val()).draw();
+            });
+        });
+
+    </script>
+}

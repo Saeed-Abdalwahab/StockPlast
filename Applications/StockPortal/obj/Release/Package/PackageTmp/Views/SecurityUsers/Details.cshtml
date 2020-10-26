@@ -1,0 +1,70 @@
+﻿@model StockPortal.ViewModel.SecurityUserData
+
+@{
+    ViewBag.Title = "المستخدمين";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="">
+    <div class="page-title">
+        <div class="title_right">
+            <h3>
+                @ViewBag.Title<small> - تفاصيل</small>
+            </h3>
+        </div>
+
+    </div><div class="ln_solidTitle"></div>
+    <div class="clearfix"></div>
+    <div class="row">
+
+        <div class="col-md-12">
+            <div class="x_content">
+                <div class="form-horizontal form-label-left">
+                    <div class="item form-group">
+                        @Html.LabelFor(model => model.WorkerName, htmlAttributes: new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            @Html.DisplayFor(model => model.WorkerName)
+                        </div>
+                    </div>
+                    <div class="item form-group">
+                        @Html.LabelFor(model => model.UserName, htmlAttributes: new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            @Html.DisplayFor(model => model.UserName)
+                        </div>
+                    </div>
+                    <div class="item form-group">
+                        @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            @Html.DisplayFor(model => model.Email)
+                        </div>
+                    </div>
+                    <div class="item form-group">
+                        @Html.LabelFor(model => model.UserTypeName, htmlAttributes: new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            @Html.DisplayFor(model => model.UserTypeName)
+                        </div>
+                    </div>
+                    <div class="item form-group">
+                        @Html.LabelFor(model => model.AccountStatus, htmlAttributes: new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            @Html.DisplayFor(model => model.AccountStatus)
+                        </div>
+                    </div>
+                    <div class="item form-group">
+                        @Html.LabelFor(model => model.ManagmentSpecializedName, htmlAttributes: new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            @Html.DisplayFor(model => model.ManagmentSpecializedName)
+                        </div>
+                    </div>
+                    <div class="ln_solid"></div>
+                    <div class="form-group">
+                        <div class="col-md-6 col-md-offset-3">
+                            @Html.ActionLink("تعديل", "Edit", "SecurityUsers", new { id = Model.UserId }, new { @class = "btn btn-default" })
+                            @Html.ActionLink("إلغاء", "Index", "SecurityUsers", null, new { @class = "btn btn-default" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,170 @@
+﻿@model StockDB.Model.Shaplona
+
+@{
+    ViewBag.Title = "اضافه سريل";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var msg = "";
+    if (ViewBag.ErrorExist != null)
+    {
+        msg = (string)ViewBag.ErrorExist;
+    }
+}
+
+@Styles.Render("~/Content/jquery")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/Content/vendors/bootstrap/dist/js/bootstrap.min.js")
+@Scripts.Render("~/Content/chosenJavaScript")
+@Styles.Render("~/Content/chosenCSS")
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+
+
+<h2 class="mb-3">اضافه سريل </h2>
+
+
+@using (Html.BeginForm("Create", "Shaplonas", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal col-md-8">
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        <label class="control-label col-md-2">رقم السريل</label>
+        <div class="col-md-6">
+            @Html.EditorFor(model => model.ShapSerial, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.ShapSerial, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @*@Html.LabelFor(model => model.cust_id, "cust_id", htmlAttributes: new { @class = "control-label col-md-2" })*@
+        <label class="control-label col-md-2">اسم العميل</label>
+        <div class="col-md-6">
+            @Html.DropDownListFor(x => x.cust_id, ViewBag.Customers as SelectList, "حدد اسم العميل ", htmlAttributes: new { @class = "form-control CustCss validateAlways", style = "visibility: hidden;position: absolute;display:inline !important" })
+            @Html.ValidationMessageFor(model => model.cust_id, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">اسم السريل</label>
+        <div class="col-md-6">
+            @Html.EditorFor(model => model.shap_name, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.shap_name, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <label class="control-label col-md-2" for="shap_startDate">تاريخ الدخول</label>
+        <div class="col-md-2">
+            @Html.EditorFor(model => model.shap_startDate, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.shap_startDate, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="image-upload">
+            <label for="file-input" class="control-label col-md-2 btn-link">
+                اختار الصوره
+            </label>
+            <div class="col-md-6">
+                @Html.TextBoxFor(a => a.shap_pic, new { type = "file", id = "file-input", @class = "form-control", name = "shap_pic" })
+                @Html.ValidationMessageFor(model => model.shap_pic, "", new { @class = "text-danger" })
+            </div>
+
+
+            @* <input id="file-input" name="shap_pic" type="file" class="d-none" style="display:none" />*@
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-5">
+            <input type="submit" value="اضافه" class="btn btn-default" />
+        </div>
+    </div>
+
+    
+</div>
+<div class="col-md-4">
+    <div class="image-upload">
+        <label for="file-input" id="LableChangPicparnt">
+
+            <img id="ShaplonImg" src="" style="max-width:100%;max-height:100%" />
+
+
+
+
+        </label>
+
+    </div>
+
+</div>
+}
+
+<div>
+    @Html.ActionLink("الرجوع للقاثمه", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/toastr.min.js"></script>
+
+    <script type="text/javascript">
+       
+
+        $(document).ready(function () {
+            var ErrorMsg = '@msg';
+            if (ErrorMsg != '') {
+
+            toastr.error('', ErrorMsg, { timeOut: 3000 });
+            }
+
+            //script To Sho Img 
+                $("input[type='File']").change(function () {
+                var input = this;
+                var url = $(this).val();
+                var ext = url.substring(url.lastIndexOf('.') + 1).toLowerCase();
+                if (input.files && input.files[0] && (ext == "gif" || ext == "png" || ext == "jpeg" || ext == "jpg")) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        $('#ShaplonImg').attr('src', e.target.result);
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
+                else {
+
+                    $('#ShaplonImg').attr('src', "");
+                }
+            });
+            $(".CustCss").chosen({
+                width: '100%',
+                no_results_text: "لايوجد عميل بهذا الاسم",
+                search_contains: true
+            });
+            $(function () {
+                $("input[type='datetime']").datepicker({
+                    dateFormat: 'yy/mm/dd',
+                    minView: 2,
+
+                });
+
+
+            });
+        //    $("input[type='datetime']").change(function () {
+        //        $(this).removeAttr("data-val-required");
+        //    });
+
+        //       $('form').validate({
+        //           rules: {
+        //               shap_startDate: { required: false },
+        //    }
+          
+        //});
+            $("option[value='']").attr("disabled", "disabled");
+            $("#cust_id").css("display", "");
+
+        });
+    </script>
+}

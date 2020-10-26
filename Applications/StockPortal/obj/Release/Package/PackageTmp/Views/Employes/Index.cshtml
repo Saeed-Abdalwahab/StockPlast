@@ -1,0 +1,47 @@
+﻿@*@model IEnumerable<StockDB.Model.Employe>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>الفنين</h2>
+<p>
+    @Html.ActionLink("اضافه فني", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.emp_name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.emp_mobile)
+        </th>
+  
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.emp_name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.emp_mobile)
+            </td>
+       
+            <td>
+
+                @Html.ActionLink("تعديل", "Edit", new { id = item.emp_id }) |
+                @Ajax.ActionLink("حذف", "Delete", "Employes", null, null, null,
+new { id = item.emp_id }, new AjaxOptions { HttpMethod = "GET", UpdateTargetId = "Deletdiv", InsertionMode = InsertionMode.Replace, OnSuccess = "$('.modal').modal('toggle')", OnFailure = "alert('لا يمكن حذف الموظف ')" }, new { @class = "Detilslink" })
+            </td>
+        </tr>
+    }
+
+</table>
+<div id="Deletdiv"></div>*@
+
+
+

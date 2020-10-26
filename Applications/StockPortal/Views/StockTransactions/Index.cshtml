@@ -1,0 +1,359 @@
+﻿@model IEnumerable<StockDB.Model.StockTransaction>
+
+@{
+    Layout = "~/Views/Shared/_EmptyLayout.cshtml";
+}
+
+<link href="~/DataTables/DataTables-1.10.20/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<link href="~/DataTables/DataTables-1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+<link href="~/DataTables/DataTables-1.10.20/css/dataTables.foundation.min.css" rel="stylesheet" />
+<link href="~/DataTables/DataTables-1.10.20/css/dataTables.jqueryui.min.css" rel="stylesheet" />
+<link href="~/DataTables/DataTables-1.10.20/css/dataTables.semanticui.min.css" rel="stylesheet" />
+<link href="~/DataTables/DataTables-1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="~/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+
+<script src="~/Scripts/bootbox.min.js"></script>
+<style>
+
+
+
+    table tbody tr td {
+        text-align: center !important;
+    }
+
+    table thead tr th {
+        text-align: center !important;
+    }table tfoot tr th {
+        text-align: center !important;
+    }
+
+    .btn {
+        cursor: pointer !important;
+    }
+
+    .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter, .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_processing, .dataTables_wrapper .dataTables_paginate {
+        margin-right: 20px !important;
+    }
+
+    .dataTables_wrapper .dataTables_length {
+        padding-right: 140px !important;
+    }
+
+    .dataTables_wrapper .dataTables_paginate {
+        margin-right: 39% !important;
+    }
+
+    table.dataTable tbody th, table.dataTable tbody td {
+        padding: 0px !important;
+    }
+
+    @@media (min-width: 992px) {
+        .modal-lg {
+            width: 100% !important;
+        }
+    }
+
+    @@media (min-width: 768px) {
+        .modal-dialog {
+            width: 90% !important;
+        }
+    }
+
+    @@media (min-width: 768px) {
+        .modal-sm {
+            width: 300px !important;
+        }
+    }
+
+    .modal-body {
+        height: auto !important;
+    }
+</style>
+<style>
+    body {
+        background-color: white;
+    }
+</style>
+@{
+    int fromstockid = (int)TempData["fromstockid"];
+    TempData.Keep();
+
+    if (TempData["msg"] != null)
+    {
+        <div class="center text-center alert-success  text-success success w-auto">@TempData["msg"]</div>
+    }
+    <div id="EditPopup" class="d-none">
+
+    </div>
+    <div style="margin-top:6px;margin-bottom:10px;">
+        @Html.ActionLink("اضافه صنف جديد", "Create", "StockTransactions", new { fromstockid = fromstockid }, new { @class = "btn btn-primary" })
+
+    </div>
+    <table class="table" id="tablee" style="margin-top:4px;">
+        <thead>
+            <tr>
+                <th>م</th>
+                <th>
+                    المورد
+                </th>
+                <th>
+                    الصنف
+                </th>
+                <th>
+                    المخزن
+                </th>
+                <th>
+                    اسم الشغل
+                </th>
+                <th>
+                    العدد/بكره
+                </th>
+                <th>
+                    فئه الوزن/كيلو
+                </th>
+                <th>
+                    اجمالي الكميه/كيلو
+                </th>
+
+                <th style="width: 63px"></th>
+
+            </tr>
+        </thead>
+
+        <tbody>
+            @{
+
+                var counter = 0;
+            }
+
+            @{
+                if (Model != null)
+                {
+                    foreach (var item in Model)
+                    {
+                        string nomitemid = "Noitem" + item.ID;
+                        string QuantityId = "Quantity" + item.ID;
+                        string WeightId = "Weight" + item.Weight;
+
+                        counter++;
+                        <tr id="@item.ID">
+                            <td>
+                                @counter
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelitem => item.ItemSupplier.supplier.sup_name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelitem => item.ItemSupplier.Item.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelitem => item.Store.st_name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelitem => item.DemondOrderDetail.Shaplona.shap_name)
+                            </td>
+                            <td id="@nomitemid">
+                                @Html.DisplayFor(modelitem => item.NoItem)
+                            </td>
+                            <td id="@WeightId">
+                                @Html.DisplayFor(modelitem => item.Weight)
+                            </td>
+                            <td id="@QuantityId">
+                                @Html.DisplayFor(model => item.Quantity)
+                            </td>
+
+                            <td>
+                                @{
+                                    if (item.DemondOrderDetail.status == (int)PlasticStatic.Enums.demondorderdetailstatus.NotStarted || item.DemondOrderDetail.status == (int)PlasticStatic.Enums.demondorderdetailstatus.Underconstruction)
+                                    {
+                                        <botton class='btn btn-primary ED' onclick="EditFunc(@item.ID)" title="تعديل" style='margin-top:3px'><span class='glyphicon glyphicon-pencil'></span></botton>
+                                        <botton class='btn btn-danger ED' onclick="DeletFunc(@item.ID)" title="حذف" style='margin-top:3px'><span class='glyphicon glyphicon-trash'></span></botton>
+
+                                    }
+                                    else if (item.DemondOrderDetail.status == (int)PlasticStatic.Enums.demondorderdetailstatus.Duringdelivery)
+                                    {
+                                        <span class="alert text-info">جاري  التسليم</span>
+
+                                    }
+                                    else
+                                    {
+                                        <span class="alert text-success"> تم الانتهاء</span>
+                                    }
+                                }
+
+                            </td>
+                        </tr>
+                    }
+                }
+            }
+        </tbody>
+        @if (Model != null)
+        {
+            <tfoot>
+                <tr>
+                    <th colspan="5">الاجمـــــــالي</th>
+                    <th>@Model.Sum(x => x.NoItem) (بكرة)</th>
+                    <th></th>
+                    <th>@Model.Sum(x => x.Quantity) (كيلو)</th>
+                    <th></th>
+                </tr>
+            </tfoot>
+        }
+    </table>
+}
+
+
+@section Scripts {
+
+    <script src="~/DataTables/datatables.min.js"></script>
+    <script src="~/Scripts/toastr.min.js"></script>
+    <script type="text/javascript">
+        //Edit Popup
+    function EditFunc(id) {
+        var url = '@Url.Action("Edit", "StockTransactions")';
+        $.ajax({
+            type: "GET",
+            //datatype:"html",
+            data: {stochTransactionId:id},
+            url: url,
+            success: function (data) {
+                $('#EditPopup').html(data);
+                 $('#EditPopup .modal').modal('toggle');
+            },
+            fail: function () {
+                alert("حدثه مشكله");
+            }
+        });
+     
+    }
+
+    //Delet Popup
+    function DeletFunc(id) {
+
+        var url = '@Url.Action("Delete", "StockTransactions")';
+        $.ajax({
+            type: "GET",
+            //datatype:"html",
+            data: {stochTransactionId:id},
+            url: url,
+            success: function (data) {
+                $('#EditPopup').html(data);
+                 $('#EditPopup .modal').modal('toggle');
+            },
+            fail: function () {
+                alert("حدثه مشكله");
+            }
+        });
+    }
+
+
+
+    
+//Save Edit
+    function saveedit(Avilable, xx, ID, weight) {
+            var NoItem = $("#NoItem").val();
+            var vaildation = $("#NoitemVailidation");
+            if (NoItem > Avilable) {
+                vaildation.text("   المتاح فقط   " + Avilable + "  بكرة  ");
+                vaildation.css("display", "block");
+                return false;
+            }
+            else if (NoItem == '') {
+                vaildation.text("مطلوب");
+                vaildation.css("display", "block");
+                return false;
+            }
+            else if (NoItem < 0 || isNaN(NoItem)) {
+                vaildation.text("كميه غير صحيحه");
+                vaildation.css("display", "block");
+                return false;
+            }
+            else {
+                vaildation.text("");
+
+            }
+
+            $.ajax({
+                url: "@Url.Action("SaveEdit", "StockTransactions")",
+                data: { StockTransactionId: ID, NewNoItem: NoItem },
+                type: "post",
+
+                success: function (rs) {
+                    var x = weight * NoItem;
+                    $("#Noitem" + ID).text(NoItem);
+                    $("#Quantity" + ID).text(x);
+                    $('#EditPopup .modal').modal('hide');
+
+                    toastr.success('', 'تمت عمليه التعديل بنجاح ', { timeOut: 3000 });
+                },
+                fail: function (xhr, textStatus, errorThrown) {
+                    toastr.error('', 'لم يتم الحفظ حدث مشكله', { timeOut: 3000 });
+
+                }
+
+            });
+
+
+    }
+    //Save Delet
+
+    function SaveDelet(ID) {
+                    $.ajax({
+                url: "@Url.Action("SaveDelete", "StockTransactions")",
+                data: { StockTransactionId: ID},
+                type: "post",
+
+                        success: function (rs) {
+                            $("table #" + ID).remove();
+                    $('#EditPopup .modal').modal('hide');
+
+                    toastr.success('', 'تمت عمليه الحذف  بنجاح ', { timeOut: 5000 });
+                },
+                fail: function (xhr, textStatus, errorThrown) {
+                    toastr.error('', 'لم يتم الحفظ حدث مشكله', { timeOut: 5000 });
+
+                }
+
+            });
+
+    }
+    //Data table
+        $(document).ready(function () {
+           var table = $("#tablee").DataTable({
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": [8],
+
+                }],
+                "language": {
+                                     "sEmptyTable":     "ليست هناك بيانات متاحة في الجدول",
+	"sLoadingRecords": "جارٍ التحميل...",
+	"sProcessing":   "جارٍ التحميل...",
+	"sLengthMenu":   "أظهر _MENU_ مدخلات",
+	"sZeroRecords":  "لم يعثر على أية سجلات",
+	"sInfo":         "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+	"sInfoEmpty":    "يعرض 0 إلى 0 من أصل 0 سجل",
+	"sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+	"sInfoPostFix":  "",
+	"sSearch":       "ابحث:",
+	"sUrl":          "",
+	"oPaginate": {
+		"sFirst":    "الأول",
+		"sPrevious": "السابق",
+		"sNext":     "التالي",
+		"sLast":     "الأخير"
+	},
+	"oAria": {
+		"sSortAscending":  ": تفعيل لترتيب العمود تصاعدياً",
+		"sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+	}
+                },
+            });
+        });
+    </script>
+
+}
+
+
+

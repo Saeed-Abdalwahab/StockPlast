@@ -1,0 +1,276 @@
+﻿@model StockViewModel.PaymentTypVM
+
+@{
+    ViewBag.Title = "طرق الدفع";
+}
+<link href="~/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+@section styles{
+    <style>
+        .modal-body {
+            height: auto;
+        }
+    </style>
+}
+<h3 class="center">طرق الدفع</h3>
+
+@*Creat apopup Modal For Add And Edit*@
+<div class="modal fade" id="MyModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="#" class="close" data-dismiss="modal">&times;</a>
+                <h4 id="Modaltitle"></h4>
+            </div>
+            <div class="modal-body" style="height:138px">
+                <form id="form">
+
+                    @Html.HiddenFor(m => m.ID, new { @id = "jobid" })
+                    <div class="form-group">
+                        @Html.Label("طريقه الدفع", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(m => m.Name, new { @class = "form-control col-md-10", @placeholder = "طريقه الدفع" })
+                            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="form-group">
+                    <div class="col-md-2">
+
+                        <a href="#" class="btn btn-block btn-primary" id="savejobRecord">حفظ</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="container" style="margin-top:3%">
+    <button class="btn btn-primary" onclick="Addnewjob(0)">إضافه طريقه دفع جديده</button>
+    <table class="table table-striped" id="JobTable">
+        <thead>
+            <tr>
+                <th>م</th>
+                <th>طريقه الدفع</th>
+                <th>تعديل</th>
+                <th>حذف</th>
+            </tr>
+        </thead>
+
+
+    </table>
+</div>
+
+
+@section scripts
+{
+    <script src="~/DataTables/datatables.min.js"></script>
+    <script src="~/Scripts/toastr.min.js"></script>
+
+    <script>
+        //Function To Save in Data base
+        function Save() {
+            if ($("#form").valid()) {
+
+                var data = $("#form").serialize();
+                $.ajax({
+                    type: "post",
+                    url: "/PaymentTyps/Save",
+                    data: data,
+                    success: function () {
+                        $("#JobTable").DataTable().ajax.reload();
+                        toastr.success('تم حفظ طريقه الدفع بنجاح', 'اشعار', { timeOut: 4000 });
+                        if (data.split("&")[0] == "ID=0") {
+
+                            Addnewjob(0);
+                        }
+                        else {
+                            $("#MyModal").modal("hide")
+                        }
+                    },
+                    fail: function () {
+                        toastr.error('الاسم مسجل بالفعل', 'حدث خطأ اثناء الاضافه برجاء المحاوله مره اخري ', { timeOut: 3000 });
+                    },
+                    error: function () {
+                        toastr.error('عمليه غير ناجحه', 'حدث خطأ اثناء الاضافه برجاء المحاوله مره اخري ', { timeOut: 3000 });
+                    }
+                });
+            }
+            else {
+                toastr.error('برجاء تحديد اسم الوظيفه', 'اشعار', { timeOut: 3000 });
+            }
+        }
+        //Show Popup To Add new One
+        function Addnewjob(ID) {
+            $("#form")[0].reset();
+            $("#Modaltitle").html("إضافه طريقه دفع جديده");
+            $("#jobid").val("0");
+            $("#MyModal").modal()
+            $("#Name").focus();
+        }
+        //Show Popup To Edit  Hand Typ By Id
+
+        function Editjob(ID) {
+            var url = "/PaymentTyps/GetByID/?id=" + ID;
+            $("#Modaltitle").html("تعديل طريقه الدفع");
+            $.ajax({
+                type: "GET",
+                url: url,
+                success: function (rs) {
+                    $("#MyModal").modal();
+                    $("#jobid").val(rs.data.ID);
+                    $("#Name").val(rs.data.Name);
+                }
+            })
+        }
+        //Show Delet Msg Confirmation
+    function DeleteJob(ID) {
+        bootbox.confirm({
+            title: "عملية حذف ",
+            message: "هل انت متاكد من عملية الحذف ؟",
+            size: 'small',
+            buttons: {
+                cancel: {
+                    label: '<i class="fa fa-times"></i> رجوع',
+                    className: 'btn-info'
+                },
+                confirm: {
+                    label: '<i class="fa fa-check"></i> تاكيد',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function (result) {
+                if (result == true) {
+                    deleteRecord(ID)
+                }
+                else {
+                    return true;
+                }
+            }
+        });
+
+    }
+         function deleteRecord(id) {
+            $.ajax({
+                type: "post",
+                url: '@Url.Action("Delete","PaymentTyps")' + '?id=' + id,
+
+                success: function (respons) {
+                    if (respons.success) {
+
+                        toastr.success('تمت حذف الوظيفه', respons.msg, { timeOut: 3000 });
+            $("#JobTable").DataTable().ajax.reload();                    }
+                    else {
+                    toastr.error('عمليه غير ناجحه','هناك بيانات معتمده علي هذاه الوظيفه  لايمكن الحذف حاليا ' ,{ timeOut: 1000 });
+
+                    }
+
+                },
+
+                fail: function (xhr, msg, errorThrown) {
+                    toastr.error('عمليه غير ناجحه', msg, { timeOut: 1000 });
+
+                },
+                error: function (xhr, statusText, errorThrown) {
+                    toastr.error('عمليه غير ناجحه','هناك بيانات معتمده علي هذا الامر  لايمكن حذفه حاليا ' ,{ timeOut: 1000 });
+                }
+
+
+            });
+
+        }
+
+
+
+
+
+        $('#Name').on('keydown', function (e) {
+            if (e.which == 13) {
+                e.preventDefault();
+                Save();
+            }
+        });
+
+        //SaveChanges In DB
+        $("#savejobRecord").click(function () {
+            Save();
+        });
+
+
+        //datatable function
+        $(document).ready(function () {
+            var t = $('#JobTable').DataTable({
+                "ajax": {
+                    'url': "/PaymentTyps/GetJobs",
+                    'type': "GET"
+                },
+                "columns": [
+                    {
+                        "data": null, "render": function (data, type, full, meta) {
+                            return meta.row + 1;
+                        }
+                    },
+
+                    { "data": "Name" },
+                    {
+                        "data": "ID", "render": function (data) {
+                         
+                            return "<botton class='btn btn-primary ED' style='margin-top:3px' onclick='Editjob(" + data + ")'><span class='glyphicon glyphicon-pencil'></span></botton>"
+                        }
+                    },
+                    {
+
+                        "data": "ID", "render": function (data) {
+                           
+                            return "<botton class='btn btn-danger ED' style='margin-top:3px' onclick='DeleteJob(" + data + ")'><span class='glyphicon glyphicon-trash'></span></botton>"
+                        }
+                    },
+
+
+                ],
+                "language": {
+                                     "sEmptyTable":     "ليست هناك بيانات متاحة في الجدول",
+	"sLoadingRecords": "جارٍ التحميل...",
+	"sProcessing":   "جارٍ التحميل...",
+	"sLengthMenu":   "أظهر _MENU_ مدخلات",
+	"sZeroRecords":  "لم يعثر على أية سجلات",
+	"sInfo":         "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+	"sInfoEmpty":    "يعرض 0 إلى 0 من أصل 0 سجل",
+	"sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+	"sInfoPostFix":  "",
+	"sSearch":       "ابحث:",
+	"sUrl":          "",
+	"oPaginate": {
+		"sFirst":    "الأول",
+		"sPrevious": "السابق",
+		"sNext":     "التالي",
+		"sLast":     "الأخير"
+	},
+	"oAria": {
+		"sSortAscending":  ": تفعيل لترتيب العمود تصاعدياً",
+		"sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+	}
+                },
+                info: false,
+
+            })
+            t.on('order.dt search.dt', function () {
+                t.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+
+        });
+
+    </script>
+}
+
+
+
+

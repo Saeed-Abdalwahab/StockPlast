@@ -1,0 +1,78 @@
+﻿@model StockViewModel.purchasesreturnVM
+
+@{
+    ViewBag.Title = "اضافه مرتجع مشتريات";
+
+}
+
+<link href="~/DataTables/datatables.css" rel="stylesheet" />
+@Styles.Render("~/Content/chosenCSS")
+
+
+
+<div class="text-center font-weight-bold   mb-md-5 " style="font-size:large;margin-bottom:20px">
+    <span class=" ">مرتجع مشتريات</span>
+</div>
+<form action="@Url.Action("AvilableinStock","PurchasesReturn")" method="get">
+    <div class="form-horizontal">
+        <div class="form-group">
+            @Html.Label("المخزن", htmlAttributes: new { @class = "control-label col-md-1 col-sm-1" })
+
+            <div class="col-md-6 col-sm-12">
+                @Html.DropDownListFor(x => x.StoreID, ViewBag.RawStoes as SelectList, "--حدد المخزن--", new { @class = "form-control DemondorderdetailsCss validateAlways", style = "visibility: hidden;position: absolute;display:inline !important" })
+                <span id="StoreIDErr" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.Label("المورد", htmlAttributes: new { @class = "control-label col-md-1 col-sm-1" })
+            <div class="col-md-6 col-sm-12">
+                @Html.DropDownListFor(x => x.SupplierID, ViewBag.Suppliers as SelectList, "--حدد المورد--", new { @class = "form-control DemondorderdetailsCss validateAlways", style = "visibility: hidden;position: absolute;display:inline !important" })
+                <span id="SupplierIDErr" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group" style="text-align:left">
+            <input type="submit" value="بحث" id="Search" />
+        </div>
+    </div>
+</form>
+    @section scripts{
+
+        @Scripts.Render("~/Content/chosenJavaScript")
+
+        <script>
+
+            $(document).ready(function () {
+                $("#StoreID").chosen({
+                    width: '100%',
+                    no_results_text: 'لا يوجد مخزن بهذا الاسم',
+                    search_contains: true,
+                }); $("#SupplierID").chosen({
+                    width: '100%',
+                    no_results_text: 'لا يوجد مورد بهذا الاسم',
+                    search_contains: true,
+                });
+              
+                $("form").submit(function (e) {
+                    var StoreIDVal = parseInt($("#StoreID").val());
+                    var SuplierIDVal = parseInt($("#SupplierID").val());
+                    if (StoreIDVal > 0 && SuplierIDVal > 0) {
+                        return;
+                    }
+                   else  if (isNaN(StoreIDVal)) {
+                    e.preventDefault()
+                        
+                        $("#StoreIDErr").text("مطلوب").show().fadeOut(2000); 
+                    }
+                    else if (isNaN(SuplierIDVal)) {
+                    e.preventDefault()
+                        $("#SupplierIDErr").text("مطلوب").show().fadeOut(2000); 
+
+                    }
+                   
+                })
+            });
+
+
+
+        </script>
+    }

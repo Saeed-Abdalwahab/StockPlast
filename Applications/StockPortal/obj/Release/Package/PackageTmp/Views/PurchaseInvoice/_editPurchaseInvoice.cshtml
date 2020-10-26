@@ -1,0 +1,813 @@
+﻿@using StockDB.Model
+@model StockViewModel.PurchaseInvoiceViewModel
+@{
+    Guid Guid = ViewBag.Key ?? Guid.NewGuid();
+    var id = Model != null ? Model.ID : -1;
+    var SupName = Model != null ? Model.SupName : "";
+}
+
+@*@using (Ajax.BeginForm("Save", new AjaxOptions() { OnSuccess = "savePurchaseInvoice" }))
+    {*@
+<form id="Form">
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal col-md-12">
+
+        @Html.Hidden("ID", id)
+        @Html.Hidden("Key", Guid)
+        @Html.HiddenFor(x => x.totalPurchesiescost)
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.InvoiceSerial, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.EditorFor(model => model.InvoiceSerial, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.InvoiceSerial, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.InvoiceDate, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.EditorFor(model => model.InvoiceDate, new { htmlAttributes = new { @class = "form-control", @autocomplete = "off" } })
+                @Html.ValidationMessageFor(model => model.InvoiceDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.SupName, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.DropDownListFor(x => x.SupId, ViewBag.supliers as SelectList, "--حدد المورد--", new { @class = "form-control DemondorderdetailsCss validateAlways", style = "visibility: hidden;position: absolute;display:inline !important" })
+                @Html.ValidationMessageFor(model => model.SupId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.Notes, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.EditorFor(model => model.Notes, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Notes, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.InvoiceStatus, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.DropDownList("InvoiceStatus", null, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.InvoiceStatus, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.StoreName, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.DropDownListFor(x => x.StoreId, ViewBag.StoreId as SelectList, "--حدد المخزن--", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.StoreId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    @*<div class="clearfix" style="margin-bottom:44px;"></div>*@
+    <div class="col col-md-12">
+        <fieldset style="border:1px solid #DDD">
+            <legend style="border:1px solid #DDD;border-bottom:none;padding-bottom:20px"><button class="btn btn-primary" id="additemaaa">اضافه صنف</button></legend>
+            <div style="margin-top:0px;padding-bottom:20px;">
+                <table id="item" class="display table-responsive-md" style="width:100%;">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tfoot>
+                        <tr>
+                            <th colspan="8" style="text-align:center">اجمالي الفاتورة</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+
+            </div>
+        </fieldset>
+        <div class="form-group col-md-6" style="margin-top:70px">
+            <input type="submit" class="btn btn-default" value="حفظ الفاتورة" />
+            <button type="button" class="btn btn-default" onclick="cancelsave()">الغاء</button>
+        </div>
+    </div>
+</form>
+
+@*}*@
+<!-- -------------- Start  Popup Of  delete transaction----------------------- -->
+<div class="modal fade" id="deletetransaction" role="dialog" style="z-index:-1">
+    <div class="modal-dialog modal-sm">
+
+        <div class="modal-content" style="padding:20px">
+            <div class="modal-body" id="datatransaction">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="closedelete">No</button>
+                <button type="button" class="btn btn-default" onclick="ConfirmDeletetransaction()">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- -------------- End  Popup Of  delete transaction----------------------- -->
+@*Moel For Add New Item*@
+<div class="modal fade bd-example-modal-lg" id="ItemMoal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+
+                </button>
+
+            </div>
+            <div class="modal-body" style="height:auto;overflow-y:hidden" id="Itembody">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">اغلاق</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+@Scripts.Render("~/Scripts/jquery.validate.js")
+@Scripts.Render("~/Scripts/jquery.validate.unobtrusive.js")
+@Scripts.Render("~/Scripts/jquery.unobtrusive-ajax.min.js")
+@Scripts.Render("~/Content/chosenJavaScript")
+@Styles.Render("~/Content/chosenCSS")
+<script>
+    var guid = '@(Guid)';
+
+            function AddSupplier() {
+           $("#ItemMoal #Itembody").html('<div style="width: auto;height:auto;text-align: center;"><i class="fa fa-spinner fa-spin" style="font-size: 300px;"></i></div>');
+            $("#deletetransaction").css("z-index", "-1")
+            $("#ItemMoal").css("z-index", "99999")
+        //$('#ItemMoal').modal("hide")
+        $("#ItemMoal #Itembody").load("/suppliers/RemotCreate")
+            $('#ItemMoal').modal("show")
+        }
+
+
+    //function to open model for add new item
+    function OpenItemModal() {
+        $("#ItemMoal #Itembody").html('<div style="width: auto;height:auto;text-align: center;"><i class="fa fa-spinner fa-spin" style="font-size: 300px;"></i></div>');
+            $("#deletetransaction").css("z-index", "-1")
+            $("#ItemMoal").css("z-index", "99999")
+        $('#ItemMoal').modal("hide")
+
+        $("#ItemMoal #Itembody").load("/Items/RemotCreate")
+            $('#ItemMoal').modal("show")
+    }
+
+
+    //to generat options in item from viewbag
+    function options(id) {
+               var alloptionselment = "";
+            //Fetch All Items
+            var Arrayofitems =@Html.Raw(
+                Json.Encode(((IEnumerable<Item>)ViewBag.items).Select(item => new { itemid = item.ID, itemname = item.Name })));
+            //Fetch All Options in item list
+        $.each(Arrayofitems, function (index, value) {
+            if (value.itemid == id) {
+                alloptionselment += '<option value="' + value.itemid + '" selected>' + value.itemname + '</option>';
+            }
+            else {
+                alloptionselment += '<option value="' + value.itemid + '" >' + value.itemname + '</option>';
+
+            }
+
+            });
+
+        return alloptionselment;
+    }
+
+        $("#SupId").chosen({
+                    width: '100%',
+                no_results_text: '<input class="btn btn-info" type="button" value="إضافه مورد جديد " onclick="AddSupplier()" />',
+            search_contains: true
+                });
+                $("#SupId").css("display", "");
+    $(document).ready(function () {
+      
+        $("#StoreId").val("@Model.StoreId");
+        $("#item tbody tr td input[id='itempriceintial']").change(function () {
+           
+        });
+        var totalforprice = 0;
+        var selecteditemid = 0;
+        var ItemId = '<select  id="Item_id" name="Item_id">   <option value="">--اختر الصنف --</option> ' + options(0) + '</select>';
+        @*var NoItem = '@Html.EditorFor(model => model.NoItem, new {@style="width:60%",placeholder="عدد البكر" } )'*@
+        var NoItem = '<input class="text-box single-line" id="NoItem" name="NoItem" type="text" value="" placeholder="عدد البكر">';
+                var Quantity = '<input class="text-box single-line" id="Weight" name="Weight" type="text" value="" placeholder="وزن البكره">'
+
+        @*var Quantity = '@Html.EditorFor(model => model.Weight, new { @class = "form-control",@style="width:60%",placeholder="وزن البكره"  })'*@
+        var itemprice = '<input type="number" id="itempriceintial" style="" class=" text-box single-line"  placeholder="سعر الكيلو"  />'
+        var NoItemerror='<div class="text-danger" style="display:none" id="NoItemerror"> مطلوب رقم<div>'
+        var Quantityerror='<div class="text-danger" style="display:none" id="Quantityerror"> مطلوب رقم<div>'
+        var itemerror = '<div class="text-danger" style="display:none" id="itemerror"> حدد الصنف<div>'
+        var itempriceerror='<div class="text-danger" style="display:none" id="itempriceerror"> مطلوب مبلغ <div>'
+        ItemId = ItemId.replace( /&quot;/g,"");
+          //Function to New Edite row 
+        function AddEditrow(itemid) {
+            debugger
+           var Htm = '<tr> <td></td>'
+            Htm += ' <td>'+ItemId+itemerror+'</td >';
+            Htm += '<td>' + NoItem + NoItemerror + '</td>';
+            Htm += '<td>' + Quantity + Quantityerror + '</td><td></td>';
+            Htm += '<td>' + itemprice + itempriceerror + '</td><td></td>';
+            Htm += "<td><button type='button' class='btn btn-default'  onclick='savetransaction()'><span class='glyphicon glyphicon-ok'></span></button><button class='btn btn-default'  onclick='cancel()'><span class='glyphicon glyphicon-remove'></span></button></td></tr>";
+
+
+            $("#item tbody").prepend(Htm)
+
+            $(this).prop("disabled", true)
+
+        $("#item tbody tr td .EDi").prop("disabled", true)
+        if (itemid != 0) {
+            $("#Item_id").val(itemid);
+            $("#NoItem").focus();
+        }
+            //enable Chosen In Dropdownlist plugin
+            $("#Item_id").chosen({
+                width: '100%',
+                no_results_text: '<input class="btn btn-info" type="button" value="اضافه صنف جديد"  onclick="OpenItemModal()" />',
+                search_contains: true
+            });
+          
+        }
+
+        //Add magicc Row In Datble
+          var Htm = '<tr id="Magicrow" style="display:none"> '
+            Htm += ' <td colspan="10">' + ItemId + itemerror + '</td >';
+            Htm += '<td>' + NoItem + NoItemerror + '</td>';
+            Htm += '<td>' + Quantity + Quantityerror +'</td>';
+            Htm += '<td>' + itemprice + itempriceerror+ '</td>';
+            Htm += "<td style='width:100%'><button type='button' class='btn btn-default'  onclick='savetransaction()'><span class='glyphicon glyphicon-ok'></span></button><button class='btn btn-default'  onclick='cancel()'><span class='glyphicon glyphicon-remove'></span></button></td></tr>";
+
+
+            $("#item thead").prepend(Htm)
+
+            //enable Chosen In Dropdownlist plugin
+            $("#Item_id").chosen({
+                width: '100%',
+                no_results_text: '<input class="btn btn-info" type="button" value="اضافه صنف جديد"  onclick="OpenItemModal()" />',
+                search_contains: true
+            });
+  var table=$('#item').DataTable({
+            "ajax": {
+                'url': "@Url.Action("ItemByInvoiceID", "PurchaseInvoiceItem")",
+                data: function (d) {
+                    return $.extend({}, d, {
+
+                        id: '@(id)',
+                        Key: '@(Guid)'.toString()
+                    });
+                },
+                'type': "GET"
+      },
+      responsive: true,
+            "columns": [
+                { data: "TransactionID", visible: false, orderable: false },
+                { data: "NoItem", visible: false, orderable: false },
+                //{ data: "TotalItemCost", visible: false, orderable: false },
+                { data: "Quantity", visible: false, orderable: false },
+                { data: "ItemID", visible: false, orderable: false },
+                { data: "ItemName", visible: false, orderable: false },
+                { data: "itemprice", visible: false, orderable: false },
+
+                {
+                    "data": null,
+                    "title": "م",
+                    "render": function (data, type, full, meta) {
+                        return meta.row + 1;
+                    }
+                },
+                {
+                    "data": "items",
+                    "title": "الصنف",
+                    render: function (data, type, row, meta) {
+                        return renderItem(data, type, row, meta);
+                    }
+                },
+                {
+                    "data": "NoItem",
+                    "title": "عدد البكر",
+                    render: function (data, type, row, meta) {
+                        return renderNoItem(data, type, row, meta);
+                    }
+                },
+                {
+                    "data": "Quantity",
+                    "title": "فئه وزن",
+                    render: function (data, type, row, meta) {
+                        return renderQuantity(data, type, row, meta);
+                    }
+                },
+                {
+                    "data": "totalweight",
+                    "title": "اجمالي وزن"
+                },
+                {
+                    "data": "itemprice",
+                    "title": "سعر الكيلو",
+                    render: function (data, type, row, meta) {
+                        return renderitemprice(data, type, row, meta);
+                    }
+                },
+                {
+                    "data": "TotalItemCost",
+                    "title": "اجمالي تكلفه",
+                    "render": function (data, type, full, meta) {
+                        return data.toFixed(2);
+                    }
+                },
+                {
+
+                    "title": "العمليه",
+                    "data": "TransactionID",
+                    render: function (data, type, row, meta) {
+                        return renderActionsButton(data, type, row, meta);
+                    }
+
+                }
+
+         ],
+            "footerCallback": function ( row, data, start, end, display ) {
+            var api = this.api(), data;
+
+            // Remove the formatting to get integer data for summation
+                var intVal = function (i) {
+
+                return typeof i === 'string' ?
+                    i.replace(/[\$,]/g, '')*1 :
+                    typeof i === 'number' ?
+                        i : 0;
+            };
+
+                //Determin The All no item in Table
+            totalfornoitem = api
+                .column( 1 )
+                .data()
+                .reduce( function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0 );
+
+             totalforprice = api
+                .column( 12 )
+                .data()
+                 .reduce(function (a, b) {
+                     return (intVal(a) + intVal(b)).toFixed(2);
+                }, 0 );
+
+                    totalforweight = api
+                .column(10 )
+                .data()
+                        .reduce(function (a, b) {
+                            return (intVal(a) + intVal(b)).toFixed(2);
+                }, 0 );
+            //pageTotal = api
+            //    .column( 4, { page: 'current'} )
+            //    .data()
+            //    .reduce( function (a, b) {
+            //        return intVal(a) + intVal(b);
+            //    }, 0 );
+
+
+
+                //Updet Footer
+                $(api.column(8).footer()).html(
+              totalfornoitem +' '+'بكره'
+                );
+
+
+
+
+                 $(api.column(10).footer()).html(
+       totalforweight +' '+  'كيلو'
+                );
+
+                 $(api.column(12).footer()).html(
+              totalforprice+' '+ 'جنيه'
+            );
+        },
+            "ordering": false,
+
+            "language": {
+                "sEmptyTable": "ليست هناك اصناف   متاحة في الفاتورة",
+                "sLoadingRecords": "جارٍ التحميل...",
+                "sProcessing": "جارٍ التحميل...",
+                "sLengthMenu": "<div id='itempricetotal'></div>",
+                "sZeroRecords": "لم يعثر على أية سجلات",
+                "sInfo": "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+                "sInfoEmpty": "يعرض 0 إلى 0 من أصل 0 سجل",
+                "sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+                "sInfoPostFix": "",
+                "sSearch": "ابحث:",
+                "sUrl": "",
+                "oPaginate": {
+                    "sFirst": "الأول",
+                    "sPrevious": "السابق",
+                    "sNext": "التالي",
+                    "sLast": "الأخير"
+                },
+                "oAria": {
+                    "sSortAscending": ": تفعيل لترتيب العمود تصاعدياً",
+                    "sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+                }
+            },
+
+
+            info: false,
+     })
+
+        table.on('draw', function () {
+          
+        });
+
+
+       
+        $("#Form").submit(function (e) {
+            if ($("Form").valid()) {
+
+                $("#totalPurchesiescost").val(totalforprice)
+                var DataSerilzed = $("#Form").serialize();
+                e.preventDefault();
+                                $.ajax({
+                    type: "post",
+                    url: '@Url.Action("Save","PurchaseInvoice")',
+                    data: DataSerilzed,
+                    dataType: "json",
+                    success: function (respons) {
+
+                        savePurchaseInvoice(respons);
+                    },
+
+                    fail: function (xhr, msg, errorThrown) {
+                        //toastr.error('عمليه غير ناجحه', , { timeOut: 1000 });
+
+                    },
+                    error: function (xhr, statusText, errorThrown) {
+                        //toastr.error('عمليه غير ناجحه', { timeOut: 1000 });
+                    }
+
+
+                });
+
+                }
+        })
+
+        //Tablle Css
+        $("th").css("text-align", "center");
+
+   
+
+        $("#additemaaa").click(function (e) {
+            e.preventDefault();
+            $("#Magicrow").css("display", "");
+
+             //$("#NoItem").focus();
+            savetransaction();
+            //AddEditrow(0);
+        })
+
+
+
+
+
+
+        $("#closedelete").click(function () {
+
+            $("#deletetransaction").css("z-index", "-1")
+            $("#ItemMoal").css("z-index", "99999")
+            $(".modal-backdrop").hide()
+        })
+
+        $("input[type='datetime']").datepicker({
+            dateFormat: 'yy/mm/dd',
+            minView: 2,
+        });
+    })
+    $(document).on('change', 'select[id="Item_id"]', function () {
+        $("#itempriceintial").val("");
+        // Does some stuff and logs the event to the console
+    });
+    function renderItem(data, type, row, meta) {
+        var id = row.TransactionID;
+        var TITLE = row.ItemName;
+
+        var Htm = '<select id="Item_id' + id + '" name="Item_id" style="display:none">   <option value="">--اختر الصنف --</option> ';
+        Htm += options(row.ItemID) + '</select>';
+
+
+        var lable = '<lable id="itemlbl_' + id + '">' + TITLE + '</lable>';
+        $("#Item_id" + id).select(row.ItemID)
+
+        var itemerrorinedit='<div class="text-danger" style="display:none" id="itemerror' + id + '"> حدد الصنف<div>'
+
+        return lable+ Htm+itemerrorinedit;
+
+
+    }
+
+    function renderstore(data, type, row, meta) {
+
+        var id = row.TransactionID;
+        var TITLE = row.StoreName;
+
+
+        var html = '<select style="display:none" id="storetxt_' + id + '">'
+        $.each(data, function (k, v) {
+            if (v.st_id == row.StoreId) {
+                html += '<option selected value=' + v.st_id + '>'
+                html += v.st_name
+                html += '</option>'
+            }
+            else {
+                html += '<option value=' + v.st_id + '>'
+                html += v.st_name
+                html += '</option>'
+            }
+
+        })
+
+        var lable = '<lable id="storetlbl_' + id + '">' + TITLE + '</lable>';
+
+        return lable + html ;
+
+    }
+
+    function renderNoItem(data, type, row, meta) {
+
+        var id = row.TransactionID;
+        var error='<div class="text-danger" style="display:none" id="itemnoer_' + id + '"> ادخل العدد<div>'
+
+        var lable = '<lable id=itemnolbl_' + id + '>' + data + '</lable>';
+        var text = '<input type="text" id=itemnotxt_' + id + ' value=' + data + ' style="display:none;width:100%;" />'
+
+        return lable + text + error;
+    }
+
+
+    function renderQuantity(data, type, row, meta) {
+
+        var id = row.TransactionID;
+        var error='<div class="text-danger" style="display:none" id="quantityer_' + id + '">ادخل الكمية<div>'
+
+        var lable = '<lable id=quantitylbl_' + id + '>' + data + '</lable>';
+        var text = '<input type="text" id=quantitytxt_' + id + ' value=' + data + ' style="display:none;width:100%;" />'
+
+        return lable + text + error;
+    }
+     function renderitemprice(data, type, row, meta) {
+
+        var id = row.TransactionID;
+        var error='<div class="text-danger" style="display:none" id="itempriceer_' + id + '">ادخل السعر<div>'
+
+        var lable = '<lable id=itempricelbl_' + id + '>' + data + '</lable>';
+        var text = '<input type="text" id=itempricetxt_' + id + ' value=' + data + ' style="display:none;width:100%;" />'
+
+        return lable + text + error;
+    }
+
+    function renderActionsButton(data, type, row, meta) {
+
+        var id = row.TransactionID;
+
+        var editbtn = "<button type='button' class='btn btn-default EDi' id='edit_" + id + "' onclick='edite(" + id + " )'><span class='glyphicon glyphicon-pencil'></span></button>"
+        var deletebtn = "<button type='button' class='btn btn-default EDi' id='delete_" + id + "' onclick='deletetrnsaction(" + id + ")'><span class='glyphicon glyphicon-trash'></span></button>"
+        var savebtn = "<button type='button' style='display:none' class='btn btn-default' id='save_" + id + "' onclick='edittransaction(" + id + ")'><span class='glyphicon glyphicon-ok'></span></button>"
+        var cancelbtn = "<button type='button' class='btn btn-default' id='cancel_"+id+"'  onclick='canceledit()'  style='display:none'><span class='glyphicon glyphicon-remove'></span></button>"
+        return editbtn + deletebtn + savebtn+cancelbtn
+    }
+
+    function edite(id) {
+            $("#Magicrow").css("display", "none");
+
+        $("#itemlbl_" + id).hide();
+        $("#Item_id" + id).show();
+        $("#Item_id" + id).chosen({
+            width: '100%',
+            no_results_text: '<input class="btn btn-info" type="button" value="اضافه صنف جديد"  onclick="OpenItemModal()" />',
+            search_contains: true
+        });
+        $("#storetlbl_" + id).hide();
+        $("#storetxt_" + id).show();
+
+        $("#itemnolbl_" + id).hide();
+        $("#itemnotxt_" + id).show();
+
+
+        $("#unittypelbl_" + id).hide();
+        $("#unittypetxt_" + id).show();
+
+
+        $("#quantitylbl_" + id).hide();
+        $("#quantitytxt_" + id).show();
+
+        $("#Quantitypelbl_" + id).hide();
+        $("#Quantitypetxt_" + id).show();
+
+        $("#itempricelbl_" + id).hide();
+        $("#itempricetxt_" + id).show();
+
+        $("#edit_" + id).hide();
+        $("#delete_" + id).hide();
+
+        $("#save_" + id).show();
+        $("#cancel_"+id).show();
+
+         $("#additemaaa").prop("disabled", true)
+
+        $("#item tbody tr td .EDi").prop("disabled", true)
+
+
+    }
+    function cancel() {
+        $("#Magicrow").css("display", "none");
+        $("#Magicrow td input").val("");
+        $("#additemaaa").prop("disabled", false)
+        //$("#item tbody tr").eq(0).remove();
+        $("#item").DataTable().ajax.reload();
+
+    }
+    function canceledit() {
+        $("#additemaaa").prop("disabled", false)
+        $("#item").DataTable().ajax.reload();
+
+    }
+    function deletetrnsaction(transactionid) {
+
+         $.ajax({
+
+            url: "@Url.Action("DeleteTransaction", "PurchaseInvoiceItem")",
+            data: { ID: transactionid,Key:guid.toString()},
+            type: "POST",
+
+            success: function (rs) {
+                $("#datatransaction").html(rs)
+                  $("#ItemMoal").css("z-index", "-1")
+                    $("#deletetransaction").css("z-index", "9999999")
+                    $("#deletetransaction").modal("show")
+
+            }
+        })
+    }
+    function ConfirmDeletetransaction() {
+
+        var transactionID = $("#TransactionID").val();
+        $.ajax({
+
+            url: "@Url.Action("ConfirmDeleteTransaction", "PurchaseInvoiceItem")" + "?ID=" + transactionID +"&Key="+guid.toString(),
+            type: "POST",
+            success: function (rs) {
+                if (rs.alert.type) {
+                    $("#deletetransaction").modal("hide");
+                    $("#item").DataTable().ajax.reload()
+                    showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+                }
+
+            }
+        });
+
+    }
+
+    function edittransaction(transactionid) {
+
+        var itemid = $("#Item_id" + transactionid).val();
+        var itemno = $("#itemnotxt_" + transactionid).val();
+        var quantity = $("#quantitytxt_" + transactionid).val();
+        var itemprice = $("#itempricetxt_" + transactionid).val();
+
+        if (itemid == "" || itemno == "" || quantity == ""|| itemprice == "") {
+
+              if (itemid == "") {
+                $("#itemerror"+ transactionid).show()
+              }
+              else if (itemno == "") {
+                $("#itemnoer_" + transactionid).show()
+              }
+              else if (quantity == "") {
+                $("#quantityer_" + transactionid).show()
+              }
+              else if(itemprice== ""){
+                $("#itempriceer_" + transactionid).show()
+
+              }
+            return false
+        }
+
+
+        else {
+            $.ajax({
+
+                url: "@Url.Action("EditTransaction", "PurchaseInvoiceItem")",
+                data: { ID: transactionid, Key: guid.toString() ,itemid:itemid , itemno:itemno, quantity:quantity ,itemprice:itemprice },
+                type: "GET",
+
+                success: function (rs) {
+                    if (rs.alert.type) {
+                        $("#additemaaa").prop("disabled", false)
+                        $("#item").DataTable().ajax.reload()
+                        showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+                    }
+
+                }
+            })
+        }
+
+    }
+   
+     
+    function savetransaction() {
+      
+        var ItemID = $("#Item_id").val();
+        var NoItem = $("#NoItem").val();
+        var Quantity = $("#Weight").val();
+        var itempriceval = $("#itempriceintial").val();
+
+        if (NoItem == "" || Quantity == "" || ItemID==""||itempriceval=="") {
+            
+            if (ItemID == "") {
+                $("#Item_id").trigger('chosen:activate')
+            }
+            else if (NoItem == ""||isNaN(NoItem)) {
+                $("#NoItem").focus();
+                $("#NoItemerror").show()
+            }
+
+            else if (Quantity == ""||isNaN(Quantity)) {
+                $("#Weight").focus();
+
+                $("#Quantityerror").show()
+            }
+            else if(itempriceval==""||isNaN(itempriceval)) {
+                $("#itempriceintial").focus();
+
+                $("#itempriceerror").show()
+            }
+            return false;
+            selecteditemid = 0;
+        }
+        else {
+            
+            selecteditemid = ItemID;
+            $.ajax({
+
+                url: "@Url.Action("savetransaction", "PurchaseInvoiceItem")",
+                data: { Key: guid.toString(), ItemID: ItemID,NoItem: NoItem, Quantity: Quantity, itemprice: itempriceval},
+                type: "post",
+
+                success: function (rs) {
+                    if (rs.alert.type) {
+                        $("#additemaaa").prop("disabled", false)
+                        $("#item").DataTable().ajax.reload(
+                            function () {
+                                $("#Magicrow").css("display", "contents");
+                                $("#Magicrow td input").val("");
+                                $("#Magicrow td .text-danger").hide();
+                                if (selecteditemid != 0) {
+                                    $("#Item_id").val(selecteditemid);
+                                    $("#Item_id").trigger('chosen:updated');
+                                    $("#itempriceintial").val(itempriceval);
+
+                                }
+                                
+                                $("#NoItem").focus();
+                            }
+                        )
+
+                        showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+                        
+                        
+                    }
+
+                }
+                
+            })
+        }
+    }
+</script>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

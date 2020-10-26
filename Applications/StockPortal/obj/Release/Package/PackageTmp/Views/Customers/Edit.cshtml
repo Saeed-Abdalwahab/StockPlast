@@ -1,0 +1,78 @@
+﻿@model StockDB.Model.Customer
+
+@{
+    ViewBag.Title = "تعديل عميل";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <h2>تعديل بيانات عميل</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        @*<h4>Customer</h4>*@
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.cust_id)
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.custSerial, htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-3">
+            @Html.EditorFor(model => model.custSerial, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.custSerial, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.cust_name, htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-3">
+            @Html.EditorFor(model => model.cust_name, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.cust_name, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.cust_mobile, htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-3">
+            @Html.EditorFor(model => model.cust_mobile, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.cust_mobile, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+       
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.cust_mail, htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-3">
+            @Html.EditorFor(model => model.cust_mail, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.cust_mail, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.contact_name, htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-3">
+            @Html.EditorFor(model => model.contact_name, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.contact_name, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.cust_address, htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-3">
+            @Html.EditorFor(model => model.cust_address, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.cust_address, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+      
+       
+        <div class="form-group">
+            @Html.LabelFor(model => model.WhatsApp, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.WhatsApp, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.WhatsApp, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="حفظ" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("رجوع", "Index")
+</div>

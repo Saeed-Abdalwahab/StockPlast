@@ -1,0 +1,426 @@
+﻿@model StockViewModel.StockTransactionVM
+@{
+    ViewBag.Title = "creat";
+    Layout = "~/Views/Shared/_EmptyLayout.cshtml";
+    var Demondorderid = (int)ViewBag.demondorderid;
+}
+<style>
+    body {
+        background-color: white;
+    }
+</style>
+<link href="~/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+<link href="~/Content/jquery.fancybox.css" rel="stylesheet" />
+<link href="~/Content/jquery.fancybox-buttons.css" rel="stylesheet" />
+<link href="~/Content/jquery.fancybox-thumbs.css" rel="stylesheet" />
+
+@if (TempData["msg"] != null)
+{
+    <div class="center text-center alert-danger  text-danger danger w-auto">@TempData["msg"]</div>
+}
+
+<div>
+    @Html.ActionLink("كل الاصناف", "index", "StockTransactions", new { fromstockid = @Model.FromStockId }, new { @class = "btn btn-primary" })
+
+</div>
+<link href="~/Content/jquery.fancybox.css" rel="stylesheet" />
+@Html.EditorFor(model => model.NoItem, new { htmlAttributes = new { @class = "form-control", oninput = "validity.valid||(value='');", type = "number", min = "0.1", style = "position: absolute;display:none !important" } })
+
+<div id="Details" class="d-none">
+
+</div>
+
+<div class="form-horizontal">
+    <hr />
+
+    <div class="form-group">
+        @Html.Label("اسم الشغل", htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-6">
+            @Html.DropDownListFor(x => x.Demondorderdetailsid, ViewBag.Demondorderdetils as SelectList, "اختار اسم الشغل", new { @class = "form-control DemondorderdetailsCss validateAlways", style = "visibility: hidden;position: absolute;display:inline !important" })
+        </div>
+
+        @Html.LabelFor(x => x.Storeid, htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-2">
+
+            @Html.DropDownListFor(x => x.Storeid, Model.Stores, "اختار المخزن", htmlAttributes: new { @class = "form-control", disabled = "disabled", title = "برجاء تحديد المورد والصنف" })
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<div class="container" style="margin-top:3%">
+    <table class="table table-striped" id="Avalibletable">
+        <thead>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+
+            </tr>
+        </thead>
+    </table>
+</div>
+
+
+
+@section Scripts {
+    @Scripts.Render("~/Scripts/jquery.validate.js")
+    @Scripts.Render("~/Scripts/jquery.validate.unobtrusive.js")
+    @Scripts.Render("~/Scripts/jquery.unobtrusive-ajax.min.js")
+    @Scripts.Render("~/Content/chosenJavaScript")
+    @Styles.Render("~/Content/chosenCSS")
+    <script src="~/DataTables/datatables.min.js"></script>
+    <script src="~/Scripts/toastr.min.js"></script>
+    <script src="~/Scripts/jquery.fancybox.pack.js"></script>
+    <script src="~/Scripts/jquery.fancybox.js"></script>
+    <script src="~/Scripts/jquery.fancybox-buttons.js"></script>
+    <script src="~/Scripts/jquery.fancybox-media.js"></script>
+    <script src="~/Scripts/jquery.fancybox-thumbs.js"></script>
+    <script type="text/javascript">
+   
+   
+        $(document).ready(function () {
+      
+            $(".various").fancybox({
+		maxWidth	: 1000,
+		maxHeight	: 800,
+		fitToView	: false,
+		width		: '100%',
+		height		: '70%',
+		autoSize	: false,
+		closeClick	: false,
+		openEffect	: 'none',
+		closeEffect	: 'none'
+            });
+
+            var table = "";
+
+            $("#Demondorderdetailsid").change(function () {
+                    var id = $(this).val();
+                    if (id != "") {
+                        $.getJSON('@Url.Action("FetchStores", "StockTransactions")', { DemondorderDetailsid: id }, function (response) {
+                            store.empty();
+
+                            store.append($('<option></option>').text("اختار المخزن").val(""));
+                            $.each(response, function (index, item) {
+
+                                store.append($('<option></option>').text(item.Text).val(item.ID));
+                            });
+
+                        });
+                        store.removeAttr("disabled");
+                        CreatDataTable();
+                    }
+                    else {
+                        store.empty();
+                        store.append($('<option disabled="disabled"></option>').text("اختار المخزن").val(""));
+                        
+                        $("#Storeid").attr("title", "برجاء تحديد المورد والصنف");
+
+                    }
+
+
+
+                });
+                var store = $('#Storeid');
+                    store.change(function () {
+                        CreatDataTable();
+                });
+                $("option[value='']").attr("disabled", "disabled");
+
+                $("#Storeid").change(function () {
+                    var id = $(this).val();
+                    if (id != "") {
+                        //Drawstorelist(true, id);
+                        CreatDataTable();
+                    }
+                    else {
+                        //Drawstorelist(false, id);
+
+                    }
+
+
+
+                });
+           
+                //Chosen
+                $(".DemondorderdetailsCss").chosen({
+                    width: '100%',
+                            no_results_text: '<div style="text-align:left"><a id="AddNewDemondorderDetails" class="btn btn-info various fancybox.ajax" href="../DemondOrderDetails/RemotCreate?demOrdId='+'@Demondorderid'+'" >اضافه اسم شغل جديد</a></div>',                     search_contains: true
+                });
+                $("#Demondorderdetailsid").css("display", "");
+
+        });
+        //Function To draw Or fill Store List To filter By Store
+        function Drawstorelist(check,id) {
+            if (check == true) {
+                $.getJSON('@Url.Action("FetchStores", "StockTransactions")', { DemondorderDetailsid: id }, function (response) {
+                    $('#Storeid').empty();
+
+                    $('#Storeid').append($('<option></option>').text("اختار المخزن").val(""));
+                    $.each(response, function (index, item) {
+
+                        $('#Storeid').append($('<option></option>').text(item.Text).val(item.ID));
+                    });
+
+                });
+                $('#Storeid').removeAttr("disabled");
+            }
+            else {
+                
+                        $('#Storeid').empty();
+                        $('#Storeid').append($('<option disabled="disabled"></option>').text("اختار المخزن").val(""));
+
+                        $("#Storeid").attr("title", "برجاء تحديد المورد والصنف");
+            }
+        }
+
+        // Function To get For Fo Add new Demon Order Details
+        function GetHtmlForm(Demondorderid) {
+
+        $.get('@Url.Action("RemotCreate", "DemondOrderDetails")',
+            { demOrdId: Demondorderid },
+            function (response, status, xhr) {
+                $('#Details').html(response);
+                $('#Details .modal').modal('toggle');
+            }),
+        "html"
+
+    }
+
+
+        //function For Sucess Add New Demond Order Details From Drop Down List
+        function SucessFun(value, text) {
+            $.fancybox.close();
+            $("#Demondorderdetailsid").append('<option value="' + value + '">' + text + '</option>');
+            $("#Demondorderdetailsid").val(value);
+
+                    $(".DemondorderdetailsCss ").trigger('chosen:updated');
+                       $(".DemondorderdetailsCss ").trigger('chosen:close');
+            $("#shap_id_chosen .chosen-drop .chosen-results").append('<li class="active-result result-selected">' + text + ' </li>');
+                        $("#Demondorderdetailsid").val(value);
+
+            CreatDataTable();
+                                    Drawstorelist(true, value);
+
+                        toastr.success('تمت اضافه اسم الشغل بنجاح', 'عمليه اضافه ناجحه', { timeOut: 1000 });
+        }
+
+                    //Function To Declaer Data Table
+        function CreatDataTable() {
+            
+                if (!$.fn.DataTable.isDataTable('table')) {
+
+                    table = $('table').DataTable({
+                        "ajax": {
+                            'url': "@Url.Action("FetchAvilableinStock", "StockTransactions")",
+                            data: function (d) {
+                                return $.extend({}, d, {
+                                    DemondorderDetailsid: $("#Demondorderdetailsid").val(),
+
+                                    //DemondorderDetailsid: $("#Demondorderdetailsid :selected").val(),
+                                    storeid: $("#Storeid :selected").val(),
+                                    fromstockid: '@Model.FromStockId'
+
+
+                                });
+                            },
+
+                            'type': "GET",
+                        },
+                        "columns": [
+                            {
+                                data: "itemid", orderable: false, visible: false
+
+                            },
+                            {
+                                data: "itemsuplierid", orderable: false, visible: false
+
+                            },
+                            {
+                                data: "storeid", visible: false, orderable: false,
+
+                            },
+                            {
+                                data: "weight", visible: false, orderable: false,
+
+                            },
+                            {
+                                "data": null,
+                                "title": "م",
+                                "render": function (data, type, full, meta) {
+                                    return meta.row + 1;
+                                }
+                            },
+                            {
+                                "data": "itemname",
+                                "title": "الصنف"
+
+                            },
+                            {
+                                "data": "supliername",
+                                "title": "المورد"
+
+                            },
+                            {
+                                "data": "storename",
+                                "title": "المخزن"
+
+                            },
+                              {
+                                "data": "Noitem",
+                                "title": "العدد المتاح(بكر)"
+
+                            },
+                            {
+                                "data": "weight",
+                                "title": "فئه الوزن"
+
+                            },
+                          
+                            {
+                                "data": null,
+                                "title": "العدد المطلوب",
+
+                                "render": function (data, type, row, meta) {
+                                    return '<input type="number" id="Noitem' + (meta.row + 1) + '" />' + '<span class="text-danger" id="validation' + (meta.row + 1) + '" style="display:none;"></span>';
+                                }
+                            },
+                            {
+                                "data": null,
+                                "title": "",
+                                "render": function (data, type, row, meta) {
+                                    return '<input type="button" onclick="savetransaction(' + (meta.row + 1) + ',' + row.itemsuplierid + ',' + row.storeid + ',' + row.weight + ',' + @Model.FromStockId+',' + row.Noitem + ',' + row.itemid + ')" value="حفظ"  class="btn btn-default">';
+                                }
+                            }
+
+                        ],
+                        "language": {
+                         
+                            "sEmptyTable": "ليست هناك اصناف متاحة من هذا النوع" + '<i class="fas fa-battery-empty"></i>',
+                            "sLoadingRecords": "جارٍ التحميل..."+'<i class="fa fa-circle-o-notch fa-spin"></i>',
+                            "sProcessing": "جارٍ التحميل...",
+                            "sLengthMenu": "أظهر _MENU_ مدخلات",
+                            "sZeroRecords": "لم يعثر على أية سجلات",
+                            "sInfo": "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+                            "sInfoEmpty": "يعرض 0 إلى 0 من أصل 0 سجل",
+                            "sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+                            "sInfoPostFix": "",
+                            "sSearch": "ابحث:",
+                            "sUrl": "",
+                            "oPaginate": {
+                                "sFirst": "الأول",
+                                "sPrevious": "السابق",
+                                "sNext": "التالي",
+                                "sLast": "الأخير"
+                            },
+                            "oAria": {
+                                "sSortAscending": ": تفعيل لترتيب العمود تصاعدياً",
+                                "sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+                            }
+                        
+                        },
+                        info: false,
+
+
+                    });
+                    table.on('order.dt search.dt', function () {
+                        table.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                            cell.innerHTML = i + 1;
+                        });
+                    }).draw();
+                }
+                else {
+                        table.ajax.reload();
+                }
+
+            }
+
+
+            function DestoryDataTable() {
+                if (!$.fn.DataTable.isDataTable('table')) {
+                    table.destroy();
+                    }
+            }
+        //Function To Save Transaction "items " in Data base and delet Row after sucess save
+        function savetransaction(rowid, itemsuplierid, storeid, weight, fromstockid, AvilableNomitem, itemid) {
+            var Validation = $("#validation" + rowid);
+            var ValidationDemondorderDetails = $("#DemondorderDetailsValidation");
+            var itemsup_id = itemsuplierid;
+            var st_it = storeid;
+            var weight_id = weight;
+            var fromstock_id = fromstockid;
+            var Nomitem = $("#Noitem" + rowid).val();
+            var avilableitem = AvilableNomitem
+            var item_id = itemid;
+            var Demondorderdetails_id = $("#Demondorderdetailsid :selected").val();
+
+
+
+            Validation.text("");
+            ValidationDemondorderDetails.text("");
+            if (Nomitem == "") {
+                Validation.text("مطلوب");
+                Validation.css("display", "block");
+                return false;
+            }
+            else if (Nomitem <= 0) {
+                Validation.text("كميه غير صحيحه");
+                Validation.css("display", "block");
+                return false;
+            }
+            else if (Nomitem > avilableitem) {
+                Validation.text(" المتاح فقط" + avilableitem + "بكرة");
+                Validation.css("display", "block");
+
+
+                return false;
+            }
+            else if (Demondorderdetails_id == "") {
+                ValidationDemondorderDetails.text("مطلوب");
+                ValidationDemondorderDetails.css("display", "block");
+                return false;
+            }
+            else {
+                Validation.text("");
+            }
+
+            $.ajax({
+
+                url: "@Url.Action("Create", "StockTransactions")",
+                data: { itemsuplierid: itemsup_id, storeid: st_it, Noitem: Nomitem, fromstockid: fromstock_id, wegiht: weight_id, Demondorderdetailsid: Demondorderdetails_id, itemid: item_id },
+                type: "post",
+
+                success: function (rs) {
+                    debugger;
+                    var search = $("table tbody tr :first-child").filter(function () {
+                        return $(this).text() == rowid;
+                    });
+
+                    search.parent().remove();
+
+                    toastr.success('', 'تمت عمليه الاضافه بنجاح ', { timeOut: 500 });
+                },
+                fail: function (xhr, textStatus, errorThrown) {
+                    toastr.error('', 'لم يتم الحفظ حدث مشكله', { timeOut: 500 });
+                }
+
+            });
+        }
+
+    </script>
+}
+

@@ -1,0 +1,270 @@
+﻿@model StockViewModel.PurchaseInvoiceViewModel
+@{
+    Guid Guid = ViewBag.Key ?? Guid.NewGuid();
+    var ToStockID = Model != null ? Model.ID : -1;
+}
+
+@using (Html.BeginForm("Save", "FinshToStock",FormMethod.Post,new { id="finishform"}))
+{
+
+    <div class="form-horizontal col-md-12">
+
+        @Html.HiddenFor(x => x.ID, new { id = "Tostockfinishedid" })
+
+        @Html.Hidden("FromStockID")
+        @Html.Hidden("demondordid")
+        @Html.HiddenFor(x=>x.itemsupid)
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group col-md-6 col-sm-12">
+            @Html.Label("رقم الاذن", htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.EditorFor(model => model.InvoiceSerial, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.InvoiceSerial, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group col-md-6 col-sm-12">
+            @Html.Label("تاريخ الاذن", htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.EditorFor(model => model.InvoiceDate, new { htmlAttributes = new { @class = "form-control", @autocomplete = "off" } })
+                @Html.ValidationMessageFor(model => model.InvoiceDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group col-md-6 col-sm-12">
+            @Html.LabelFor(model => model.Notes, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.EditorFor(model => model.Notes, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Notes, "", new { @class = "text-danger" })
+            </div>
+        </div>
+       
+        <div class="form-group col-md-6 col-sm-12">
+            @Html.LabelFor(model => model.StoreName, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.DropDownList("StoreId", null, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.StoreId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group col-md-6 col-sm-12">
+            @Html.Label("وزن التام", htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.EditorFor(x => x.finishweight, new { htmlAttributes = new { @class = "form-control", value = "" } })
+                @Html.ValidationMessageFor(model => model.finishweight, "", new { @class = "text-danger" })
+            </div>
+        </div>
+      
+        <div class="form-group" style="text-align:left;margin-top:15%">
+            <input type="submit" class="btn btn-primary" value="حفظ الفاتورة" />
+            <button type="button" class="btn btn-default" onclick="cancelsavefinish()">الغاء</button>
+        </div>
+    </div>
+    <div class="clearfix" style="margin-bottom:44px;"></div>
+    
+
+}
+<!-- -------------- Start  Popup Of  delete transaction----------------------- -->
+<div class="modal fade" id="deletefinish" role="dialog" style="z-index:-1">
+    <div class="modal-dialog modal-sm">
+
+        <div class="modal-content" style="padding:20px">
+            <div class="modal-body" id="datatransaction">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-default" onclick="ConfirmDeleteFinshItem()">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- -------------- End  Popup Of  delete transaction----------------------- -->
+
+@Scripts.Render("~/Scripts/jquery.validate.js")
+@Scripts.Render("~/Scripts/jquery.validate.unobtrusive.js")
+@Scripts.Render("~/Scripts/jquery.unobtrusive-ajax.min.js")
+<script>
+
+    var oldtotal;
+    $(document).ready(function () {
+
+        $("#FromStockID").val(FromStockID)
+        $("#demondordid").val(demondorderdetailsid)
+
+        $("input[type='datetime']").datepicker({
+            dateFormat: 'yy/mm/dd',
+            minView: 2,
+        });
+    })
+
+    $("#finishform").submit(function (e) {
+
+        var finishweight = $("#finishweight").val();
+        e.preventDefault();
+        if (!$(this).valid()) {
+            toastr.error('برجاء تحديد جميع الحقول', { timeOut: 1000 });
+            return false;
+        }
+        else if (finishweight < 0 || finishweight == "0" || isNaN(finishweight)||finishweight == "") {
+            $('span[data-valmsg-for="finishweight"]').text("كميه تام غير صحيحه");
+            return false;
+        }
+        else if (finishweight > 0) {
+
+                                    $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Save", "FinshToStock")',
+                data: $("#finishform").serialize(),
+                success: function (respons) {
+
+                    savePurchaseInvoice(respons);
+
+                },
+
+                fail: function (xhr, msg, errorThrown) {
+                    toastr.error('عمليه غير ناجحه', { timeOut: 1000 });
+
+                },
+                error: function (xhr, statusText, errorThrown) {
+                    toastr.error('عمليه غير ناجحه', { timeOut: 1000 });
+
+                }
+
+
+            });
+        }
+        else {
+
+
+        }
+    });
+
+    function ConfirmDeleteFinshItem() {
+
+        var transactionID = $("#TransactionID").val();
+        $.ajax({
+
+            url: "@Url.Action("ConfirmDeleteFinshItem", "FinishItem")",
+            data: { ID: transactionID, Key: guid.toString() },
+            type: "POST",
+            success: function (rs) {
+                if (rs.alert.type) {
+                    $("#Totalx").val(parseInt( $("#Totalx").val()) + parseInt(oldtotal));
+                    $("#deletefinish").modal("hide");
+                     $("#itemfinish").DataTable().ajax.reload(
+                         function () {
+                             if (!$('#itemfinish').DataTable().data().any()) {
+                                 $("#additemaaa").prop("disabled", false)
+
+                             }
+                         });
+                    showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+                }
+
+            }
+        })
+
+    }
+    function EditFinishItem(transactionid) {
+
+
+
+        var weightsinish = $("#quantityfinishtxt_" + transactionid).val();
+        if (weightsinish == "") {
+
+            if (weightsinish == "") {
+                $("#quantityfinisher_" + transactionid).show()
+            }
+            return false
+        }
+
+
+        else {
+
+
+            Totalx =parseInt( $("#Totalx").val()) + parseInt(oldtotal);
+            $.ajax({
+
+
+                url: "@Url.Action("EditFinishItem", "FinishItem")",
+                data: { ID: transactionid, Key: guid.toString(), quantity: weightsinish, TransactioID: StockTransactioID, NoItem: 1 ,Total:Totalx},
+                type: "GET",
+
+                success: function (rs) {
+                    if (rs.alert.type) {
+
+
+                        $("#Totalx").val(Totalx+oldtotal)
+                        $("#Totalx").val(Totalx - (1 * weightsinish))
+                        $("#additemaaa").prop("disabled", false)
+                        $("#itemfinish").DataTable().ajax.reload()
+                        showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+
+                    }
+                    else {
+                        showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+                    }
+
+
+                }
+            })
+        }
+
+    }
+    function savefinishitem() {
+        var finishWeight = $("#finishWeight").val();
+        if (finishWeight == "") {
+
+            if (finishWeight == "") {
+                $("#finishWeighterror").show()
+
+            }
+
+            return false
+        }
+        else {
+            Totalx = parseInt($("#Totalx").val())
+
+            $.ajax({
+
+                url: "@Url.Action("SaveFinishItem", "FinishItem")",
+                data: { Key: guid.toString(), Quantity: finishWeight, TransactioID: StockTransactioID, NoItem: 1, demondorderdetailsid: demondorderdetailsid ,fromstockid:FromStockID},
+                type: "post",
+
+                success: function (rs) {
+
+                    if (rs.alert.type) {
+                       $("#Totalx").val(Totalx-(1*finishWeight))
+                        $("#additemaaa").prop("disabled", false)
+                        $("#itemfinish").DataTable().ajax.reload()
+                        showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+
+                    }
+                    else {
+                        showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+                    }
+
+                }
+            })
+        }
+        }
+
+    function savePurchaseInvoice(rs) {
+        if (rs.alert.type) {
+            debugger
+            $("#completedcontent").html(rs.data)
+            //$("#Add").css("display", "none")
+            showAlert(rs.alert.AlertType, rs.alert.ErrorMessage);
+            AddTOstockreturn();
+        }
+        else {
+            $("#completedcontent").html(rs.data)
+            showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+        }
+    }
+</script>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+

@@ -1,0 +1,26 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+
+@{
+    ViewBag.Title = "يوجد حطأ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div style="background-color: #A52A2A; color: White; height: 10px;">
+</div>
+<div style="background-color: #F5F5DC; color: White; height: 170px;">
+    <div style=" padding:20px;">
+        <h3>
+            يوجد خطأ بالمنظومة
+        </h3>
+        <h4>
+            
+            Sorry, an error occurred while processing your request.
+        </h4>
+        <h6>@Html.ActionLink("الذهاب إلى الصفحة الرئيسية", "Index", "Home")</h6>
+        <br />
+        <br />
+    </div>
+</div>
+<div style="background-color: #A52A2A; color: White; height: 20px;">
+</div>  
+

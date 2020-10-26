@@ -1,0 +1,45 @@
+﻿
+
+
+@{
+    ViewBag.Title = "Edit";
+    Layout = null;
+    double avilableamount = (double)ViewBag.Avilableamount;
+    int ID = (int)ViewBag.ID;
+    double Noitem =(double) ViewBag.Noitem;
+    double Weight = (double)ViewBag.wieght;
+
+
+}
+
+<div class="modal  fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header ">
+                <h5 class="modal-title" id="exampleModalLongTitle">تعديل</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <p>
+                الكميه المتاحه بالمخزن @avilableamount
+            </p>
+            <div class="modal-body" style="height:auto">
+                @Html.Label("العدد", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-5">
+                    @Html.TextBox("Noitem", Noitem, new { @class = "form-control",@type="number",id="NoItem" } )
+                    <span class="text-danger " id="NoitemVailidation" style="display:none;"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="form-actions no-color">
+                    <input type="button" onclick="saveedit(@avilableamount,@Noitem,@ID,@Weight)" id="submit" value="تعديل" class="btn btn-danger" />
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">رجوع</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

@@ -1,0 +1,171 @@
+﻿@model StockDB.Model.AspNetUserWorker
+
+@{
+    ViewBag.Title = "المستخدمين";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        $(document).ready(function () {
+           $("#txtEmployeeSearch").chosen();
+
+
+            //$("#txtEmployeeSearch").autocomplete({
+            //    source: function (request, response) {
+            //        $("#loading").show();
+            //        $.ajax({
+            //            url: "../api/GetTransportCenterWorkers",
+            //            type: "GET",
+            //            dataType: "json",
+            //            data: { searchText: request.term },
+            //            success: function (data) {
+            //                if (data.length == 0) {
+            //                    alert("لا توجد بيانات مطابقه للبحث");
+            //                }
+            //                else
+            //                    response($.map(data, function (item) {
+            //                        return { label: item.Name, value: item.Name, ident: item.Id, Uname: item.NationalId };
+            //                    }));
+            //                $("#loading").hide();
+            //            },
+            //            error: function (XMLHttpRequest, textStatus, errorThrown) {
+            //                alert(errorThrown);
+            //                $("#loading").hide();
+            //            }
+            //        });
+            //    },
+            //    minLength: 3,
+            //    select: function (event, ui) {
+            //        $('#hdnWorkerName').val(ui.item.label);
+            //        $('#hdnWorkerId').val(ui.item.ident);
+            //        $('#txtWorkerUserName').val(ui.item.Uname);
+            //        $('#hdnWorkerUserName').val(ui.item.Uname);
+            //    }
+            //});
+
+        });
+    </script>
+}
+<style>
+.checkboxes ul, .checkboxes li {
+    margin:0;
+    padding:0;
+    list-style:none;
+}
+.checkboxes li {
+    display:inline-block;
+    width:27%;
+}
+</style>
+<div class="">
+    <div class="page-title">
+        <div class="title_right">
+            <h3>
+                @ViewBag.Title<small> - إنشاء جديد</small>
+            </h3>
+        </div>
+
+    </div>
+    <div class="ln_solidTitle"></div>
+    <div class="clearfix"></div>
+
+    <div class="row">
+
+        <div class="col-md-12">
+            <div class="x_content">
+
+                @using (Html.BeginForm())
+            {
+                    @Html.AntiForgeryToken()
+
+                <div class="form-horizontal form-label-left">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    <div class="item form-group">
+                        <img id="loading" style="display: none; position: absolute; top: 7%; left: 57%;z-index: 999"
+                             src="../Content/images/Ajax/loader.gif" />
+                        @Html.Label("WorkerName", "إختر الموظف", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-5">
+                            <div class="input-group">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button">يحتوى على</button>
+                                </span>
+                                @*<input type="text" class="form-control" placeholder="-- بحث بإسم الموظف --" id="txtEmployeeSearch" name="txtEmployeeSearch" style="text-align: right" value="@ViewBag.Workername" />*@
+                                @Html.DropDownList("WorkerId",ViewBag.txtEmployeeSearch as SelectList,"-- بحث بإسم الموظف --",htmlAttributes:new { @class="form-control" , @id="txtEmployeeSearch" ,@style="text-align: right"})
+                            </div>
+                            <input type="Hidden" id="hdnWorkerName" name="hdnWorkerName" value="@ViewBag.Workername" />
+                            @*@Html.HiddenFor(model => model.WorkerId, new { id = "hdnWorkerId" })*@
+                        </div>
+                    </div>
+                    <div class="item form-group">
+                        @Html.Label("WorkerUserName", "إسم الدخول", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-5">
+                            @*<input type="text" class="form-control  col-md-7 col-xs-12" id="txtWorkerUserName" name="txtWorkerUserName" disabled="disabled" />*@
+                            @Html.TextBoxFor(a=>a.AspNetUser.UserName,htmlAttributes:new { @class="form-control col-md-7 col-xs-12"  ,@style="text-align: right"})
+                        </div>
+                        <input type="Hidden" id="hdnWorkerUserName" name="hdnWorkerUserName" value="@ViewBag.WorkerUsername" />
+                    </div>
+
+                    <div class="item form-group">
+                        @Html.Label("البريد الالكترونى", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-5">
+
+                            @Html.EditorFor(model => model.AspNetUser.Email, new { htmlAttributes = new { @class = "form-control col-md-7 col-xs-12" } })
+                            @Html.ValidationMessageFor(model => model.AspNetUser.Email, "", new { @class = "text-danger" })
+
+                        </div>
+                    </div>
+                    @*<div class="item form-group">
+                        @Html.LabelFor(model => model.AspNetUser.PasswordHash, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-5">
+
+                            @Html.EditorFor(model => model.AspNetUser.PasswordHash, new { htmlAttributes = new { @class = "form-control col-md-7 col-xs-12" } })
+                            @Html.ValidationMessageFor(model => model.AspNetUser.PasswordHash, "", new { @class = "text-danger" })
+
+                        </div>
+                    </div>*@
+                    <div class="item form-group">
+                        @Html.Label("رقم التليفون", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-5">
+
+                            @Html.EditorFor(model => model.AspNetUser.PhoneNumber, new { htmlAttributes = new { @class = "form-control col-md-7 col-xs-12" } })
+                            @Html.ValidationMessageFor(model => model.AspNetUser.PhoneNumber, "", new { @class = "text-danger" })
+
+                        </div>
+                    </div>
+                    <div class="item form-group">
+                        @Html.LabelFor(model => model.UserTypeId, "نوع المستخدم", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-5">
+                            @Html.DropDownListFor(x=>x.UserTypeId,ViewBag.UserTypeId as SelectList, "أختر نوع المستخدم", htmlAttributes: new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.UserTypeId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="item form-group">
+                        @Html.Label("مفعل/غير مفعل", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-5">
+
+                            @Html.EditorFor(model => model.IsActivte)
+                            <label>مفعل</label>
+                            @Html.ValidationMessageFor(model => model.IsActivte, "", new { @class = "text-danger" })
+
+                        </div>
+                    </div>
+
+                    <div class="ln_solid"></div>
+
+                    <div class="form-group">
+                        <div class="col-md-6 col-md-offset-3">
+                            <input type="submit" value="حفظ" class="btn btn-default" />
+                            &nbsp;
+                            @Html.ActionLink("إلغاء", "Index", "SecurityUsers", null, new { @class = "btn btn-default" })
+                        </div>
+                    </div>
+                </div>
+                                    }
+
+            </div>
+        </div>
+    </div>
+</div>

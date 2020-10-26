@@ -1,0 +1,464 @@
+﻿@model StockViewModel.SalesVM
+
+@{
+    ViewBag.Title = "اضافه فاتورة مبيعات";
+}
+
+
+@using (Html.BeginForm("creatdse","Sadsfdles"))
+{
+    <div class="text-center  m-5 ">
+        <span class="btn-default text-success font-weight-bold">فاتورة مبيعات</span>
+    </div>
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.Label("اسم العميل", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.DropDownListFor(x => x.cust_ID, ViewBag.customers as SelectList, "حدد العميل", htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.cust_ID, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="col-md-4 text-center">
+                <span class="control-label">رقم هاتف العميل</span>:
+                <span class="control-label" id="CustPhone"></span>
+            </div>
+            <div class="col-md-4 text-center">
+                <span class="control-label">عنوان العميل</span>:
+                <span class="control-label" id="CustAdress"></span>
+            </div>
+
+        </div>
+
+        <div class="form-group">
+            @Html.Label("اسم الشغل", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                <select class="form-control " id="DemondorderDetailid" multiple>
+                    <option disabled value="">حدد اسم الشغل</option>
+                </select>
+            </div>
+            @Html.Label("تاريخ الفاتوره", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-2">
+                @Html.EditorFor(x => x.TransDate, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.TransDate, "", new { @class = "text-danger" })
+            </div>
+
+            @Html.Label("رقم الفاتورة", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-2">
+                @Html.EditorFor(x => x.Serial, null, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Serial, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-2">
+                @Html.EnumDropDownListFor(x => x.invoicestatus, "حاله الفاتورة", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.invoicestatus, "", new { @class = "text-danger" })
+            </div>
+
+
+        </div>
+        
+
+
+        </div>
+        <div id="Table" hidden>
+        </div>
+        <div class="form-group" id="operations" hidden>
+            @Html.Label("1-خصم", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-2">
+                <input name="sale_discount" hidden id="ActualDiscount" />
+                @Html.EditorFor(x => x.sale_discount, new { htmlAttributes = new { @class = "form-control", name = "k", style = "max-width:100%" } })
+
+                @Html.ValidationMessageFor(model => model.sale_discount, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-1">
+                <select class="form-control" name="discount_typ" id="discounttyp">
+                    <option value="0">نسبه(%)</option>
+                    <option value="1">قيمه(جنيه)</option>
+                </select>
+            </div>
+            @Html.Label("2-الضريبه", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-2">
+                <input name="sale_tax" hidden id="Actualsale_tax" />
+                @Html.EditorFor(x => x.sale_tax, new { htmlAttributes = new { @class = "form-control", name = "f", style = "max-width:100%" } })
+                @Html.ValidationMessageFor(model => model.sale_tax, "", new { @class = "text-danger" })
+            </div>
+
+            @Html.Label("3-مصاريف شحن", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-2">
+                @Html.EditorFor(x => x.sale_charge, new { htmlAttributes = new { @class = "form-control", style = "max-width:100%" } })
+                @Html.ValidationMessageFor(model => model.sale_charge, "", new { @class = "text-danger" })
+            </div>
+
+            @Html.Label("اجمالي الفاتورة", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-1">
+
+                @Html.EditorFor(x => x.TotalCost, new { htmlAttributes = new { @class = "form-control", style = "max-width:100%", @readonly = "readonly" } })
+            </div>
+
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="اضافه الفاتوره" class="btn btn-default" />
+            </div>
+        </div>
+        }
+
+        <div>
+            @Html.ActionLink("رجوع", "Index")
+        </div>
+
+        @section Scripts {
+            @Scripts.Render("~/bundles/jqueryval")
+            @Scripts.Render("~/Content/chosenJavaScript")
+            @Styles.Render("~/Content/chosenCSS")
+            <script>
+                var Totalitemprice = 0;
+                function Calctotalinvoice() {
+
+                    var invoicediscount = 0;
+                    var invoictotal = 0;
+                    var sumtotal = 0;
+                    $("input[id^='total_']").each(function (i, value) {
+                        sumtotal += parseFloat($(this).val());
+                    });
+                    if (isNaN(sumtotal) || sumtotal == 0) {
+                        toastr.error('برجاء تحديد كل الاسعار', { timeOut: 100 });
+                        $("#TotalCost").val(0);
+                        return false;
+                    }
+                    else {
+                        invoictotal = sumtotal;
+
+                        var saletax = parseFloat($("#sale_tax").val());
+                        var salediscount = parseFloat($("#sale_discount").val());
+                        var salecharge = parseFloat($("#sale_charge").val());
+                        var discounttype = parseFloat($("#discounttyp").val());
+
+                        if (isNaN(salediscount) || salediscount<0) {
+                            salediscount = 0;
+
+                        }
+                        if (isNaN(saletax) || saletax<0) {
+                            saletax = 0;
+                        }
+                        if (isNaN(salecharge) || salecharge<0) {
+                            salecharge = 0;
+                        }
+
+
+                        if (discounttype == 0) {
+                            debugger
+                            invoictotal = (sumtotal - (salediscount * sumtotal) / 100);
+                            $("#ActualDiscount").val((salediscount * sumtotal) / 100)
+
+                        }
+                        else {
+                            $("#ActualDiscount").val(salediscount)
+
+                            invoictotal = (sumtotal - salediscount);
+                        }
+                        $("#Actualsale_tax").val((invoictotal * saletax) / 100)
+                        invoictotal = invoictotal + ((invoictotal * saletax) / 100 )+ salecharge;
+
+                        $("#TotalCost").val(invoictotal);
+
+                    }
+
+
+                }
+                function collectalldemonorderdetails() {
+                    var customstocktransactionlist = [];
+                    Totalitemprice = 0;
+                    var Discount = parseFloat($("#sale_discount").val());
+                    var Charge = parseFloat($("#sale_charge").val());
+                    var TaxSales = parseFloat($("#sale_tax").val());
+
+
+                    $("table tbody tr").each(function (index, item) {
+                        debugger
+                        var stocktransactionid = $(this).attr('id');
+                        var TotalSelingPrice = $(this).children().find('input[id^="total_"]').val();
+                        var sellingprice = $(this).children().find('input[id^="itemprice_"]').val();
+                        var ActualyQuantity = parseInt($(this).find('td[id^="weight_"]').text());
+                        //var HandCount = parseInt($(this).find('td[id^="HandCount_"]').text());
+                        var HandPricee = $(this).children().find('input[id^="HandPrice_"]').val();
+                        var HandCount = $(this).children().find('input[id^="HandCount_"]').val();
+
+                        if (stocktransactionid != 0) {
+                            customstocktransactionlist.push({
+                                ID: stocktransactionid,
+                                totalprice: TotalSelingPrice,
+                                SelingPrice: sellingprice,
+                                ActualQuantity: ActualyQuantity,
+                                HandPrice: HandPricee,
+                                HandCount : HandCount
+
+
+                            });
+                        }
+                        if (HandPricee != "" && HandPricee != undefined & HandCount != "" && HandCount != undefined) {
+                            debugger
+                            Totalitemprice += parseFloat((sellingprice * ActualyQuantity) + (HandPricee * HandCount));
+                        }
+                        else {
+                            Totalitemprice += parseFloat((sellingprice * ActualyQuantity));
+                        }
+                    });
+                    debugger
+                    var PriceAfterDiscount = Totalitemprice - (isNaN(Discount) ? 0 : Discount)
+                    Totalitemprice = PriceAfterDiscount + (isNaN(Charge) ? 0 : Charge) + (PriceAfterDiscount * (isNaN(TaxSales) ? 0 : TaxSales)) / 100;
+
+                    return customstocktransactionlist;
+                }
+                function checkvalidation() {
+                    debugger
+                    var flag = true
+                    $("table tbody tr td input[id^='itemprice_']").each(function (index, item) {
+                        debugger
+                        var itemprice = parseFloat($(this).val());
+                        if (itemprice < 0 || isNaN(itemprice)) {
+
+                            $(this).css('border', ' 1px solid red');
+                            flag = false
+                            return false;
+                        }
+
+                    });
+                    if (flag == true) {
+                        $("table tbody tr td input[id^='HandPrice_']").each(function (index, item) {
+                            debugger
+                            var HandTypPrice = parseFloat($(this).val());
+                            if (HandTypPrice < 0 || isNaN(HandTypPrice)) {
+
+                            $(this).css('border', ' 1px solid red');
+                            flag = false
+                            return false;
+                        }
+
+                        });
+
+                    }
+                     if (flag == true) {
+                         $("table tbody tr td input[id^='HandCount_']").each(function (index, item) {
+                            debugger
+                            var HandCount = parseFloat($(this).val());
+                             if (HandCount < 0 || isNaN(HandCount)) {
+
+                            $(this).css('border', ' 1px solid red');
+                            flag = false
+                            return false;
+                        }
+
+                        });
+
+                    }
+                    
+                    return flag;
+
+
+                }
+                $(document).ready(function () {
+                    $("#invoicestatus option[value='0']").attr("value", "");
+                    $("form").submit(function (e) {
+                        debugger
+                        e.preventDefault();
+                        var checker = checkvalidation();
+                        if (!$(this).valid()) {
+
+                            return false;
+                        }
+                        else if (DemondorderDetailsid.val() == null) {
+
+                            toastr.error('برجاء اختيار اسماء الشغل ', { timeOut: 1000 });
+
+                        }
+
+                        else if (checkvalidation() == false) {
+                            toastr.error('برجاء تحديد الاسعار لجميع اسماء الشغل', { timeOut: 1000 });
+                            return false;
+                        }
+
+                        else {
+
+                            var list = { 'stocktranslist': collectalldemonorderdetails() }
+                            //if ($("#discounttyp").val() == "0") {
+
+                            //    var fakediscountvalue = $("#sale_discount").val();
+                            //    //$("#sale_discount").val((Totalitemprice * fakediscountvalue) / 100);
+                            //    $("#discounttyp").val("1");
+
+                            //}
+                            var datatosent = $('form').serialize() + "&" + $.param(list);
+                            $.ajax({
+                                dataType: 'json',
+
+                                type: 'POST',
+                                url: '@Url.Action("create", "sales")',
+                                data: datatosent,
+                                success: function (respons) {
+                                    if (respons.success) {
+                                        toastr.success('تم حفظ الفاتورة بنجاح', { timeOut: 1000 });
+
+                                        window.location.href = '@Url.Action("index", "sales")';
+
+                                    }
+                                    else {
+                                        toastr.error('عمليه غير ناجحه', { timeOut: 1000 });
+
+                                    }
+
+                                },
+
+                                fail: function (xhr, msg, errorThrown) {
+                                    toastr.error('عمليه غير ناجحه', { timeOut: 1000 });
+
+                                },
+                                error: function (xhr, statusText, errorThrown) {
+                                    toastr.error('عمليه غير ناجحه', { timeOut: 1000 });
+
+                                }
+
+
+                            });
+
+                        }
+
+                    });
+
+                    //Decleration variables Zone
+                    var CustID = $("#cust_ID");
+                    var DemondorderDetailsid = $("#DemondorderDetailid");
+                    var HiddenTable = $("#Table");
+                    var DemondorderDetailsids = DemondorderDetailsid.val();
+                    var custphonenumber = $("#CustPhone");
+                    var cusaddress = $("#CustAdress");
+                    var saletax = $("#sale_tax");
+                    var customstocktransactionlist = [];
+
+
+                    CustID.change(function () {
+                        HiddenTable.html("");
+                        HiddenTable.attr("hidden", "hidden")
+                        $("#operations").attr('hidden', 'hidden');
+                        var customerid = CustID.val();
+                        if (CustID.val() == "") {
+                            custphonenumber.text("");
+                            cusaddress.text("");
+                            HiddenTable.html("");
+                            $("#operations").attr('hidden', 'hidden');
+                            DemondorderDetailsid.empty();
+                            DemondorderDetailsid.html("<option disabled value=''>حدد العميل</option>")
+                            DemondorderDetailsid.trigger('chosen:updated');
+
+                        }
+                        else {
+                            $.getJSON('@Url.Action("filldemondorderlist", "sales")', { Custid: customerid }, function (response) {
+                                DemondorderDetailsid.empty();
+                                DemondorderDetailsid.append($('<option value="" disabled>"حدد اسم الشغل"</option>'));
+                                $.each(response.Demondorderdetailslist, function (index, item) {
+                                    DemondorderDetailsid.append($('<option></option>').text(item.Text).val(item.ID));
+                                    $("#DemondorderDetailid_chosen .chosen-drop .chosen-results").append('<li class="active-result">' + item.Text + ' </li>');
+                                });
+                                DemondorderDetailsid.trigger('chosen:updated');
+                                custphonenumber.text(response.custphone);
+                                cusaddress.text(response.CustAddress);
+
+                            });
+                        }
+                    });
+
+                    DemondorderDetailsid.change(function () {
+
+                        if (DemondorderDetailsid.val() == null) {
+                            HiddenTable.html("");
+                            HiddenTable.attr("hidden", "hidden")
+                            $("#operations").attr('hidden', 'hidden');
+
+                        }
+                        else {
+
+                            var values = [];
+                            $("#DemondorderDetailid option").each(function () {
+                                if (this.selected) {
+                                    values.push(parseInt($(this).val()));
+                                }
+                            });
+
+                            $.ajax({
+                                type: "GET",
+                                url: '@Url.Action("fetchDemondorderDetailslist", "sales")',
+                                data: { DemondorderDetailsids: JSON.stringify(values) },
+                                dataType: "html",
+                                success: function (respons) {
+
+                                    HiddenTable.html(respons);
+                                    HiddenTable.removeAttr('hidden', 'hidden');
+                                    $("#operations").removeAttr('hidden', 'hidden');
+
+                                },
+
+                                fail: function (xhr, msg, errorThrown) {
+                                    toastr.error('عمليه غير ناجحه', { timeOut: 1000 });
+
+                                },
+                                error: function (xhr, statusText, errorThrown) {
+                                    toastr.error('عمليه غير ناجحه', { timeOut: 1000 });
+
+                                }
+
+
+                            });
+                        }
+                    });
+
+                    $("#AddNewDemondorderdetails").click(function (e) {
+                        e.preventDefault
+                        if ($("#cust_ID").val() == "") {
+                            toastr.error('برجاء تحديد العميل اولا', '', { timeOut: 100 });
+                            $('[data-valmsg-for="cust_ID"]').text('برجاء تحديد العميل اولا')
+                            return false;
+                        }
+                        else {
+
+                        }
+
+                    });
+                    saletax.keyup(function () {
+
+                        Calctotalinvoice();
+                    })
+
+                    $("#sale_discount").keyup(function () {
+
+                        Calctotalinvoice();
+                    })
+                    $("#sale_charge").keyup(function () {
+
+                        Calctotalinvoice();
+                    })
+
+                    $("#discounttyp").change(function () {
+
+                        Calctotalinvoice();
+                    })
+
+
+                    DemondorderDetailsid.chosen({
+                        width: '100%',
+                        no_results_text: 'لا يوجد اسم شغل بهذالاسم',
+                        search_contains: true,
+                        display_selected_options: false,
+                        placeholder_text_multiple:'حدد اسماء الشغل'
+
+                    });
+                            $("input[type='datetime']").datepicker({
+            dateFormat: 'yy/mm/dd',
+            minView: 2,
+        });
+
+                });
+
+
+
+
+            </script>
+        }

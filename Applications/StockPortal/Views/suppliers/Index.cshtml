@@ -1,0 +1,122 @@
+﻿@model IEnumerable<StockDB.Model.supplier>
+
+@{
+    ViewBag.Title = "الموردين";
+}
+    <link href="~/DataTable/datatables.min.css" rel="stylesheet" />
+<h2>الموردين</h2>
+
+<div id="Details" class="d-none">
+
+</div>
+<div id="DeletShaplonDiv" class="d-none">
+
+</div>
+<p>
+    @Html.ActionLink(" اضافة مورد جديد", "Create")
+</p>
+<table id="suppllierdata" class="table">
+
+
+    <thead>
+        <tr>
+            <th>
+                م
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Sup_Serial)
+            </th> <th>
+                @Html.DisplayNameFor(model => model.sup_name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.sup_mobile)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.sup_mail)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.contact_name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.WhatsApp)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var counter = 0;
+        }
+        @foreach (var item in Model)
+        {
+            counter++;
+            <tr>
+                <td>
+                    @counter
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Sup_Serial)
+                </td> <td>
+                    @Html.DisplayFor(modelItem => item.sup_name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.sup_mobile)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.sup_mail)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.contact_name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.WhatsApp)
+                </td>
+                <td>
+                    @Html.ActionLink("تعديل", "Edit", new { id = item.sup_id }) |
+                    @*@Html.ActionLink("Details", "Details", new { id = item.sup_id }) |*@
+                    @Ajax.ActionLink("حذف", "Delete", "suppliers", null, null, null,
+        new { id = item.sup_id }, new AjaxOptions { HttpMethod = "GET", UpdateTargetId = "DeletShaplonDiv", InsertionMode = InsertionMode.Replace, OnSuccess = "$('.modal').modal('toggle')", OnFailure = "alert('Not available Details')" }, new { @class = "Detilslink" })
+                    |  @Html.ActionLink("الحساب", "Index","SupplierAccountReport", new { ID = item.sup_id },null)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@section scripts{
+    <script src="~/DataTables/datatables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var table = $("#suppllierdata").DataTable({
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": [6],
+                }],
+                "language": {
+                                     "sEmptyTable":     "ليست هناك بيانات متاحة في الجدول",
+	"sLoadingRecords": "جارٍ التحميل...",
+	"sProcessing":   "جارٍ التحميل...",
+	"sLengthMenu":   "أظهر _MENU_ مدخلات",
+	"sZeroRecords":  "لم يعثر على أية سجلات",
+	"sInfo":         "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+	"sInfoEmpty":    "يعرض 0 إلى 0 من أصل 0 سجل",
+	"sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+	"sInfoPostFix":  "",
+	"sSearch":       "ابحث:",
+	"sUrl":          "",
+	"oPaginate": {
+		"sFirst":    "الأول",
+		"sPrevious": "السابق",
+		"sNext":     "التالي",
+		"sLast":     "الأخير"
+	},
+	"oAria": {
+		"sSortAscending":  ": تفعيل لترتيب العمود تصاعدياً",
+		"sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+	}
+                },
+            });
+        });
+    </script>
+}

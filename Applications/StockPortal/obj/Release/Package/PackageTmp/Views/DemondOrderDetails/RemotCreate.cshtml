@@ -1,0 +1,216 @@
+﻿@model StockViewModel.DemondOrderDetailsVM
+
+<style type="text/css">
+    .showimgmodalheader {
+        position: absolute;
+    }
+
+    .exitsec {
+        position: relative;
+        top: -2rem;
+        right: 0;
+    }
+</style>
+
+<form id="Form" method="post">
+    <div class="form-horizontal">
+        @Html.HiddenFor(X => X.Cust_id)
+        @Html.HiddenFor(x=>x.demoOrd_id)
+        <div class="form-group">
+            <div class="col-sm-6 col-xs-12" id="ShaplonList">
+                @Html.DropDownListFor(x => x.shap_id, ViewBag.shap_id as SelectList, "--اختر السريل --", htmlAttributes: new { @class = "form-control ShapCSS validateAlways", style = "visibility: hidden;position: absolute;display:inline !important" })
+                @Html.ValidationMessageFor(model => model.shap_id, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-sm-6 col-xs-12">
+                @Html.DropDownListFor(x => x.Item_id, ViewBag.Item_Id as SelectList, "--اختر الصنف --", htmlAttributes: new { @class = "form-control ItemCss validateAlways", style = "visibility: hidden;position: absolute;display:inline !important" })
+                @Html.ValidationMessageFor(model => model.Item_id, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-3 col-xs-3">
+                @Html.DropDownListFor(x => x.HandTypeId, ViewBag.HandTypeId as SelectList, "--اختر نوع اليد--", htmlAttributes: new { @class = "form-control HandTypeCss validateAlways", style = "visibility: hidden;position: absolute;display:inline !important" })
+                @Html.ValidationMessageFor(model => model.HandTypeId, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-sm-3  col-xs-3">
+                @Html.EditorFor(model => model.size, new { htmlAttributes = new { @class = "form-control", placeholder = "مقاس العميل" } })
+                @Html.ValidationMessageFor(model => model.size, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-sm-3 col-xs-3">
+                <input class="form-control text-box single-line" placeholder="الكمية" data-val="true" data-val-number="رقم الكمية." data-val-required="* مطلوب" id="demondQuantity" name="demondQuantity" type="number" value="" />
+                <span class="field-validation-valid text-danger" data-valmsg-for="demondQuantity" data-valmsg-replace="true"></span>
+   
+            </div>
+            <div class="col-sm-3  col-xs-3">
+                @Html.EditorFor(model => model.Hand_Count, new { htmlAttributes = new { @class = "form-control", placeholder = "عدد اليد" } })
+                @Html.ValidationMessageFor(model => model.Hand_Count, "", new { @class = "text-danger" })
+
+            </div>
+
+        </div>
+
+
+        <div class="form-group">
+            <div class="col-sm-3  col-xs-3">
+                @Html.EditorFor(model => model.Hand_Price, new { htmlAttributes = new { @class = "form-control", placeholder = "سعر اليد" } })
+                @Html.ValidationMessageFor(model => model.Hand_Price, "", new { @class = "text-danger" })
+     
+            </div>
+            <div class="col-sm-3  col-xs-3">
+                @Html.EditorFor(model => model.Selling_Price, new { htmlAttributes = new { @class = "form-control", placeholder = "سعر البيع" } })
+                @Html.ValidationMessageFor(model => model.Selling_Price, "", new { @class = "text-danger" })
+
+            </div>
+            <div class="col-sm-3  col-xs-3">
+                @Html.EditorFor(model => model.colorcount, new { htmlAttributes = new { @class = "form-control", placeholder = "عدد الالوان" } })
+                @Html.ValidationMessageFor(model => model.colorcount, "", new { @class = "text-danger" })
+
+            </div>
+            <div class="col-sm-3  col-xs-3">
+                @Html.EditorFor(model => model.colorname, new { htmlAttributes = new { @class = "form-control", placeholder = "الالوان" } })
+                @Html.ValidationMessageFor(model => model.colorname, "", new { @class = "text-danger" })
+         
+            </div>
+
+        </div>
+        <div class="form-group">
+
+            <div class="col-sm-1 col-xs-1 col-md-1" style="text-align:right">
+                <input type="submit" value="اضافه" class="btn btn-default" style="width:100%" />
+            </div>
+        </div>
+    </div>
+</form>
+@{ int Cust_id = (int)ViewBag.Cust_id;
+
+}
+
+
+
+@Scripts.Render("~/bundles/jqueryval")
+
+<script type="text/javascript">
+    function sucessadd(data) {
+        alert(data);
+    }
+
+    function faild(msg) {
+        alert(msg);
+    }
+
+    //Function to determin Input Value
+    function shaploninput() {
+        return $("#ShaplonList #shap_id_chosen .chosen-drop .chosen-search input");
+    }
+    //function to Add shiplon
+    function AddShip(info) {
+
+        var shiplonname = shaploninput().val();
+        var WithDate = info;
+        var cust_id = '@Cust_id';
+        var ul = $("#shap_id_chosen .chosen-drop .chosen-results");
+        if (WithDate == true) {
+            $.ajax({
+                type: "post",
+                                url: "@Url.Action("AddShiplon", "Shaplonas")",
+
+                data: { cust_id:cust_id,Shap_nam:shiplonname,Check:WithDate },
+                success: function (res) {
+
+                    $("#shap_id").append('<option value="' + res.data+ '">' + shiplonname + '</option>');
+                    $("#shap_id").val(res.data);
+
+                    $(".ShapCSS").trigger('chosen:updated');
+                       $(".ShapCSS").trigger('chosen:close');
+
+                    ul.append('<li class="active-result result-selected">' + shiplonname + ' </li>');
+
+                    toastr.success('تمت اضافه السريل بتاريخ اليوم', 'عمليه اضافه ناجحه', { timeOut: 3000 });
+                },
+                fail: function () {
+                    toastr.error('عمليه غير ناجحه', 'حدث خطأ اثناء الضافه برجاء المحاوله مره اخري ', { timeOut: 3000 });
+                }
+            });
+
+        }
+        else {
+                        $.ajax({
+                type: "post",
+                                url: "@Url.Action("AddShiplon", "Shaplonas")",
+
+                data: { cust_id:cust_id,Shap_nam:shiplonname,Check:WithDate },
+                            success: function (res) {
+                    $("#shap_id").append('<option value="' + res.data+ '">' + shiplonname + '</option>');
+                    $("#shap_id").val(res.data);
+
+                    $(".ShapCSS").trigger('chosen:updated');
+                       $(".ShapCSS").trigger('chosen:close');
+
+                    ul.append('<li class="active-result result-selected">' + shiplonname + ' </li>');
+
+                    toastr.success( 'تمت اضافه السريل بدون تاريخ اليوم', 'عمليه اضافه ناجحه',{ timeOut: 3000 });
+
+                            }
+
+
+            });
+
+        }
+    }
+    $(document).ready(function () {
+
+
+        $(".ShapCSS").chosen({
+            width: '100%',
+            no_results_text: '<input class="btn btn-info" type="button" value="اضافه السريل بتاريخ اليوم"  onclick="AddShip(true)" />',
+            search_contains: true
+        });
+        $(".HandTypeCss").chosen({
+            width: '100%',
+            no_results_text: "لايوجد يد بهذا الاسم",
+            search_contains: true
+        });
+                $(".ItemCss").chosen({
+            width: '100%',
+            no_results_text: "لايوجد صنف بهذا الاسم",
+            search_contains: true
+        });
+
+                    $("#HandTypeId").css("display", "");
+        $("#shap_id").css("display", "");
+                    $("#Item_id").css("display", "");
+
+
+
+
+        //Sent Demond OrderDetails By Ajax Call
+        $("#Form").submit(function (e) {
+            if ($("#Form").valid()) {
+                e.preventDefault();
+                $.ajax({
+                    type: "post",
+                    url: '@Url.Action("RemotCreate","DemondOrderDetails")',
+                    data: $("#Form").serialize(),
+                    dataType: "json",
+                    success: function (respons) {
+                        debugger;
+                        SucessFun(respons.value, respons.text);
+
+                    },
+
+                    fail: function (xhr, msg, errorThrown) {
+                        alert("S");
+                        toastr.error('عمليه غير ناجحه', msg, { timeOut: 1000 });
+
+                    },
+                    error: function (xhr, statusText, errorThrown) {
+                        toastr.error('عمليه غير ناجحه', { timeOut: 1000 });
+
+                        // Work out what the error was and display the appropriate message
+                    }
+
+
+                });
+            }
+        })
+    });
+</script>

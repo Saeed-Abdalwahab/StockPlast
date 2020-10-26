@@ -1,0 +1,78 @@
+﻿
+@{
+    ViewBag.Title = "تقرير اوامر الشغل";
+}
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+
+<form>
+    
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label class="col-md-1">من تاريخ</label>
+            <div class="col-md-3">
+
+                <input class="form-control" name="StartDate" type="text" required />
+            </div>
+            <label class="col-md-1">الي تاريخ</label>
+            <div class="col-md-3">
+
+                <input class="form-control" name="EndDate" type="text" required />
+            </div>
+            <div class="col-md-2" style="text-align:left">
+
+                <input type="submit" class="btn btn-primary" value="بحــث" />
+            </div>
+            
+        </div>
+        <div class="form-group">
+            <div class="col-md-10" style="text-align:left">
+
+            </div>
+        </div>
+       
+    </div>
+</form>
+<div class="row" id="ReportTable">
+
+</div>
+@section Scripts{
+    <script src="~/Scripts/toastr.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("input[name='StartDate']").datepicker({
+                dateFormat: 'yy/mm/dd',
+                minView: 2,
+
+            }); $("input[name='EndDate']").datepicker({
+                dateFormat: 'yy/mm/dd',
+                minView: 2,
+            });
+            $("form").submit(function (e) {
+                e.preventDefault();
+                if ($(this).valid()) {
+                        $.ajax({
+                    type: "post",
+                            url: '@Url.Action("DemondOrderReport", "StockReports")',
+                            data: $(this).serialize(),
+                    success: function (response) {
+                        $("#ReportTable").html(response);
+                    },
+                    fail: function () {
+                        toastr.error('', 'حدث خطأ ', { timeOut: 3000 });
+                    },
+                    error: function () {
+                        toastr.error('عمليه غير ناجحه', ' ', { timeOut: 3000 });
+                    }
+                });
+
+                }
+                else {
+                    toastr.error('', 'برجاء تحديد كل الحقول', { timeOut: 3000 });
+
+                    false;
+                }
+            })
+        });
+    </script>
+}

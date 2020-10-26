@@ -1,0 +1,36 @@
+﻿@model IEnumerable<StockViewModel.stockReportVM>
+@{
+    int counter = 0;
+}
+@{
+    if (Model != null)
+    {
+        foreach (var item in Model)
+        {
+
+            if (item.Weight != 0)
+            {
+                counter++;
+                <tr>
+                    <td>@counter</td>
+                    <td>@item.storeName</td>
+                    <td>@item.itemname</td>
+                    @{ 
+                        if (item.supliername != null)
+                        {
+                    <td>@item.supliername</td>
+
+                        }
+                    }
+                    <td>@item.NoItem</td>
+                    <td>@item.Weight</td>
+                    <td>@item.Quantity</td>
+
+                </tr>
+            }
+        }
+    }
+}
+
+
+

@@ -1,0 +1,58 @@
+﻿@*@model StockDB.Model.Store
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Store</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Employe.emp_name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Employe.emp_name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.st_SerialNum)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.st_SerialNum)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.st_name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.st_name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.StoreType_ID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.StoreType_ID)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.st_address)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.st_address)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.st_id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>*@

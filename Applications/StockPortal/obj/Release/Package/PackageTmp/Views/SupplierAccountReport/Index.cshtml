@@ -1,0 +1,223 @@
+﻿@model  StockDB.Model.supplier
+@{
+    ViewBag.Title = "كشف حساب المورد";
+}
+
+@section styles{
+    <style>
+        .CustomerRepost {
+            text-align: center;
+            border: 2px solid #808080;
+            border-radius: 60px;
+        }
+    </style>
+}
+
+<link href="~/DataTables/datatables.min.css" rel="stylesheet" />
+
+<div class="text-center font-weight-bold   mb-md-5 " style="font-size:large;margin-bottom:20px">
+    <h2>كشف حساب المورد(@Model.sup_name)</h2>
+</div>
+
+<div class="form-horizontal">
+    <div class="form-group CustomerRepost" style="text-align:center">
+        <div class="col-md-2" style="color:#151415;font:bold">
+            اجمالي حساب المورد
+        </div>
+        <div class="col-md-2">
+            <label class=" font-weight-bold">مشتريات</label>
+            :
+            <span class="">
+                @ViewBag.SalesTotal
+            </span>
+        </div>
+        <div class="col-md-2">
+
+            <label class=" font-weight-bold">مرتجع مشتريات</label>
+            :
+            <span class="">
+                @ViewBag.SalesReturn
+            </span>
+        </div>
+        <div class="col-md-2">
+
+            <label class="font-weight-bold">دفعات</label>
+            :
+            <span class="">
+                @ViewBag.PAymentTotal
+            </span>
+        </div>
+        <div class="col-md-2">
+
+            <label class="font-weight-bold">رصيد</label>
+            :
+            <span class="">
+                @ViewBag.totalBalance
+            </span>
+        </div>
+    </div>
+
+</div>
+<div class="container" style="margin-top:3%">
+    <table class="table table-striped" id="table">
+        <thead>
+            <tr>
+                <th>
+                    م
+                </th>
+                <th>
+                    @Html.Name("التاريخ")
+                </th>
+                <th>
+                    @Html.Name("المشتريات")
+                </th>
+                <th>
+                    @Html.Name("مرتجع المشتريات")
+                </th>
+                <th>
+                    @Html.Name("الدفعات")
+                </th>
+                <th>
+                    @Html.Name("الرصيد")
+                </th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th colspan="2" style="text-align:center">
+                    الاجمالي
+                </th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+@section scripts
+{
+    <script src="~/DataTables/datatables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            $('#table').DataTable({
+                "ajax": {
+                     'url':'@Url.Action("GetAll","SupplierAccountReport")',  
+                    data: function (d) {
+                        return $.extend({}, d, {
+                            ID: '@Model.sup_id'
+                        });
+                    },
+                    'type': "GET"
+                },
+                "columns": [
+                    {
+                        "data": null, "render": function (data, type, full, meta) {
+                            return meta.row + 1;
+                        }
+                    },
+
+                    {
+                        "data": "Date",
+
+                        "render": function (data) {
+                            var date = new Date(parseInt(data.substr(6)));
+                            var month = date.getMonth() + 1
+                            return date.getFullYear() + "/" + month + "/" + date.getDate();
+                        }
+                    },
+                    { "data": "Purchases" },
+                    { "data": "PurchasesReturn" },
+
+                    { "data": "Payment" },
+                    { "data": "TotalBalance" },
+                ],
+                "language": {
+                    "sEmptyTable": "ليست هناك بيانات متاحة في الجدول",
+                    "sLoadingRecords": "جارٍ التحميل...",
+                    "sProcessing": "جارٍ التحميل...",
+                    "sLengthMenu": "أظهر _MENU_ مدخلات",
+                    "sZeroRecords": "لم يعثر على أية سجلات",
+                    "sInfo": "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+                    "sInfoEmpty": "يعرض 0 إلى 0 من أصل 0 سجل",
+                    "sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+                    "sInfoPostFix": "",
+                    "sSearch": "ابحث:",
+                    "sUrl": "",
+                    "oPaginate": {
+                        "sFirst": "الأول",
+                        "sPrevious": "السابق",
+                        "sNext": "التالي",
+                        "sLast": "الأخير"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": تفعيل لترتيب العمود تصاعدياً",
+                        "sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+                    }
+                },
+                                "footerCallback": function (row, data, start, end, display) {
+                    var api = this.api(), data;
+
+                    // Remove the formatting to get integer data for summation
+                    var intVal = function (i) {
+
+                        return typeof i === 'string' ?
+                            i.replace(/[\$,]/g, '') * 1 :
+                            typeof i === 'number' ?
+                                i : 0;
+                    };
+
+                    //Determin The All no item in Table
+
+
+                    sales = api
+                        .column(2, { page: 'current' })
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+
+                    $(api.column(2).footer()).html(
+                        sales + ' ' + 'جنيه'
+                    );
+
+                    SalesReturn = api
+                        .column(3, { page: 'current' })
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+
+                    $(api.column(3).footer()).html(
+                        SalesReturn + ' ' + 'جنيه'
+                    );
+
+                             Payment = api
+                        .column(4, { page: 'current' })
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+
+                    $(api.column(4).footer()).html(
+                        Payment + ' ' + 'جنيه'
+                    );
+                    Discount = api
+                        .column(5, { page: 'current' })
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+
+
+                },
+
+                info: false,
+
+            })
+
+        });
+    </script>
+}

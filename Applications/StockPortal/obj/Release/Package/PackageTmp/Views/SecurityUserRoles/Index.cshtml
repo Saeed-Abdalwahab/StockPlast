@@ -1,0 +1,191 @@
+﻿
+@model PagedList.IPagedList<StockPortal.ViewModel.SecurityUserData>
+@using PagedList.Mvc;
+
+
+@*@model dynamic*@
+
+@{
+    ViewBag.Title = "أدوار المستخدمين";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@*@section scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $("#txtEmployeeSearch").autocomplete({
+                    source: function(request, response) {
+                        $("#loading").show();
+                        $.ajax({
+                            url: "./api/GetTransportCenterUsers",
+                            type: "GET",
+                            dataType: "json",
+                            data: { searchText: request.term },
+                            success: function (data) {
+                                if (data.length == 0) {
+                                    alert("لا توجد بيانات مطابقه للبحث");
+                                }
+                                else
+                                    response($.map(data, function(item) {
+                                        return { label: item.Name, value: item.Name, ident: item.Id, Uname: item.NationalId, Uid: item.UserId };
+                                    }));
+                                $("#loading").hide();
+                            },
+                            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                                alert(errorThrown);
+                                $("#loading").hide();
+                            }
+                        });
+                    },
+                    minLength: 3,
+                    select: function(event, ui) {
+                        $('#hdnWorkerUserId').val(ui.item.Uid);
+                    }
+                });
+
+                $("#searchlink").click(function() {
+                    var $nationalId = $("#hdnWorkerUserId").val();
+                    $(this).attr("href", $(this).attr("href") + "?id=" + $nationalId);
+                });
+
+            });
+        </script>
+    }*@
+
+
+
+
+@*<div class="">
+        <div class="page-title">
+            <div class="title_right">
+                <h3>
+                    @ViewBag.Title<small> - بحث عن مستخدم</small>
+                </h3>
+            </div>
+
+        </div>
+        <div class="ln_solidTitle"></div>
+        <div class="clearfix"></div>
+
+        <div class="row">
+
+            <div class="col-md-12">
+                <div class="x_content">
+                    <div class="form-horizontal form-label-left">
+                        <div class="item form-group">
+                            <img id="loading" style="display: none; position: absolute; top: 7%; left: 57%;z-index: 999"
+                                 src="./Content/images/Ajax/loader.gif" />
+                            @Html.Label("WorkerName", "إختر الموظف", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-5">
+                                <div class="input-group">
+                                    @Html.DropDownList("WorkerId", ViewBag.txtEmployeeSearch as SelectList, "-- بحث بإسم الموظف --", htmlAttributes: new { @class = "form-control", @id = "txtEmployeeSearch", @style = "text-align: right" })
+                                    <span class="input-group-btn">
+                                        @Html.ActionLink("إستعلام", "GetUserRoles", null, new { id = "searchlink", @class = "btn btn-primary" })
+                                    </span>
+                                </div>
+                                <input type="Hidden" id="hdnWorkerUserId" name="hdnWorkerUserId" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+
+
+
+
+
+    <div class="">
+        <div class="page-title">
+            <div class="title_right">
+                <h3>@ViewBag.Title</h3>
+            </div>
+
+        </div><div class="ln_solidTitle"></div>
+        <div class="clearfix"></div>
+        @using (@Html.BeginForm("Index", "SecurityUserRoles", FormMethod.Get))
+        {
+
+            @Html.Label("UserID", "إختر الموظف", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-5">
+                <div class="input-group">
+                    @Html.DropDownList("UserID", ViewBag.txtEmployeeSearch as SelectList, "-- بحث بإسم الموظف --", htmlAttributes: new {@Name="UserID"  , @class = "form-control", @id = "txtEmployeeSearch", @style = "text-align: right" })
+                    <span class="input-group-btn">
+                        @*@Html.ActionLink("إستعلام", "Index", null, new { @class = "btn btn-primary" })*@
+                        <input type="submit" value="إستعلام" class="btn btn-primary" />
+                    </span>
+                </div>
+                @*<input type="Hidden" id="hdnWorkerUserId" name="hdnWorkerUserId" />*@
+            </div>
+
+        }
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="x_panel">
+                    <div class="x_title">
+
+                        <ul class="nav navbar-right panel_toolbox">
+                            <li>
+                                <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                            </li>
+
+                        </ul>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <table class="table table-striped">
+
+                            <tr>
+
+                                <th>إسم الموظف</th>
+                                <th>إسم الدخول</th>
+                                <th>البريد الإلكترونى</th>
+                                <th>نوع الحساب</th>
+                                <th>حالة الحساب</th>
+
+                                <th></th>
+                            </tr>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.WorkerName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.UserName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Email)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.UserTypeName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.AccountStatus)
+                                    </td>
+                                    <td>
+
+                                        @Html.ActionLink("الأدوار", "GetUserRoles", "SecurityUserRoles", new { id = item.UserId }, null)
+
+                                    </td>
+                                </tr>
+
+                            }
+                        </table>
+                        <br />
+                        صفحة @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) من @Model.PageCount
+                        @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+

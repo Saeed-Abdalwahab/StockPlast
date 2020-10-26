@@ -1,0 +1,94 @@
+﻿@model StockDB.Model.Store
+
+@{
+    ViewBag.Title = "تعديل مخزن";
+}
+@Scripts.Render("~/Content/chosenJavaScript")
+@Styles.Render("~/Content/chosenCSS")
+
+
+
+<h2>تعديل بيانات المخزن</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        @*<h4>Store</h4>*@
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.st_id)
+        @Html.HiddenFor(model => model.StoreType_ID)
+        
+        <div class="form-group">
+            @Html.LabelFor(model => model.st_SerialNum, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.st_SerialNum, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.st_SerialNum, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.st_name, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.st_name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.st_name, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.StoreType_ID, htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-3">
+            <input type="text" id="storeTypeName" class="form-control" readonly />
+            @Html.ValidationMessageFor(model => model.StoreType_ID, "", new { @class = "text-danger" })
+        </div>
+
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.emp_id, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.DropDownListFor(x=>x.emp_id, ViewBag.emp_id as SelectList,"اختر امين المخزن", htmlAttributes: new { @class = "form-control EmpStoerCSS" })
+                @Html.ValidationMessageFor(model => model.emp_id, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.st_address, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.st_address, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.st_address, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="حفظ" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("رجوع", "Create")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+<script>
+
+    $(document).ready(function () {
+        @* function to search for store  *@
+        $(".StoerCSS").chosen({
+            width: '100%',
+            no_results_text: "لايوجد مخزن بهذا الاسم",
+            search_contains: true
+        });
+        @* function to search for store employee  *@
+        $(".EmpStoerCSS").chosen({
+            width: '100%',
+            no_results_text: "لايوجد امين مخزن بهذا الاسم",
+            search_contains: true
+        });
+        $("#emp_id").val("@Model.emp_id");
+        $("#emp_id").trigger("chosen:updated");
+        @*$("#StoreType_ID").val("@Model.StoreType_ID");
+        $("#StoreType_ID").trigger("chosen:updated");*@
+        $("#storeTypeName").val("@(Convert.ToString(ViewBag.StorTypeName))")
+    });
+</script>
+}
+

@@ -1,0 +1,73 @@
+﻿@model StockDB.Model.DemondOrder
+
+@{
+    ViewBag.Title = "حذف";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>DemondOrder</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Customer.cust_name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Customer.cust_name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Safe.safe_name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Safe.safe_name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.demoOrd_serailNum)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.demoOrd_serailNum)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.demoOrd_date)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.demoOrd_date)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.demoOrd_notes)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.demoOrd_notes)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.demoOrd_deposit)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.demoOrd_deposit)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>

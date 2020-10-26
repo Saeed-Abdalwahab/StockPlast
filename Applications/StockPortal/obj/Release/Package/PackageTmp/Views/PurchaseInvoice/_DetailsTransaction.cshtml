@@ -1,0 +1,258 @@
+﻿@model StockViewModel.PurchaseInvoiceViewModel
+@{
+    var id = Model != null ? Model.ID : -1;
+
+    var InvoiceSerial = Model.InvoiceSerial != null ? Model.InvoiceSerial : "";
+    var InvoiceDate = Model.InvoiceDate != null ?Model.InvoiceDate.ToString() : "";
+    var SupName = Model.SupName != null ? Model.SupName : "";
+    var Notes = Model.Notes != null ? Model.Notes : "";
+    var InvoiceStatus = Model.InvoiceStatus != null ? Model.InvoiceStatus.ToString() : "";
+    var InvoiceStatusName = Model.InvoiceStatusName != null ? Model.InvoiceStatusName: "";
+}
+
+<style>
+    .form-horizontal .control-label
+    {
+        padding-top:0px;
+    }
+
+    table tbody tr{
+        height:37px;
+    }
+
+</style>
+
+
+
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal col col-md-12">
+
+    @Html.Hidden("ID", id)
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="form-group">
+        <div class="col-md-1">
+            @Html.LabelFor(model => model.InvoiceSerial, htmlAttributes: new { @class = "control-label" })
+        </div>
+        <div class="col-md-5 ">
+            @Html.EditorFor(x => x.InvoiceSerial, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+        </div>
+        <div class="col-md-1">
+            @Html.LabelFor(model => model.InvoiceDate, htmlAttributes: new { @class = "control-label" })
+        </div>
+        <div class="col-md-5 ">
+            @Html.EditorFor(x => x.InvoiceDate, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-1">
+            @Html.LabelFor(model => model.SupName, htmlAttributes: new { @class = "control-label" })
+        </div>
+        <div class="col-md-5 ">
+            @Html.EditorFor(x => x.SupName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+        </div>
+        <div class="col-md-1">
+            @Html.LabelFor(model => model.Notes, htmlAttributes: new { @class = "control-label" })
+        </div>
+        <div class="col-md-5 ">
+            @Html.EditorFor(x => x.Notes, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-1">
+            @Html.LabelFor(model => model.InvoiceStatus, htmlAttributes: new { @class = "control-label" })
+        </div>
+        <div class="col-md-5 ">
+            @Html.EditorFor(x => x.InvoiceStatusName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+        </div>
+        <div class="col-md-1">
+            @Html.LabelFor(model => model.StoreName, htmlAttributes: new { @class = "control-label" })
+        </div>
+        <div class="col-md-5 ">
+            @Html.EditorFor(x => x.StoreName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+
+        </div>
+    </div>
+    
+    
+    
+    
+</div>
+    <div class="col col-md-12">
+        <fieldset style="border:1px solid #DDD">
+            <div style="margin-top:0px;padding-bottom:20px;">
+                <table id="item" class="display table-responsive-md" style="width:100%;">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th colspan="2">الاجمالي</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </fieldset>
+        <div class="form-group col-md-6" style="margin-top:70px">
+            <button type="button" class="btn btn-default" onclick="canceldetails()">الغاء</button>
+        </div>
+    </div>
+
+<script>
+            $('#item').DataTable({
+            "ajax": {
+                'url': "@Url.Action("ItemDetails", "PurchaseInvoiceItem")",
+                data: function (d) {
+                    return $.extend({}, d, {
+
+                        id: '@(id)',
+                    });
+                },
+                'type': "GET"
+            },
+            "columns": [
+
+                {
+                    "data": null,
+                    "title": "م",
+                    "render": function (data, type, full, meta) {
+                        return meta.row + 1;
+                    }
+                },
+                {
+                    "data": "ItemName",
+                    "title": "الصنف",
+                },
+               
+                {
+                    "data": "NoItem",
+                    "title": "العدد / بكرة",
+                    
+                },
+
+                {
+                    "data": "Quantity",
+                    "title": "الوزن / كيلو",
+                },       
+                 {
+                    "data": "totalitemweight",
+                    "title": "اجمالي وزن",
+                },  
+                      {
+                    "data": "itemprice",
+                    "title": "سعر الكيلو",
+                },  
+                        {
+                    "data": "totalitemcost",
+                            "title": "اجمالي تكلفه",
+                             "render": function(data, type, full, meta) {
+                                return data.toFixed(2);
+                            }
+                },  
+
+                ],
+                        "footerCallback": function ( row, data, start, end, display ) {
+            var api = this.api(), data;
+
+            // Remove the formatting to get integer data for summation
+                var intVal = function (i) {
+
+                return typeof i === 'string' ?
+                    i.replace(/[\$,]/g, '')*1 :
+                    typeof i === 'number' ?
+                        i : 0;
+            };
+
+                //Determin The All no item in Table
+            totalfornoitem = api
+                .column( 2 )
+                .data()
+                .reduce( function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0 );
+
+             totalforprice = api
+                .column( 6 )
+                .data()
+                 .reduce(function (a, b) {
+                     return (intVal(a) + intVal(b)).toFixed(2);
+                }, 0 );
+
+                    totalforweight = api
+                .column( 4)
+                .data()
+                        .reduce(function (a, b) {
+                            return (intVal(a) + intVal(b)).toFixed(2);
+                }, 0 );
+            //pageTotal = api
+            //    .column( 4, { page: 'current'} )
+            //    .data()
+            //    .reduce( function (a, b) {
+            //        return intVal(a) + intVal(b);
+            //    }, 0 );
+
+
+
+                //Updet Footer
+                $(api.column(2).footer()).html(
+              totalfornoitem +' '+'بكره'
+                );
+
+
+
+
+                 $(api.column(4).footer()).html(
+       totalforweight +' '+  'كيلو'
+                );
+
+
+
+                 $(api.column(6).footer()).html(
+              totalforprice+' '+ 'جنيه'
+            );
+        },
+
+            
+            "language": {
+                                 "sEmptyTable":     "ليست هناك بيانات متاحة في الجدول",
+	"sLoadingRecords": "جارٍ التحميل...",
+	"sProcessing":   "جارٍ التحميل...",
+	"sLengthMenu":   "أظهر _MENU_ مدخلات",
+	"sZeroRecords":  "لم يعثر على أية سجلات",
+	"sInfo":         "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+	"sInfoEmpty":    "يعرض 0 إلى 0 من أصل 0 سجل",
+	"sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+	"sInfoPostFix":  "",
+	"sSearch":       "ابحث:",
+	"sUrl":          "",
+	"oPaginate": {
+		"sFirst":    "الأول",
+		"sPrevious": "السابق",
+		"sNext":     "التالي",
+		"sLast":     "الأخير"
+	},
+	"oAria": {
+		"sSortAscending":  ": تفعيل لترتيب العمود تصاعدياً",
+		"sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+	}
+            },
+            info: false,
+        })
+</script>

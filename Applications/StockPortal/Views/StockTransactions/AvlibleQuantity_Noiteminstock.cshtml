@@ -1,0 +1,95 @@
+﻿@model IEnumerable<StockPortal.ViewModel.Avaliableiteminstore>
+
+@{
+    ViewBag.Title = "index";
+    Layout = null;
+}
+<style>
+    body {
+        background-color: white;
+    }
+</style>
+
+
+
+
+        <table class="table" id="tablee">
+            <thead>
+                <tr>
+                    <th>م</th>
+                    <th>
+                        @Html.DisplayName("الصنف")
+                    </th>
+                    <th>
+                        @Html.DisplayName("المورد")
+
+                    </th>
+                    <th>
+                        @Html.DisplayName("المخزن")
+
+                    </th>
+                    <th>
+                        @Html.DisplayName("فئه الوزن")
+
+                    </th>
+                    <th>
+                        @Html.DisplayName("العدد المتاح")
+
+                    </th>
+                    <th>
+                        @Html.DisplayName("الكميه المطلوبه")
+
+                    </th>
+                    <th>
+                        @Html.DisplayName("")
+
+                    </th>
+
+                    <th></th>
+
+                </tr>
+            </thead>
+
+            <tbody>
+                @{
+
+                    var counter = 0;
+                }
+
+                @foreach (var item in Model)
+                {
+                    counter++;
+                    @using (Html.BeginForm("", "", FormMethod.Post, new { id = counter }))
+                    {
+                        <tr>
+                            <td>
+                                @counter
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelitem => item.itemname)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelitem => item.supliername)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelitem => item.storename)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelitem => item.weight)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelitem => item.Noitem)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelitem => item.weight)
+                            </td>
+                            <td>
+                                <input type="submit" value="حفظ" class="btn btn-default" />
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    }
+

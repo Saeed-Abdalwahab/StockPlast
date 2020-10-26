@@ -1,0 +1,22 @@
+﻿@model dynamic
+@using ReportViewerForMvc;
+
+
+@{
+    ViewBag.Title = "ارصدة العملاء";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+
+
+<style>
+    iframe {
+        width: 100% !important;
+    }
+</style>
+
+
+@Html.ReportViewer(ViewBag.ReportViewer as Microsoft.Reporting.WebForms.ReportViewer, new { @class = "col-md-12" })
+

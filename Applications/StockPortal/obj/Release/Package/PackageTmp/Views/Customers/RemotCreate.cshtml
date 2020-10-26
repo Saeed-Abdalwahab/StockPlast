@@ -1,0 +1,115 @@
+﻿
+@model StockDB.Model.Customer
+
+<form id="AddCutForm">
+    <div class="form-horizontal">
+        <div class="form-group">
+            @Html.LabelFor(model => model.custSerial, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.TextBoxFor(model => model.custSerial, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.custSerial, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.cust_name, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.TextBoxFor(model => model.cust_name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.cust_name, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.cust_mobile, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.TextBoxFor(model => model.cust_mobile, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.cust_mobile, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.cust_mail, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.TextBoxFor(model => model.cust_mail, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.cust_mail, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.contact_name, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.TextBoxFor(model => model.contact_name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.contact_name, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.cust_address, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.TextBoxFor(model => model.cust_address, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.cust_address, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.WhatsApp, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.TextBoxFor(model => model.WhatsApp, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.WhatsApp, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-12" style="text-align:left">
+                <input type="submit" value="اضافة" class="btn btn-default" />
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">اغلاق</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+@Scripts.Render("~/Scripts/jquery.validate.js")
+@Scripts.Render("~/Scripts/jquery.validate.unobtrusive.js")
+<script src="~/Scripts/toastr.min.js"></script>
+
+<script>
+                    function SucessFun(value, text) {
+            //close Model
+            debugger;
+            $('#CustModal').modal("hide");
+            $("#cust_id").append('<option value="' + value + '">' + text + '</option>');
+            $("#cust_id").val(value);
+
+                    $("#cust_id").trigger('chosen:updated');
+                       $("#cust_id ").trigger('chosen:close');
+            $("#cust_id_chosen .chosen-drop .chosen-results").append('<li class="active-result result-selected">' + text + ' </li>');
+                        $("#cust_id").val(value);
+
+                        toastr.success('تمت اضافه  العميل بنجاح', 'عمليه اضافه ناجحه', { timeOut: 1000 });
+        }
+
+    $("#AddCutForm").submit(function (e) {
+        if ($("#AddCutForm").valid()) {
+            e.preventDefault();
+            $.ajax({
+                type: "post",
+                url: '@Url.Action("RemotCreate","Customers")',
+                data: $("#AddCutForm").serialize(),
+                dataType: "json",
+                success: function (respons) {
+                    if (respons.success) {
+                        SucessFun(respons.value, respons.text);
+                    }
+                    else {
+                        toastr.error('عمليه غير ناجحه', respons.responseText, { timeOut: 1000 });
+
+                    }
+
+                },
+
+                fail: function (xhr, msg, errorThrown) {
+                    toastr.error('عمليه غير ناجحه', ErrorMsg, { timeOut: 1000 });
+
+                },
+                error: function (xhr, statusText, errorThrown) {
+                    toastr.error('عمليه غير ناجحه', { timeOut: 1000 });
+
+                }
+
+
+            });
+        }
+        else {
+            return false;
+        }
+    });
+
+</script>

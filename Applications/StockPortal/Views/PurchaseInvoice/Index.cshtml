@@ -1,0 +1,262 @@
+﻿<link href="~/DataTables/datatables.min.css" rel="stylesheet" />
+
+<style>
+
+
+
+    table tbody tr td {
+        text-align: center;
+    }
+
+    table thead tr th {
+        text-align: center;
+    }
+
+    .btn {
+        cursor: pointer;
+    }
+
+    .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter, .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_processing, .dataTables_wrapper .dataTables_paginate {
+        margin-right: 20px;
+    }
+
+    .dataTables_wrapper .dataTables_length {
+        padding-right: 140px;
+    }
+
+    .dataTables_wrapper .dataTables_paginate {
+        margin-right: 39%;
+    }
+
+    table.dataTable tbody th, table.dataTable tbody td {
+        padding: 0px;
+    }
+
+    @@media (min-width: 992px) {
+        .modal-lg {
+            width: 100%;
+        }
+    }
+
+    @@media (min-width: 768px) {
+        .modal-dialog {
+            width: 90%;
+        }
+    }
+
+    @@media (min-width: 768px) {
+        .modal-sm {
+            width: 300px;
+        }
+    }
+
+    .modal-body {
+        height: auto;
+    }
+</style>
+
+@Styles.Render("~/Content/jquery")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/Content/vendors/bootstrap/dist/js/bootstrap.min.js")
+@Scripts.Render("~/Content/chosenJavaScript")
+@Styles.Render("~/Content/chosenCSS")
+
+<div id="con">
+    <div style="margin-top:30px" id="con">
+        @Html.Partial("_PurchaseInvoice")
+    </div>
+</div>
+
+
+<!-- -------------- Start  Popup Of  delete PurchaseInvoice----------------------- -->
+<div class="modal fade" id="deletePurchaseInvoice" role="dialog">
+    <div class="modal-dialog modal-sm">
+
+        <div class="modal-content" style="padding:20px">
+            <div class="modal-body" id="dataDEL">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" onclick="canceldelete()">No</button>
+                <button type="button" class="btn btn-default" onclick="ConfirmDeletePurchaseInvoice()">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- -------------- End  Popup Of  delete PurchaseInvoice----------------------- -->
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script src="~/DataTables/datatables.min.js"></script>
+    <script>
+
+        /*---------------add New PurchaseInvoice--------*/
+        function addPurchaseInvoice(id) {
+            $.ajax({
+
+                url: "@Url.Action("addPurchaseInvoice", "PurchaseInvoice")",
+                data: { ID: id },
+                type: "Get",
+
+                success: function (rs) {
+                    if (rs.alert.type) {
+                        $("#con").html(rs.data)
+                    }
+                    else {
+                        showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+                    }
+
+
+                },
+            })
+        }
+
+        function detailsPurchaseInvoice(id) {
+            $.ajax({
+
+                url: "@Url.Action("DetailsInvoiceID", "PurchaseInvoice")",
+                data: { ID: id },
+                type: "Get",
+
+                success: function (rs) {
+                    if (rs.alert.type) {
+                        $("#con").html(rs.data)
+                    }
+                    else {
+                        showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+                    }
+
+
+                },
+            })
+        }
+
+        function deletePurchaseInvoice(id) {
+            $.ajax({
+
+                url: "@Url.Action("DeletePurchaseInvoice", "PurchaseInvoice")",
+                data: { ID: id },
+                type: "POST",
+
+                success: function (rs) {
+                    if (rs.alert.type) {
+                        $("#dataDEL").html(rs.data)
+                        $("#deletePurchaseInvoice").css("z-index", "9999999")
+                        $("#deletePurchaseInvoice").modal("show")
+
+                    }
+                    else {
+                        showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+                    }
+                },
+            })
+        }
+        function ConfirmDeletePurchaseInvoice() {
+            var id = $("#ID").val();
+            debugger
+            $.ajax({
+                url: "@Url.Action("ConfirmDeletePurchaseInvoice", "PurchaseInvoice")" + "?ID="+id,
+                type: "POST",
+
+                success: function (rs) {
+                    if (rs.alert.type) {
+                        debugger
+                        $("#PurchaseInvoice").DataTable().ajax.reload()
+                        $("#deletePurchaseInvoice").modal("hide")
+                        showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+
+                    }
+                    else {
+                        showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+                    }
+                }
+            })
+        }
+
+        //Function to New Edite row
+        function AddEditrow(itemid) {
+            var Htm = '<tr> <td></td>'
+            Htm += ' <td>' + ItemId + itemerror + '</td >';
+            Htm += '<td>' + NoItem + NoItemerror + '</td>';
+            Htm += '<td>' + Quantity + Quantityerror + '</td>';
+            Htm += '<td>' + itemprice + itempriceerror + '</td>';
+            Htm += "<td><button type='button' class='btn btn-default'  onclick='savetransaction()'><span class='glyphicon glyphicon-ok'></span></button><button class='btn btn-default'  onclick='cancel()'><span class='glyphicon glyphicon-remove'></span></button></td></tr>";
+
+
+            $("#item tbody").prepend(Htm)
+
+            $("#additemaaa").prop("disabled", true)
+
+            $("#item tbody tr td .EDi").prop("disabled", true)
+            if (itemid != 0) {
+                $("#Item_id").val(itemid);
+                $("#NoItem").focus();
+            }
+            //enable Chosen In Dropdownlist plugin
+            $("#Item_id").chosen({
+                width: '100%',
+                no_results_text: '<input class="btn btn-info" type="button" value="اضافه صنف جديد"  onclick="OpenItemModal()" />',
+                search_contains: true
+            });
+        }
+
+        function savePurchaseInvoice(rs) {
+            debugger
+            if (rs.alert.type) {
+                $("#con").html(rs.data)
+                showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+
+            }
+            else {
+                $("#con").html(rs.data)
+                showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+            }
+        }
+
+        function cancelsave() {
+            debugger
+            $.ajax({
+                url: "@Url.Action("CancelSave", "PurchaseInvoice")",
+                type: "GET",
+                success: function (rs) {
+                    if (rs.alert.type) {
+                        $("#con").html(rs.data)
+                        showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+                    }
+
+                }
+            })
+        }
+
+        function canceldetails() {
+            debugger
+            $.ajax({
+                url: "@Url.Action("CancelSave", "PurchaseInvoice")",
+                type: "GET",
+                success: function (rs) {
+                    if (rs.alert.type) {
+                        $("#con").html(rs.data)
+                    }
+
+                }
+            })
+        }
+
+        function canceldelete() {
+            $("#deletePurchaseInvoice").modal("hide")
+        }
+
+
+
+        /*---------------add New PurchaseInvoice--------*/
+
+
+        $(document).ready(function () {
+
+        })
+    </script>
+}
+

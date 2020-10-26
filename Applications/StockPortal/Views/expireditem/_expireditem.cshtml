@@ -1,0 +1,243 @@
+﻿
+<button class="btn btn-primary" id="Add" onclick="AddExpired( 0,$('#demondorderdetailsid').val())">اضافه تالف</button>
+<table id="returnPurchaseInvoice" class="display table-responsive-md" style="width:100%;">
+    <thead>
+        <tr>
+            <th></th>
+            <th>م</th>
+            <th>رقم الاذن</th>
+            <th>تاريخ الاذن</th>
+            <th>كميه التالف</th>
+            <th>نوع التالف</th>
+            <th>المخزن</th>
+            <th>الملاحظات</th>
+            <th style="width:auto">العمليه</th>
+        </tr>
+    </thead>
+</table>
+@using (Ajax.BeginForm("ConfirmDeleteToStockReturn", "expireditem", new AjaxOptions() { OnSuccess = "deletePurchaseInvoicereturn" }))
+{
+
+    <div class="modal fade" id="deletePurchaseInvoice" role="dialog">
+        <div class="modal-dialog modal-sm">
+
+            <div class="modal-content" style="padding:20px">
+                <div class="modal-body" id="dataDEL">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                    <button type="submit" class="btn btn-default">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+
+
+    $(document).ready(function () {
+        debugger
+        var t = $('#returnPurchaseInvoice').DataTable({
+            "ajax": {
+                'url': "@Url.Action("GetexpiredItemByItemID", "expireditem")"+"?FromStockID="+$("#FromStockID").val()+"&Demondorderdetailsid="+$("#demondorderdetailsid").val(),
+
+           
+                'type': "GET",
+
+            },
+            "columns": [
+                { data: "InvoiceStatus", visible: false, orderable: false },
+
+                {
+                    "data": null, "render": function (data, type, full, meta) {
+                        return meta.row + 1;
+                    }
+                },
+                { "data": "InvoiceSerial" },
+                {
+                    "data": "InvoiceDate",
+                    "render": function (data) {
+                        var date = new Date(parseInt(data.substr(6)));
+                        var month = date.getMonth() + 1
+                        return date.getFullYear() + "/" + month + "/" + date.getDate();
+                    }
+                },
+                { "data": "Weight" },
+                { "data": "expiredtypname" },
+                { "data": "StoreName" },
+                { "data": "Notes" },
+                {
+                    "data": "ID", "width": "auto", "render": function (data, type, row, meta) {
+                        if (row.InvoiceStatus == 1) {
+                            var Editstr = "<botton class='btn btn-primary ED' style='margin-top:3px' onclick='AddExpired(" + data + "," + row.demondordid + ")'><span class='glyphicon glyphicon-pencil'></span></botton>";
+                            var Deletestr = "<botton class='btn btn-danger ED' style='margin-top:3px' onclick='Deleteexpired(" + data + "," + row.demondordid + ")'><span class='glyphicon glyphicon-trash'></span></botton>";
+                            return Editstr + Deletestr;
+                        }
+                        else {
+                            return "<botton class='btn btn-primary ED' style='margin-top:3px' onclick='AddExpired(" + data + "," + row.demondordid + ")'><span class='glyphicon glyphicon-eye-open'></span></botton>";
+                        }
+                    }
+                },
+      
+                
+
+
+            ],
+            "columnDefs": [{
+                "orderable": false,
+                "targets": [3, 4, 5, 6],
+
+            }],
+            "order": [[1, 'asc']],
+
+            "language": {
+                                "sEmptyTable":     "ليست هناك بيانات متاحة في الجدول",
+	"sLoadingRecords": "جارٍ التحميل...",
+	"sProcessing":   "جارٍ التحميل...",
+	"sLengthMenu":   "أظهر _MENU_ مدخلات",
+	"sZeroRecords":  "لم يعثر على أية سجلات",
+	"sInfo":         "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+	"sInfoEmpty":    "يعرض 0 إلى 0 من أصل 0 سجل",
+	"sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+	"sInfoPostFix":  "",
+	"sSearch":       "ابحث:",
+	"sUrl":          "",
+	"oPaginate": {
+		"sFirst":    "الأول",
+		"sPrevious": "السابق",
+		"sNext":     "التالي",
+		"sLast":     "الأخير"
+	},
+	"oAria": {
+		"sSortAscending":  ": تفعيل لترتيب العمود تصاعدياً",
+		"sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+	}
+            },
+            info: false,
+
+        })
+
+
+
+        t.on('order.dt search.dt', function () {
+            if ($("#DEMONDORDERDETAILSSTATUS").val() == 2 || $("#DEMONDORDERDETAILSSTATUS").val() == "2") {
+                debugger
+                $("#Add").css("display", "none")
+            }
+            else {
+                   if (!t.data().any()) {
+                $("#Add").css("display", "block")
+            }
+            else {
+                $("#Add").css("display", "none")
+            }
+            }
+         
+            t.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                cell.innerHTML = i + 1;
+            });
+        }).draw();
+
+
+    })
+
+    function AddExpired(ID,demondorderdetails=0) {
+        $.ajax({
+
+            url: "@Url.Action("AddTOstockexpired", "expireditem")",
+                        data: { ToStockid: ID, FromStockid: FromStockID ,demondorderdetailsid:demondorderdetailsid},
+
+            type: "Get",
+
+            success: function (rs) {
+                if (rs.alert.type) {
+                    $("#expiredcontent").html(rs.data)
+                }
+                else {
+                    showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+                }
+
+
+            },
+        })
+    }
+
+    function cancelsavereturn() {
+
+        $.ajax({
+            url: "@Url.Action("CancelSave", "expireditem")",
+            type: "GET",
+            success: function (rs) {
+                if (rs.alert.type) {
+                    $("#expiredcontent").html(rs.data)
+                    showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+                }
+
+            }
+        })
+    }
+
+    function Deleteexpired(id, demonorderdetails) {
+        
+        $.ajax({
+
+            url: "@Url.Action("DeleteToStockReturn", "expireditem")",
+            data: { ID: id,demondorderdetailsid: demonorderdetails},
+            type: "POST",
+
+            success: function (rs) {
+                if (rs.alert.type) {
+                    $("#dataDEL").html(rs.data)
+                    $("#deletePurchaseInvoice").css("z-index", "9999999")
+                    $("#deletePurchaseInvoice").modal("show")
+
+                }
+                else {
+                    showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+                }
+            },
+        })
+    }
+
+    function deletePurchaseInvoicereturn(rs) {
+        if (rs.alert.type) {
+            
+            $("#Add").css("display", "none")
+            $("#Add").css("display", "block")
+            $("#returnPurchaseInvoice").DataTable().ajax.reload()
+            $("#deletePurchaseInvoice").modal("hide")
+            showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+            AddTOstockreturn();
+
+
+        }
+        else {
+            showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+            AddTOstockreturn();
+
+        }
+
+    }
+
+    function detailsTOstockreturn(id) {
+        $.ajax({
+
+            url: "@Url.Action("DetailsInvoiceID", "expireditem")",
+            data: { ID: id },
+            type: "Get",
+
+            success: function (rs) {
+                if (rs.alert.type) {
+                    $("#expiredcontent").html(rs.data)
+                }
+                else {
+                    showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+                }
+
+
+            },
+        })
+    }
+</script>

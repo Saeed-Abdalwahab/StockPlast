@@ -1,0 +1,261 @@
+﻿@model IEnumerable<StockViewModel.SalesVM>
+
+@{
+    ViewBag.Title = "فواتير المبيعات";
+    int counter = 0;
+}
+<link href="~/DataTables/datatables.min.css" rel="stylesheet" />
+<style>
+
+    table tbody {
+        line-height: 4;
+    }
+
+        table tbody tr td {
+            text-align: center;
+        }
+
+    table thead tr th {
+        text-align: center;
+    }
+
+
+
+    .btn {
+        cursor: pointer;
+    }
+
+    .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter, .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_processing, .dataTables_wrapper .dataTables_paginate {
+        margin-right: 20px;
+    }
+
+    .dataTables_wrapper .dataTables_length {
+        padding-right: 140px;
+    }
+
+    .dataTables_wrapper .dataTables_paginate {
+        margin-right: 39%;
+        margin-top: 2%;
+    }
+
+    table.dataTable tbody th, table.dataTable tbody td {
+        padding: 0px;
+    }
+
+    @@media (min-width: 992px) {
+        .modal-lg {
+            width: 100%;
+        }
+    }
+
+    @@media (min-width: 768px) {
+        .modal-dialog {
+            width: 90%;
+        }
+    }
+
+    @@media (min-width: 768px) {
+        .modal-sm {
+            width: 300px;
+        }
+    }
+
+    .modal-body {
+        height: auto;
+    }
+
+    .nav-tabs > li {
+        cursor: pointer;
+    }
+</style>
+<h2>فواتير المبيعات</h2>
+
+<p>
+    @Html.ActionLink("اضافه فاتورة مبيعات", "Create")
+</p>
+<div id="DeletShaplonDiv" class="d-none">
+
+</div>
+<table class="display table-responsive-md" style="width:100%;">
+    <thead>
+        <tr>
+            <th>م</th>
+            <th>
+                @Html.DisplayName("اسم العميل")
+            </th>
+            <th>
+                @Html.DisplayName("هاتف العميل")
+            </th>
+            <th>
+                @Html.DisplayName("1-الخصم")
+            </th>
+            <th>
+                @Html.DisplayName("2-ضريبه")
+            </th>
+            <th>
+                @Html.DisplayName("3-مصاريف الشحن")
+            </th>
+            <th>
+                @Html.DisplayName("تكلفه االفاتورة")
+            </th>
+            <th></th>
+
+        </tr>
+    </thead>
+    <tbody>
+
+
+        @foreach (var item in Model)
+        {
+            counter++;
+            <tr>
+                <td>@counter</td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.cust_name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Cust_phone)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.sale_discount)
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.sale_tax)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.sale_charge)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.invoicecost)
+                </td>
+
+                @{
+                    if (item.invoicestatus == PlasticStatic.Enums.InvoiceSSAlestatus.Finish)
+                    {
+                                <td>
+                                    @Html.ActionLink("ارتجاع", "Index", "SalesReturn", new { fromstockid = item.Sale_ID }, null)|
+                                    @Html.ActionLink("عرض", "Details", "Sales", new { fromstockid = item.Sale_ID }, null)|
+                                    @Html.ActionLink("طباعه", "SalesReport", "StockReports", new { FromStockID = item.Sale_ID }, null)
+
+                                </td>
+
+                       
+
+                    }
+                    else
+                    {
+            <td>
+                @Html.ActionLink("تعديل", "Edit", "Sales", new { fromstockid = item.Sale_ID }, null)|
+                <a href="#" onclick="DeleteConfirmation(@item.Sale_ID)">حذف </a>
+
+            </td>
+                
+                    }
+                }
+            </tr>
+        }
+    </tbody>
+
+
+</table>
+@section scripts{
+    <script src="~/DataTables/datatables.min.js"></script>
+    <script src="~/Scripts/bootbox.min.js"></script>
+    <script>
+
+          function DeleteConfirmation(id) {
+        bootbox.confirm({
+            title:"عمليه حذف",
+            message: "هل انت متاكد من حذف امر البيع",
+            size: 'small',
+            buttons: {
+                cancel: {
+                    label: '<i class="fa fa-times"></i> رجوع',
+                    className: 'btn-info'
+                },
+                confirm: {
+                    label: '<i class="fa fa-check"></i> حذف',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function (result) {
+                if (result == true) {
+                    deleteRecord(id)
+                }
+                else {
+                    return true;
+                }
+            }
+        });
+
+    }
+         function deleteRecord(id) {
+            $.ajax({
+                type: "post",
+                url: '@Url.Action("Delete","Sales")' + '?ID=' + id,
+
+                success: function (respons) {
+                    debugger
+                    if (respons.status) {
+                        toastr.success("", "تم الحذف بنجاح", { timeOut: 3000 });
+                        window.location.reload();
+
+                    }
+                    else {
+                        toastr.error("لا يمكن الحذف حاليا", "", { timeOut: 1000 });
+
+
+                    }
+
+                },
+
+                fail: function (xhr, msg, errorThrown) {
+                    toastr.error("لا يمكن الحذف حاليا", "", { timeOut: 1000 });
+
+                },
+                error: function (xhr, statusText, errorThrown) {
+                    toastr.error("لا يمكن الحذف ",'' ,{ timeOut: 1000 });
+                }
+            });
+
+        }
+        $(document).ready(function () {
+            $('table').DataTable({
+
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": [0, 1, 2, 3],
+
+                }],
+                "language": {
+
+                    "sEmptyTable": "ليست هناك بيانات متاحة في الجدول",
+                    "sLoadingRecords": "جارٍ التحميل...",
+                    "sProcessing": "جارٍ التحميل...",
+                    "sLengthMenu": "أظهر _MENU_ مدخلات",
+                    "sZeroRecords": "لم يعثر على أية سجلات",
+                    "sInfo": "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+                    "sInfoEmpty": "يعرض 0 إلى 0 من أصل 0 سجل",
+                    "sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+                    "sInfoPostFix": "",
+                    "sSearch": "ابحث:",
+                    "sUrl": "",
+                    "oPaginate": {
+                        "sFirst": "الأول",
+                        "sPrevious": "السابق",
+                        "sNext": "التالي",
+                        "sLast": "الأخير"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": تفعيل لترتيب العمود تصاعدياً",
+                        "sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+                    }
+
+                },
+                info: false,
+            });
+        })
+
+    </script>
+}

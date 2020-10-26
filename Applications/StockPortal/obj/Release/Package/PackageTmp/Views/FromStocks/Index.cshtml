@@ -1,0 +1,280 @@
+﻿
+@model IEnumerable<StockDB.Model.FromStock>
+
+@{
+    ViewBag.Title = "اوامر التشغيل";
+    string Demondorderdetailsname = "";
+    string FromStockStatus = "";
+}
+<link href="~/DataTables/datatables.min.css" rel="stylesheet" />
+<style>
+
+    table tbody {
+        line-height: 4;
+        color: black;
+    }
+
+        table tbody tr td {
+            text-align: center;
+        }
+
+    table thead tr th {
+        text-align: center;
+    }
+
+
+
+    .btn {
+        cursor: pointer;
+    }
+
+    .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter, .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_processing, .dataTables_wrapper .dataTables_paginate {
+        margin-right: 20px;
+    }
+
+    .dataTables_wrapper .dataTables_length {
+        padding-right: 140px;
+    }
+
+    .dataTables_wrapper .dataTables_paginate {
+        margin-right: 39%;
+        margin-top: 2%;
+    }
+
+    table.dataTable tbody th, table.dataTable tbody td {
+        padding: 0px;
+    }
+
+    @@media (min-width: 992px) {
+        .modal-lg {
+            width: 100%;
+        }
+    }
+
+    @@media (min-width: 768px) {
+        .modal-dialog {
+            width: 90%;
+        }
+    }
+
+    @@media (min-width: 768px) {
+        .modal-sm {
+            width: 300px;
+        }
+    }
+
+    .modal-body {
+        height: auto;
+    }
+
+    .nav-tabs > li {
+        cursor: pointer;
+    }
+</style>
+
+
+<div class="form-horizontal">
+    <div class="col-md-8 col-sm-6">
+        <h2>اوامر التشغيل</h2>
+        <p>
+            @Html.ActionLink("اضافه امر تشغيل", "Create")
+        </p>
+    </div>
+    <label class="col-md-1 col-sm-1">الحاله</label>
+    <div class="col-md-3 col-sm-5">
+        <select id="statusList" class="form-control">
+            <option value="">الكل</option>
+            <option selected value="لم تنتهي">لم تنتهي</option>
+            <option  value="انتهي">انتهي</option>
+        </select>
+    </div>
+</div>
+
+
+
+<div id="Details" class="d-none">
+
+</div>
+<div id="DeletShaplonDiv" class="d-none">
+
+</div>
+
+<table class="display table-responsive-md" style="width:100%;">
+    <thead>
+        <tr>
+            <th>م</th>
+            <th>
+                @Html.DisplayName("العميل")
+            </th>
+            <th>
+                @Html.DisplayName("اسماء الشغل")
+            </th>
+            <th>
+                @Html.DisplayName("فني الطباعه")
+            </th>
+            <th>
+                @Html.DisplayName("فني التقطيع")
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.Serial)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TransDate)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.notes)
+            </th>
+            <th>
+                @Html.DisplayName("الحاله")
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    @{
+        var counter = 0;
+    }
+
+<tbody>
+    @foreach (var item in Model)
+    {
+
+        counter++;
+    <tr>
+        <td>
+            @counter
+        </td>
+        <td>
+            @item.DemondOrder.Customer.cust_name
+        </td>
+        <td>
+            @{
+                //Handl Exception for Any Demond order have no Demoondorderdetails
+                try
+                {
+                    var test = item.StockTransactions.Count; 
+                    
+                    Demondorderdetailsname = item.StockTransactions.Where(x=>x.FromStock.FromStockTypeID==(int)PlasticStatic.Enums.FromStockTypeId.OperationOrder&&x.DemondOrderDetialsId!=null).GroupBy(x => new { x.DemondOrderDetail }).Select(x => x.Key.DemondOrderDetail.Shaplona.shap_name).Aggregate((a, b) => a + " - " + b);
+                    //Demondorderdetailsname = item.DemondOrder.DemondOrderDetails.Where(x=>x.status==(int)PlasticStatic.Enums.demondorderdetailstatus.Underconstruction).Select(x => x.Shaplona.shap_name).Aggregate((a, b) => a + " - " + b);
+                }
+                catch
+                {
+                    Demondorderdetailsname = "لم يتم البدء في اي اسم شغل";
+                }
+            }
+            @Demondorderdetailsname
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Employe.emp_name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Employe1.emp_name)
+        </td>
+
+        <td>
+            @Html.DisplayFor(modelItem => item.Serial)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TransDate)
+        </td>
+
+        <td>
+            @{ 
+                string Notes = item.notes ;
+                
+                var DemondOrderNotes = item.DemondOrder.DemondOrderDetails.Select(x => x.Notes).Aggregate((x, y) => x + " - " + y);
+                Notes = Notes + "-" + DemondOrderNotes;
+
+
+
+            }
+            @Notes
+        </td>
+        <td>
+           @{ 
+               try
+               {
+                   if (item.StockTransactions.Count() > 0)
+                   {
+                  
+                       var check = item.StockTransactions.Where(x=>x.DemondOrderDetialsId!=null).Any(x => x.DemondOrderDetail.status == (int)PlasticStatic.Enums.demondorderdetailstatus.Underconstruction || x.DemondOrderDetail.status == (int)PlasticStatic.Enums.demondorderdetailstatus.NotStarted || x.DemondOrderDetail.status == (int)PlasticStatic.Enums.demondorderdetailstatus.Duringdelivery);
+                       FromStockStatus = check == true ? "لم تنتهي" : "انتهي";
+                   }
+                   else
+                   {
+                       FromStockStatus = "لم تنتهي";
+                   }
+               }
+               catch
+               {
+                   FromStockStatus = "لم تنتهي";
+               }
+           }
+            @FromStockStatus
+        </td>
+        <td>
+            @Html.ActionLink("تسليم", "FromStockDetails", "FinishDemondOrder", new { id = item.ID }, null) |
+
+            @Html.ActionLink("عرض", "Edit", new { id = item.ID }) |
+            @Ajax.ActionLink("حذف", "Delete", "FromStocks", null, null, null,
+          new { id = item.ID }, new AjaxOptions { HttpMethod = "GET", UpdateTargetId = "DeletShaplonDiv", InsertionMode = InsertionMode.Replace, OnSuccess = "$('#DeletShaplonDiv .modal').modal('toggle')", OnFailure = "alert('لا يمكن حذف هذا الامر حاليا')" }, new { @class = "Detilslink" })
+
+        </td>
+    </tr>
+
+
+    }
+
+</tbody>
+</table>
+@section scripts{
+    <script src="~/DataTables/datatables.min.js"></script>
+
+    <script>
+
+
+        $(document).ready(function () {
+            var MyTable=    $('table').DataTable({
+
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": [0, 1, 2, 3],
+
+                }],
+                "language": {
+
+                    "sEmptyTable": "ليست هناك بيانات متاحة في الجدول",
+                    "sLoadingRecords": "جارٍ التحميل...",
+                    "sProcessing": "جارٍ التحميل...",
+                    "sLengthMenu": "أظهر _MENU_ مدخلات",
+                    "sZeroRecords": "لم يعثر على أية سجلات",
+                    "sInfo": "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+                    "sInfoEmpty": "يعرض 0 إلى 0 من أصل 0 سجل",
+                    "sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+                    "sInfoPostFix": "",
+                    "sSearch": "ابحث:",
+                    "sUrl": "",
+                    "oPaginate": {
+                        "sFirst": "الأول",
+                        "sPrevious": "السابق",
+                        "sNext": "التالي",
+                        "sLast": "الأخير"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": تفعيل لترتيب العمود تصاعدياً",
+                        "sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+                    }
+
+                },
+                info: false,
+        });
+            MyTable.column(8).search($("#statusList").val()).draw();
+
+            $("#statusList").change(function () {
+                MyTable.column(8).search($("#statusList").val()).draw();
+            });
+        });
+
+    </script>
+}

@@ -1,0 +1,122 @@
+﻿
+@model StockPortal.ViewModel.FromStockVM
+@{
+    ViewBag.Title = "اضافه امر تشغيل";
+}
+@if (ViewBag.msg != null) {
+    <div class="center text-center text-danger danger w-auto">@ViewBag.msg</div>
+}
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+    <h2>إضافة أمر تشغيل</h2>
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.LabelFor(model => model.CutTechEmp_ID, htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-3">
+            @Html.DropDownListFor(x => x.CutTechEmp_ID, ViewBag.CutEmps as SelectList, "--اختر فني التقطيع --", htmlAttributes: new { @class = "form-control CutCss validateAlways", style = "visibility: hidden;position: absolute;display:inline !important" })
+            @Html.ValidationMessageFor(model => model.CutTechEmp_ID, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.PrintTechEmp_ID, htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-3">
+            @Html.DropDownListFor(x => x.PrintTechEmp_ID, ViewBag.PrintEmps as SelectList, "--اختر فني الطباعه --", htmlAttributes: new { @class = "form-control PrintCss validateAlways", style = "visibility: hidden;position: absolute;display:inline !important" })
+            @Html.ValidationMessageFor(model => model.PrintTechEmp_ID, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.DemondOrderDetailsIdString, htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-3">
+            @Html.DropDownListFor(m => m.arrayOfselectedString, new SelectList(Model.selectedDemondOrderDetailsId, "Value", "Text"), null, new { @class = "form-control DemonedDetCSS", @multiple = "true" })
+            @Html.ValidationMessageFor(model => model.arrayOfselectedString, "", new { @class = "text-danger" })
+        </div>
+
+    </div>
+    <div class="form-group">
+
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Serial, htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-3">
+            @Html.EditorFor(model => model.Serial, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Serial, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.TransDate, htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-3">
+            @Html.EditorFor(model => model.TransDate, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.TransDate, "", new { @class = "text-danger" })
+        </div>
+        @Html.LabelFor(model => model.notes, htmlAttributes: new { @class = "control-label col-md-1" })
+        <div class="col-md-3">
+            @Html.EditorFor(model => model.notes, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.notes, "", new { @class = "text-danger" })
+        </div>
+
+    </div>
+
+
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="اضافه" class="btn btn-default" />
+        </div>
+    </div>
+</div>
+    }
+
+    <div>
+        @Html.ActionLink("رجوع", "Index")
+    </div>
+
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+        @Scripts.Render("~/Scripts/jquery.validate.js")
+        @Scripts.Render("~/Scripts/jquery.validate.unobtrusive.js")
+        @Scripts.Render("~/Scripts/jquery.unobtrusive-ajax.min.js")
+        @Scripts.Render("~/Content/vendors/bootstrap/dist/js/bootstrap.min.js")
+        @Scripts.Render("~/Content/chosenJavaScript")
+        @Styles.Render("~/Content/chosenCSS")
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $("form").data("validator").settings.ignore = "";
+
+
+
+                $(function () {
+                    $('#TransDate').datepicker({
+                        dateFormat: 'yy/mm/dd',
+                        minView: 2,
+                    });
+                });
+
+
+                $(".CutCss").chosen({
+                    width: '100%',
+                    no_results_text: "لايوجدفني تقطيع بهذا الاسم",
+                    search_contains: true
+                });
+                $("#CutTechEmp_ID").css("display", "");
+                $(".PrintCss").chosen({
+                    width: '100%',
+                    no_results_text: "لايوجدفني طباعه بهذا الاسم",
+                    search_contains: true
+                });
+                $("#PrintTechEmp_ID").css("display", "");
+
+                $(".DemonedDetCSS").chosen({
+                    rtl: true,
+                    width: '100%',
+                    no_results_text: "لايوجد اسم امر الشغل بهذا الاسم",
+                    search_contains: true,
+                    placeholder_text_multiple: 'حدد اوامر الشغل',
+                    display_disabled_options: false,
+                    display_selected_options: false
+                });
+
+
+               
+            });
+        </script>
+
+
+    }

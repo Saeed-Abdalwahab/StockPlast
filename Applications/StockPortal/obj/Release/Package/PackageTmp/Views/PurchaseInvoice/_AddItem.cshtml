@@ -1,0 +1,188 @@
+﻿@model StockViewModel.PurchaseInvoiceViewModel
+@Styles.Render("~/Content/jquery")
+@Scripts.Render("~/bundles/jquery")
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group col-md-6">
+
+            @Html.LabelFor(model => model.ItemName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <input type="text" class="form-control" placeholder="--  بحث بإسم المورد --" id="SupSearchText" style="text-align:right" />
+                @Html.ValidationMessageFor(model => model.ItemID, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.ItemID, new { id = "ItemName" })
+            </div>
+        </div>
+
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.StoreName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("StoreId", null, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.StoreName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.NoItem, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.NoItem, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.NoItem, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.ItemUnitTypeId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("ItemUnitTypeId", null,new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.ItemUnitTypeId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Quantity,null, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.QuantityUnitTypeId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("QuantityUnitTypeId", null, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.QuantityUnitTypeId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-12 center-block">
+                <input type="button" value="اضافه" onclick="AddItemesuccess()" class="btn btn-default pull-left" />
+            </div>
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+    $(document).ready(function () {
+
+    });
+
+    function AddPurchaseInvoicesuccess() {
+        var ItemID = $("#ItemID").val();
+        var StoreId = $("#StoreId").val();
+        var NoItem = $("#NoItem").val();
+        var ItemUnitTypeId = $("#ItemUnitTypeId").val();
+        var Quantity = $("#Quantity").val();
+        var QuantityUnitTypeId = $("#QuantityUnitTypeId").val();
+
+        if (ItemID == "" || StoreId == "" || NoItem == ""||ItemUnitTypeId == ""||Quantity == ""||QuantityUnitTypeId == "") {
+            if (ItemID == "") {
+                $("span[data-valmsg-for='ItemID']").text("ادخل الصنف  ")
+                $("span[data-valmsg-for='ItemID']").show();
+            }
+            if (StoreId == "") {
+                $("span[data-valmsg-for='StoreId']").text("ادخل المخزن ")
+                $("span[data-valmsg-for='StoreId']").show();
+
+            }
+            if (NoItem == "") {
+                $("span[data-valmsg-for='NoItem']").text("ادخل العدد ")
+                $("span[data-valmsg-for='NoItem']").show();
+
+            }
+            if (ItemUnitTypeId == "") {
+                $("span[data-valmsg-for='ItemUnitTypeId']").text("ادخل نوع الوحده ")
+                $("span[data-valmsg-for='ItemUnitTypeId']").show();
+
+            }
+             if (Quantity == "") {
+                $("span[data-valmsg-for='Quantity']").text("ادخل الكمية ")
+                $("span[data-valmsg-for='Quantity']").show();
+
+            }
+             if (QuantityUnitTypeId == "") {
+                $("span[data-valmsg-for='QuantityUnitTypeId']").text("ادخل نوع الكمية ")
+                $("span[data-valmsg-for='QuantityUnitTypeId']").show();
+
+            }
+
+            return false;
+        }
+
+        $.ajax({
+            type: "post",
+            url: "@Url.Action("AddItem", "PurchaseInvoice")",
+            data: JSON.stringify({ ItemID: ItemID, StoreId: StoreId, NoItem: NoItem, ItemUnitTypeId: ItemUnitTypeId,Quantity:Quantity,QuantityUnitTypeId:QuantityUnitTypeId }),
+            contentType: "application/json",
+            success: function (rs) {
+                if (rs != "error") {
+                    $("#data").html(rs)
+                    $("#exampleemp").DataTable().ajax.reload();
+                    $("#AddItem").modal("hide")
+                }
+                else if (rs == "error") {
+                    alert("")
+                }
+                else {
+                    $("#data").html(rs)
+                    $("#AddPurchaseInvoice").modal("show")
+                }
+            }
+        })
+
+    }
+
+    function AddItemesuccess() {
+         
+        var InvoiceSerial = $("#InvoiceSerial").val();
+        var InvoiceDate = $("#InvoiceDate").val();
+        var SupId = $("#SupId").val();
+        var Notes = $("#Notes").val();
+
+        if (InvoiceSerial == "" || InvoiceDate == "" || Notes == "") {
+            if (InvoiceSerial == "") {
+                $("span[data-valmsg-for='InvoiceSerial']").text("ادخل رقم الفاتورة ")
+                $("span[data-valmsg-for='InvoiceSerial']").show();
+            }
+            if (InvoiceDate == "") {
+                $("span[data-valmsg-for='InvoiceDate']").text("ادخل تاريخ الفاتورة")
+                $("span[data-valmsg-for='InvoiceDate']").show();
+
+            }
+            //if (SupId == "") {
+            //    $("span[data-valmsg-for='SupId']").text("ادخل تاريخ الفاتورة")
+            //    $("span[data-valmsg-for='SupId']").show();
+
+            //}
+            if (Notes == "") {
+                $("span[data-valmsg-for='Notes']").text("ادخل الملاحظات ")
+                $("span[data-valmsg-for='Notes']").show();
+
+            }
+
+            return false;
+        }
+
+        $.ajax({
+            type: "post",
+            url: "@Url.Action("AddPurchaseInvoice", "PurchaseInvoice")",
+            data: JSON.stringify({ InvoiceSerial: InvoiceSerial, InvoiceDate: InvoiceDate, SupId: 1, Notes: Notes }),
+            contentType: "application/json",
+            success: function (rs) {
+                if (rs != "error") {
+                    $("#data").html(rs)
+                    $("#AddPurchaseInvoice").modal("show")
+                }
+                else if (rs == "error") {
+                    alert("")
+                }
+                else {
+                    $("#data").html(rs)
+                    $("#AddPurchaseInvoice").modal("show")
+                }
+            }
+        })
+        }
+
+
+    
+
+    </script>

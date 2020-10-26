@@ -1,0 +1,9 @@
+﻿@model StockViewModel.PurchaseInvoiceViewModel
+@{
+    Guid guid = ViewBag.Key;
+}
+
+<div>
+    @Html.Hidden("TransactionID", Model.ID)
+        <h2> هل انت متاكد من حذف هذا الصنف</h2>
+ </div>

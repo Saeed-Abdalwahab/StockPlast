@@ -1,0 +1,332 @@
+﻿@model StockViewModel.IncomeDetailsVM
+
+@{
+    ViewBag.Title = "انوع الايرادات";
+
+}
+<link href="~/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+@Styles.Render("~/Content/chosenCSS")
+
+<div class="text-center">
+    <h3 class="center info">الايرادات اليوميه</h3>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="MyModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="#" class="close" data-dismiss="modal">&times;</a>
+                <h4 id="Modaltitle"></h4>
+            </div>
+            <div class="modal-body" style="height:226px">
+                <form id="form">
+                    <div class="form-horizontal">
+                        @Html.HiddenFor(m => m.incDet_id, new { @id = "IncomeID" })
+                        <div class="form-group">
+                            @Html.Label("نوع الايراد", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DropDownListFor(x => x.inc_id, ViewBag.income as SelectList, "--اختر النوع--", new { @class = "form-control validateAlways", style = "visibility: hidden;position: absolute;display:inline !important" })
+                                @Html.ValidationMessageFor(model => model.inc_id, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.Label("قيمه الايراد", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.EditorFor(model => model.incDet_value, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.incDet_value, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.Label("البيان", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.EditorFor(model => model.incDet_notes, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.incDet_notes, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.Label("الخزينه", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.DropDownListFor(x => x.safe_id, ViewBag.safes as SelectList, "--اختر الخزينه--", new { @class = "form-control" })
+
+                                @Html.ValidationMessageFor(model => model.safe_id, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.Label("التاريخ", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.EditorFor(model => model.incDet_Date, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.incDet_Date, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.Label("الحاله", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4">
+                                @Html.EnumDropDownListFor(x => x.IncDet_status, "--اختر حاله --", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.IncDet_status, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="text-left">
+                    <a href="#" class="btn btn-primary" id="SaveincomeDet">اضافه</a>
+                    <a href="#" class="btn btn-primary" data-dismiss="modal">الغاء</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="DeletDiv" class="d-none">
+
+</div>
+
+<div class="container" style="margin-top:3%">
+    <button class="btn btn-primary" onclick="AddIncome(0)">أضافه ايراد </button>
+    <table class="table table-striped" id="IncomeTable">
+        <thead>
+            <tr>
+                <th>م</th>
+                <th>نوع الايراد</th>
+                <th>قيمه الايراد</th>
+                <th>الخزينه</th>
+                <th>التاريخ</th>
+                <th>حاله الايراد</th>
+                <th>ملاحظات</th>
+                <th>تعديل</th>
+                <th>حذف</th>
+            </tr>
+        </thead>
+
+
+    </table>
+</div>
+
+
+@section scripts
+{
+    <script src="~/DataTables/datatables.min.js"></script>
+    <script src="~/Scripts/toastr.min.js"></script>
+    @Scripts.Render("~/Content/chosenJavaScript")
+
+<script>
+           $(function () {
+                $('#incDet_Date').datepicker({
+                    dateFormat: 'yy/mm/dd',
+                    minView: 2,
+                });
+
+
+           });
+
+        function GetDate(data) {
+            var date = new Date(parseInt(data.substr(6)));
+            var month = date.getMonth() + 1
+            return date.getFullYear() + "/" + month + "/" + date.getDate();
+        }
+        function Save() {
+            if ($("#form").valid()) {
+
+                var data = $("#form").serialize();
+                $.ajax({
+                    type: "post",
+                    url: "@Url.Action("Save", "IncomeDetails")",
+                    data: data,
+                    success: function (response) {
+                        if (response.msg == "true") {
+                            if (data.split("&")[0] == "inc_id=0") {
+                                $("#IncomeTable").DataTable().ajax.reload();
+                                toastr.success('تم حفظ الايراد اليومى', 'اشعار', { timeOut: 4000 });
+                                AddIncome(0);
+                            }
+                            else {
+                                $("#IncomeTable").DataTable().ajax.reload();
+                                toastr.success('تم تعديل الايراد اليومى', 'اشعار', { timeOut: 4000 });
+                                $("#MyModal").modal("hide")
+                            }
+                        }
+                        else if (response.msg == "false") {
+
+                            toastr.error('عمليه غير ناجحه', 'حدث خطأ اثناء الاضافه برجاء المحاوله مره اخري ', { timeOut: 3000 });
+                        }
+                        else {
+                            toastr.error('عمليه غير ناجحه', response.msg , { timeOut: 3000 });
+
+                        }
+                    },
+                    fail: function () {
+                        toastr.error('الاسم مسجل بالفعل', 'حدث خطأ اثناء الاضافه برجاء المحاوله مره اخري ', { timeOut: 3000 });
+                    },
+                    error: function () {
+                        toastr.error('عمليه غير ناجحه', 'حدث خطأ اثناء الاضافه برجاء المحاوله مره اخري ', { timeOut: 3000 });
+                    }
+                });
+            }
+            else {
+                toastr.error('برجاءادخال الحقول', 'اشعار', { timeOut: 3000 });
+            }
+        }
+        function AddIncome(inc_id) {
+            $("#form")[0].reset();
+            $('#inc_id').trigger('chosen:updated');
+
+            $("#Modaltitle").html("إضافه ايراد يومي");
+            var today = new Date();
+            var date = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate();
+            $("#incDet_Date").val(date);
+            $("#IncomeID").val("0");
+            $("#MyModal").modal()
+        }
+
+        function EditIncome(incDet_id) {
+            var url = "@Url.Action("getIncome", "IncomeDetails")" +"?incDet_id=" + incDet_id;
+            $("#Modaltitle").html("تعديل الايراد يومي");
+            $.ajax({
+                type: "GET",
+                url: url,
+                success: function (rs) {
+                    $("#MyModal").modal();
+                    $("#IncomeID").val(rs.data.incDet_id);
+                    $("#incDet_notes").val(rs.data.incDet_notes);
+                    $("#incDet_Date").val(GetDate(rs.data.incDet_Date));
+                    $("#safe_id").val(rs.data.safe_id);
+                    $("#inc_id").val(rs.data.inc_id);
+                    $('#inc_id').trigger('chosen:updated');
+
+                    $("#incDet_value").val(rs.data.incDet_value);
+                    $("#incDet_status").val(rs.data.IncDet_status);
+
+                }
+            })
+        }
+
+        function DeleteIncome(incDet_id) {
+            var url = "@Url.Action("GetDelete", "IncomeDetails")"+"?incDet_id=" + incDet_id;
+            $("#MyModal").modal("hide");
+            $.ajax({
+                type: "GET",
+                dataType: 'html',
+                url: url,
+                success: function (data) {
+                    $('#DeletDiv').html(data);
+                    $('#DeletDiv .modal').modal('show');
+                },
+                fail: function (xhr, textStatus, errorThrown) {
+                    toastr.error('لا يمكن حذف النوع', 'حدث خطأ اثناء الاضافه برجاء المحاوله مره اخري ', { timeOut: 3000 });
+                }
+            })
+        }
+
+        function DeletSuccess(data)
+        {
+            $('#DeletDiv .modal').modal('hide');
+            $("#IncomeTable").DataTable().ajax.reload();
+            toastr.success('تم حذف  الايراد', 'اشعار', { timeOut: 4000 });
+        }
+
+
+
+        $("#SaveincomeDet").click(function () {
+            Save();
+        });
+
+
+        //datatable function
+    $(document).ready(function () {
+                 $("#inc_id").chosen({
+                    width: '100%',
+                    no_results_text: 'لا يوجد مورد بهذا الاسم',
+                    search_contains: true,
+                });
+                $("#inc_id").css("display", "");
+
+            var t = $('#IncomeTable').DataTable({
+                "ajax": {
+                    'url': "@Url.Action("GetincomeDet", "IncomeDetails")",
+                    'type': "GET"
+                },
+                "columns": [
+                    {
+                        "data": null, "render": function (data, type, full, meta) {
+                            return meta.row + 1;
+                        }
+                    },
+
+                    { "data": "incomename" },
+                    { "data": "incDet_value" },
+                    { "data": "safe_name" },
+                    {
+                        "data": "incDet_Date",
+                        "render": function (data) {
+                            var date = new Date(parseInt(data.substr(6)));
+                            var month = date.getMonth() + 1
+                            return date.getFullYear() + "/" + month + "/" + date.getDate();
+                        }
+                    },
+                    { "data": "IncDet_statusName" },
+                    { "data": "incDet_notes" },
+                    {
+
+                        "data": "incDet_id", "render": function (data, type, row, meta) {
+                            debugger
+                            if (row.IncDet_status == @((int)PlasticStatic.Enums.IncomeDetailsStatus.Finish)) {
+                                return ""
+                            }
+                            else {
+                            return "<botton class='btn btn-primary ED' style='margin-top:3px' onclick='EditIncome(" + data + ")'><span class='glyphicon glyphicon-pencil'></span></botton>"
+                        }
+                        }
+                    },
+                    {
+                        "data": "incDet_id", "render": function (data, type, row, meta) {
+
+                            if (row.IncDet_status == @((int)PlasticStatic.Enums.IncomeDetailsStatus.Finish)) {
+                                return ""
+                            }
+                            else {
+                            return "<botton class='btn btn-danger ED' style='margin-top:3px' onclick='DeleteIncome(" + data + ")'><span class='glyphicon glyphicon-trash'></span></botton>"
+                        }
+                        }
+                    },
+
+
+                ],
+                                     "language": {
+
+	"sEmptyTable":     "ليست هناك بيانات متاحة في الجدول",
+	"sLoadingRecords": "جارٍ التحميل...",
+	"sProcessing":   "جارٍ التحميل...",
+	"sLengthMenu":   "أظهر _MENU_ مدخلات",
+	"sZeroRecords":  "لم يعثر على أية سجلات",
+	"sInfo":         "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+	"sInfoEmpty":    "يعرض 0 إلى 0 من أصل 0 سجل",
+	"sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+	"sInfoPostFix":  "",
+	"sSearch":       "ابحث:",
+	"sUrl":          "",
+	"oPaginate": {
+		"sFirst":    "الأول",
+		"sPrevious": "السابق",
+		"sNext":     "التالي",
+		"sLast":     "الأخير"
+	},
+	"oAria": {
+		"sSortAscending":  ": تفعيل لترتيب العمود تصاعدياً",
+		"sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+	}
+
+                        },
+
+                info: false,
+
+            })
+            t.on('order.dt search.dt', function () {
+                t.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+
+        });
+
+</script>
+}
+
+
+
+

@@ -1,0 +1,82 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منظومة البلاستيك</title>
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    @Styles.Render("~/Content/vendors/bootstrap/dist/css/bootstrap.min.css")
+    @Styles.Render("~/Content/vendors/font-awesome/css/font-awesome.min.css")
+    @Styles.Render("~/Content/vendors/nprogress/nprogress.css")
+    @Styles.Render("~/Content/vendors/iCheck/skins/flat/green.css")
+    @Styles.Render("~/Content/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css")
+    @Styles.Render("~/Content/vendors/jqvmap/dist/jqvmap.min.css")
+    @Styles.Render("~/Content/build/css/custom-rtl.css")
+
+
+    @Scripts.Render("~/bundles/modernizr")
+    @Styles.Render("~/Content/bootstrap-datetimepicker.min.css")
+    <link href="~/Content/toastr.min.css" rel="stylesheet" />
+
+    @RenderSection("styles", required: false)
+
+</head>
+
+<body class="nav-md">
+
+
+
+    <!-- jQuery -->
+    @Scripts.Render("~/Content/vendors/jquery/dist/jquery.min.js")
+    <!-- Bootstrap -->
+    @Scripts.Render("~/Content/vendors/bootstrap/dist/js/bootstrap.min.js")
+    <!-- FastClick -->
+    @Scripts.Render("~/Content/vendors/fastclick/lib/fastclick.js")
+    <!-- NProgress -->
+    @Scripts.Render("~/Content/vendors/nprogress/nprogress.js")
+    <!-- Chart.js -->
+    @Scripts.Render("~/Content/vendors/Chart.js/dist/Chart.min.js")
+    <!-- gauge.js -->
+    @Scripts.Render("~/Content/vendors/gauge.js/dist/gauge.min.js")
+    <!-- bootstrap-progressbar -->
+    @Scripts.Render("~/Content/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js")
+    <!-- iCheck -->
+    @Scripts.Render("~/Content/vendors/iCheck/icheck.min.js")
+    <!-- Skycons -->
+    @Scripts.Render("~/Content/vendors/skycons/skycons.js")
+    <!-- Flot -->
+    @Scripts.Render("~/Content/vendors/Flot/jquery.flot.js")
+    @Scripts.Render("~/Content/vendors/Flot/jquery.flot.pie.js")
+    @Scripts.Render("~/Content/vendors/Flot/jquery.flot.time.js")
+    @Scripts.Render("~/Content/vendors/Flot/jquery.flot.stack.js")
+    @Scripts.Render("~/Content/vendors/Flot/jquery.flot.resize.js")
+    <!-- Flot plugins -->
+    @Scripts.Render("~/Scripts/flot/jquery.flot.orderBars.js")
+    @Scripts.Render("~/Scripts/flot/date-fa-IR.js")
+    @Scripts.Render("~/Scripts/flot/jquery.flot.spline.js")
+    @Scripts.Render("~/Scripts/flot/curvedLines.js")
+    <!-- JQVMap -->
+    @Scripts.Render("~/Content/vendors/jqvmap/dist/jquery.vmap.js")
+    @Scripts.Render("~/Content/vendors/jqvmap/dist/maps/jquery.vmap.world.js")
+    @Scripts.Render("~/Content/vendors/jqvmap/examples/js/jquery.vmap.sampledata.js")
+    <!-- bootstrap-daterangepicker -->
+    @Scripts.Render("~/Scripts/moment/moment-with-locales.js")
+    @Scripts.Render("~/Scripts/datepicker/daterangepicker.js")
+
+    <!-- Custom Theme Scripts -->
+    @*@Scripts.Render("~/Content/build/js/custom.min.js")*@
+    <!-- jQuery -->
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/Scripts/jquery.validate.js")
+    @Scripts.Render("~/Scripts/jquery.validate.unobtrusive.js")
+    @Scripts.Render("~/Scripts/jquery.unobtrusive-ajax.min.js")
+    <!-- bootstrap-datetimepicker -->
+    @Scripts.Render("~/Scripts/bootstrap-datetimepicker.min.js")
+
+
+    @RenderBody()
+    <script src="~/Scripts/bootbox.min.js"></script>
+    <script src="~/Scripts/toastr.min.js"></script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

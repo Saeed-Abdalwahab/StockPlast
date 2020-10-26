@@ -1,0 +1,140 @@
+﻿@model StockDB.Model.Customer
+
+@{
+    ViewBag.Title = "اضافه عميل";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>اضافة عميل جديد</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        @*<h4>Customer</h4>*@
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.custSerial, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.custSerial, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.custSerial, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.cust_name, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.cust_name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.cust_name, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.cust_mobile, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.cust_mobile, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.cust_mobile, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.cust_mail, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.cust_mail, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.cust_mail, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.contact_name, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.contact_name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.contact_name, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.cust_address, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.cust_address, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.cust_address, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.WhatsApp, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.WhatsApp, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.WhatsApp, "", new { @class = "text-danger" })
+            </div>
+            @Html.Label("رصيد افتتاحي", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.OpiningBlance, new { htmlAttributes = new { @class = "form-control",min="0" ,type="number"} })
+                @Html.ValidationMessageFor(model => model.OpiningBlance, "", new { @class = "text-danger" })
+            </div>
+            @Html.Label("الخزينه", htmlAttributes: new { @class = "control-label col-md-1 " })
+            <div class="col-md-3">
+                @Html.DropDownListFor(m => m.SafeID, ViewBag.safes as SelectList, "--اختر الخزينه--", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.SafeID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.Label("تاريخ", htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.BlanceDate, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.BlanceDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="اضافة" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("رجوع", "Index")
+</div>
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            $('#BlanceDate').datepicker({
+                dateFormat: 'yy/mm/dd',
+                minView: 2,
+            });
+            $("form").submit(function (e) {
+                debugger;
+                if (!$(this).valid()) {
+                    e.preventDefault();
+                    return;
+                }
+                else {
+                    if ($("#OpiningBlance").val() > 0) {
+                        if ($("#SafeID").val() == "" || $("#SafeID").val() < 0) {
+                            e.preventDefault();
+                            $("span[data-valmsg-for='SafeID']").text("مطلوب");
+                            return;
+                        }
+                        else if ($("#BlanceDate").val() == "") {
+                            e.preventDefault();
+                            $("span[data-valmsg-for='BlanceDate']").text("مطلوب");
+                            return;
+                        }
+                        else {
+                            return true;
+                        }
+                    }
+                    if ($("#SafeID").val() > 0) {
+                        if ($("#OpiningBlance").val() == "" || $("#OpiningBlance").val() < 0) {
+                            e.preventDefault();
+                            $("span[data-valmsg-for='OpiningBlance']").text("مطلوب");
+                            return;
+                        }
+                        else if ($("#BlanceDate").val() == "") {
+                            e.preventDefault();
+                            $("span[data-valmsg-for='BlanceDate']").text("مطلوب");
+                            return;
+                        }
+                        else {
+                            return true;
+                        }
+                    }
+                }
+            })
+        })
+
+    </script>
+    }

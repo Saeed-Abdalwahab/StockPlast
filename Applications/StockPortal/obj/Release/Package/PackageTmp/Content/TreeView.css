@@ -1,0 +1,43 @@
+﻿/*Here We will add some css for style our treeview*/
+.collapse {
+    width: 15px;
+    background-image: url('images/ui-icons_454545_256x240.png');
+    background-repeat: no-repeat;
+    background-position: -36px -17px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.expand {
+    width: 15px;
+    background-image: url('images/ui-icons_454545_256x240.png');
+    background-repeat: no-repeat;
+    background-position: -50px -17px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.treeview ul {
+    font: 14px Arial, Sans-Serif;
+    margin: 0px;
+    padding-left: 20px;
+    list-style: none;
+}
+
+.treeview > li > a {
+    font-weight: bold;
+}
+
+.treeview li a {
+    padding: 4px;
+    font-size: 15px;
+    display: inline-block;
+    text-decoration: none;
+    width: auto;
+    font-weight: normal;
+}
+
+.treeview li span {
+       font-size: 15px;
+    font-weight: bold;
+}

@@ -1,0 +1,14 @@
+﻿@using ReportViewerForMvc
+
+@{
+    ViewBag.Title = "CustomersReport";
+}
+
+<h2>CustomersReport</h2>
+<div class="x_panel">
+    <div class="x_content">
+        @Html.ReportViewer(ViewBag.ReportViewer as Microsoft.Reporting.WebForms.ReportViewer)
+
+    </div>
+</div>
+

@@ -1,0 +1,66 @@
+﻿@model StockDB.Model.FromStock
+
+@{
+    ViewBag.Title = "تفاصيل";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>FromStock</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Customer.custSerial)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Customer.custSerial)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DemondOrder.demoOrd_serailNum)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DemondOrder.demoOrd_serailNum)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Serial)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Serial)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TransDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TransDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FromStockID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FromStockID)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.notes)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.notes)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

@@ -1,0 +1,163 @@
+﻿@model  StockViewModel.FromStockDetailsVM
+
+
+@{
+    var id = Model != null ? Model.ID : -1;
+}
+
+<link href="~/DataTables/datatables.min.css" rel="stylesheet" />
+
+<style>
+    .form-horizontal .control-label {
+        padding-top: 0px;
+    }
+</style>
+
+
+<div class="form-horizontal col-md-12">
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="form-group col-md-6">
+        @Html.Label("العميل", htmlAttributes: new { @class = "control-label col-md-3" })
+        <div class="col-md-9">
+            @Html.DisplayFor(x=>x.Custname, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+    </div>
+    <div class="form-group col-md-6">
+        @Html.Label("التاريخ", htmlAttributes: new { @class = "control-label col-md-3" })
+        <div class="col-md-9 font-weight-bold">
+            @Html.DisplayFor(x => x.TransDate, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+    </div>
+    <div class="form-group col-md-6">
+        @Html.Label("فني التقطيع", htmlAttributes: new { @class = "control-label col-md-3" })
+        <div class="col-md-9">
+            @Html.Label(Model.cutTechName, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+    </div>
+    <div class="form-group col-md-6">
+        @Html.Label("فني الطباعه", htmlAttributes: new { @class = "control-label col-md-3" })
+        <div class="col-md-9">
+            @Html.DisplayFor(x => x.printTechName, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+    </div>
+</div>
+<div class="col col-md-12" style="margin-top:30px;">
+    <fieldset style="border:1px solid #DDD">
+        <div style="margin-top:0px;padding-bottom:20px;">
+            <table id="item" class="display table-responsive-md" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </fieldset>
+
+</div>
+
+<script src="~/DataTables/datatables.min.js"></script>
+
+<script>
+    $('#item').DataTable({
+        "ajax": {
+            'url': "@Url.Action("FromStockDetailsList", "FinishDemondOrder")",
+            data: function (d) {
+                return $.extend({}, d, {
+
+                    id: '@(id)',
+                });
+            },
+            'type': "GET"
+        },
+        "columns": [
+
+            { data: "FromStockId", visible: false, orderable: false },
+            { data: "Demondorderdetailsid", visible: false, orderable: false },
+            { data: "status", visible: false, orderable: false },
+            {
+                "data": null,
+                "title": "م",
+                "render": function (data, type, full, meta) {
+                    return meta.row + 1;
+                }
+            },
+            {
+                "data": "Demonordname",
+                "title": "اسم الشغل",
+            },
+            {
+                "data": "ItemName",
+                "title": "الصنف",
+            },
+
+            {
+                "data": "NoItem",
+                "title": "العدد (بكر)",
+
+            },
+
+            {
+                "data": "Total",
+                "title": "الاجمالي (وزن)",
+            },
+            {
+                "title": "تسليم", "data": null, "width": "20px", "render": function (data, type, row, meta) {
+                    debugger
+                    if (row.status == 2 || row.status == 3 || row.status == 5) {
+                        return "<botton class='btn btn-info ED' style='margin-top:3px' onclick='detailsdemondorder(" + row.FromStockId + "," + row.Demondorderdetailsid + ")'>تم التسليم</botton>"
+                        
+                        //return '<span class="btn btn-info"  style="margin-top:3px">تم التسليم</span>'
+                    }
+                    else {
+                        return "<botton class='btn btn-primary ED' style='margin-top:3px' onclick='detailsdemondorder(" + row.FromStockId + "," + row.Demondorderdetailsid + ")'>تسليم</botton>"
+                        }
+                }
+            },
+
+        ],
+        //"columnDefs": [{
+        //    "orderable": false,
+        //    "targets": [14],
+
+        //}],
+        "order": [[1, 'asc']],
+
+        "language": {
+                             "sEmptyTable":     "ليست هناك بيانات متاحة في الجدول",
+	"sLoadingRecords": "جارٍ التحميل...",
+	"sProcessing":   "جارٍ التحميل...",
+	"sLengthMenu":   "أظهر _MENU_ مدخلات",
+	"sZeroRecords":  "لم يعثر على أية سجلات",
+	"sInfo":         "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+	"sInfoEmpty":    "يعرض 0 إلى 0 من أصل 0 سجل",
+	"sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+	"sInfoPostFix":  "",
+	"sSearch":       "ابحث:",
+	"sUrl":          "",
+	"oPaginate": {
+		"sFirst":    "الأول",
+		"sPrevious": "السابق",
+		"sNext":     "التالي",
+		"sLast":     "الأخير"
+	},
+	"oAria": {
+		"sSortAscending":  ": تفعيل لترتيب العمود تصاعدياً",
+		"sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+	}
+        },
+        info: false,
+    })
+</script>

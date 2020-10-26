@@ -1,0 +1,88 @@
+﻿@{
+    //int StockTransactioID = ViewBag.StockTransactioID;
+    int FromStockID = ViewBag.FromStockID;
+
+    int demondorderdetailsid = ViewBag.demondorderdetailsid;
+    int? demondorderdetailsstatus = (int?)ViewBag.demondorderdetailsstatus;
+
+}
+
+<style>
+    .nav-tabs > li {
+        cursor: pointer;
+    }
+</style>
+
+<ul class="nav nav-tabs navbar-right">
+
+    <li ><a data-toggle="tab" href="#return">المرتجع</a></li>
+    <li><a data-toggle="tab" href="#talif">التالف</a></li>
+    <li class="active"><a data-toggle="tab" href="#finish">التام</a></li>
+
+</ul>
+<div class="clearfix"></div>
+<div class="tab-content navbar-right" style="width:100%;margin-top:30px;">
+    @Html.Hidden("FromStockID", FromStockID)
+
+    @Html.Hidden("demondorderdetailsid", demondorderdetailsid)
+    @Html.Hidden("TotalReturn")
+    @Html.Hidden("DEMONDORDERDETAILSSTATUS",demondorderdetailsstatus)
+    <div id="finish" class="tab-pane fade active in">
+        <div id="completedcontent">
+            @Html.Partial("~/Views/FinshToStock/_FinishItem.cshtml")
+        </div>
+    </div>
+    <div id="talif" class="tab-pane fade">
+        <div id="expiredcontent">
+            @Html.Partial("~/Views/expireditem/_expireditem.cshtml")
+        </div>
+    </div>
+    <div id="return" class="tab-pane fade  ">
+        <div id="retuenedcontet">
+            @if(demondorderdetailsstatus !=(int) PlasticStatic.Enums.demondorderdetailstatus.NotStarted&&demondorderdetailsstatus!= (int)PlasticStatic.Enums.demondorderdetailstatus.Underconstruction && demondorderdetailsstatus != null)
+            {
+
+            @Html.Partial("~/Views/ReturnItem/_ReturnItem.cshtml")
+            }
+        </div>
+    </div>
+
+</div>
+
+<div class="form-group col-md-12" style="margin-top:70px;text-align:left">
+    <button type="button" class="btn btn-default" onclick="cancelDeliveryDemondOrder()">خروج</button>
+</div>
+
+
+
+
+
+<script>
+    var FromStockID = $("#FromStockID").val()
+    var ItemsuplierID = $("#ItemsuplierID").val()
+
+    var demondorderdetailsid = $("#demondorderdetailsid").val()
+
+    var DemondorderDetailsStatus = $("#DEMONDORDERDETAILSSTATUS").val();
+    $(document).ready(function () {
+        if (DemondorderDetailsStatus ==@((int)PlasticStatic.Enums.demondorderdetailstatus.NotStarted)|| DemondorderDetailsStatus == @((int)PlasticStatic.Enums.demondorderdetailstatus.Underconstruction) || DemondorderDetailsStatus == null)
+                    {
+             $.ajax({
+
+            url: "@Url.Action("AddTOstockreturned", "ReturnToStock")" + "?FromStockid=" + FromStockID + "&itemsupID=0" + "&demondorderdetailsid=" + demondorderdetailsid,
+            type: "GET",
+            success: function (response) {
+                $("#retuenedcontet").html(response.data);
+
+            },
+
+        });
+                    }
+
+    });
+    function cancelDeliveryDemondOrder() {
+
+        location.reload();
+
+    }
+</script>

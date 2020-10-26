@@ -1,0 +1,354 @@
+﻿@model StockViewModel.PurchaseInvoiceViewModel
+@{
+    Guid GuidReturn = ViewBag.Keyreturn ?? Guid.NewGuid();
+    var ToStockID = Model != null ? Model.ID : -1;
+}
+
+@using (Html.BeginForm("", "", FormMethod.Post, new { id = "Expiredformid" }@*new AjaxOptions() { OnSuccess = "saveexpiredinvoice" }*@))
+{
+
+@Html.AntiForgeryToken()
+
+<div class="form-horizontal col-md-12">
+
+
+    @Html.HiddenFor(x => x.ID, new { id = "tostockexpiredid" })
+
+    @Html.Hidden("FromStockID")
+    @Html.Hidden("demondordid")
+
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="form-group col-md-6">
+        @Html.Label("رقم الاذن", htmlAttributes: new { @class = "control-label col-md-3" })
+        <div class="col-md-9">
+            @Html.EditorFor(model => model.InvoiceSerial, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.InvoiceSerial, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group col-md-6">
+        @Html.Label("تاريخ الاذن", htmlAttributes: new { @class = "control-label col-md-3" })
+        <div class="col-md-9">
+            @Html.EditorFor(model => model.InvoiceDate, new { htmlAttributes = new { @class = "form-control", @autocomplete = "off" } })
+            @Html.ValidationMessageFor(model => model.InvoiceDate, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group col-md-6">
+        @Html.LabelFor(model => model.Notes, htmlAttributes: new { @class = "control-label col-md-3" })
+        <div class="col-md-9">
+            @Html.EditorFor(model => model.Notes, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Notes, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group col-md-6">
+        @Html.LabelFor(model => model.StoreName, htmlAttributes: new { @class = "control-label col-md-3" })
+        <div class="col-md-9">
+            @Html.DropDownListFor(x => x.StoreId, ViewBag.expiredstores as SelectList, htmlAttributes: new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.StoreId, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group col-md-6">
+        @Html.Label("تالف طباعه", htmlAttributes: new { @class = "control-label col-md-3" })
+        <div class="col-md-9">
+            @Html.EditorFor(x => x.printexpired, new { htmlAttributes = new { @class = "form-control", value = "" } })
+            @Html.ValidationMessageFor(model => model.printexpired, "", new { @class = "text-danger" })
+        </div>
+    </div><div class="form-group col-md-6">
+        @Html.Label("تالف تقطيع", htmlAttributes: new { @class = "control-label col-md-3" })
+        <div class="col-md-9">
+            @Html.EditorFor(x => x.cutexpired, new { htmlAttributes = new { @class = "form-control", value = "" } })
+            @Html.ValidationMessageFor(model => model.cutexpired, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group col-md-6">
+        @Html.Label("تالف فيلم", htmlAttributes: new { @class = "control-label col-md-3" })
+        <div class="col-md-9">
+            @Html.EditorFor(x => x.filmexpired, new { htmlAttributes = new { @class = "form-control", value = "" } })
+            @Html.ValidationMessageFor(model => model.filmexpired, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    @*<div class="form-group col-md-6">
+        @Html.Label("المورد", htmlAttributes: new { @class = "control-label col-md-3" })
+        <div class="col-md-9">
+            @Html.DropDownListFor(x => x.itemsupid, ViewBag.itemsuplierid as SelectList, htmlAttributes: new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.itemsupid, "", new { @class = "text-danger" })
+        </div>
+    </div>*@
+    <div class="form-group col-md-12" style="text-align:left;margin-top:15%">
+        <button type="button" class="btn btn-default" onclick="cancelsavereturn()">الغاء</button>
+    </div>
+
+</div>
+<div class="clearfix" style="margin-bottom:44px;"></div>
+
+
+}
+
+
+@Scripts.Render("~/Scripts/jquery.validate.js")
+@Scripts.Render("~/Scripts/jquery.validate.unobtrusive.js")
+@Scripts.Render("~/Scripts/jquery.unobtrusive-ajax.min.js")
+<script>
+    $(document).ready(function () {
+        $("input").attr("disabled", "disabled");
+        $("select").attr("disabled", "disabled");
+
+        $("#FromStockID").val(FromStockID)
+        $("#demondordid").val(demondorderdetailsid)
+
+        $("#Expiredformid").submit(function (e) {
+            debugger
+        e.preventDefault();
+        var cutexpiredweight = $("#cutexpired").val();
+        var printexpiredweight = $("#printexpired").val();
+        var filmexpiredweight = $("#filmexpired").val();
+
+         if (cutexpiredweight == "" && printexpiredweight == "" && filmexpiredweight == "") {
+            toastr.error('برجاء برجاء تحديد علي الاقل نوع تالف واحد', { timeOut: 1000 });
+            return false;
+        }
+        else if (isNaN(cutexpiredweight) || cutexpiredweight < 0)
+        {
+            $('span[data-valmsg-for="cutexpired"]').text("كميه تالف غير صحيحه");
+            return false;
+        }
+            else if (isNaN(printexpiredweight) || printexpiredweight < 0)
+        {
+            $('span[data-valmsg-for="printexpired"]').text("كميه تالف غير صحيحه");
+            return false;
+        }
+            else if (isNaN(cutexpiredweight) || cutexpiredweight < 0)
+        {
+            $('span[data-valmsg-for="filmexpired"]').text("كميه تالف غير صحيحه");
+            return false;
+         }
+                if (!$(this).valid()) {
+            toastr.error('برجاء تحديد جميع الحقول', { timeOut: 1000 });
+            return false;
+        }
+        else {
+
+                    $.ajax({
+
+                        type: 'POST',
+                        url: '@Url.Action("checktotalquantity", "expireditem")',
+                        data: { cutexpiredweight: cutexpiredweight, printexpiredweight: printexpiredweight, filmexpiredweight: filmexpiredweight, demondorderdetailsid: demondorderdetailsid, tostockid: $("#tostockexpiredid").val() },
+                        success: function (respons) {
+                            debugger
+                            if (!respons.status) {
+                                if (cutexpiredweight != "") {
+                                    $('span[data-valmsg-for="cutexpired"]').text("كميه تالف غير صحيحه");
+                                }
+                                else if (printexpiredweight != "") {
+                                    $('span[data-valmsg-for="printexpired"]').text("كميه تالف غير صحيحه");
+                                }
+                                else if (cutexpiredweight != "") {
+                                    $('span[data-valmsg-for="filmexpired"]').text("كميه تالف غير صحيحه");
+                                }
+                                toastr.error('كميه تالف اكبر من الكميه المستخدمه ف اسم الشغل', 'الكميه المستخدمه لاسم الشغل=' + respons.original, { timeOut: 1500 });
+                            }
+
+                            else {
+                                $.ajax({
+                                    type: 'POST',
+                                    url: '@Url.Action("Save", "expireditem")',
+                                    data: $("#Expiredformid").serialize(),
+                                    success: function (respons) {
+
+                                        saveexpiredinvoice(respons);
+
+                                    },
+
+                                    fail: function (xhr, msg, errorThrown) {
+                                        toastr.error('عمليه غير ناجحه', { timeOut: 1000 });
+
+                                    },
+                                    error: function (xhr, statusText, errorThrown) {
+                                        toastr.error('عمليه غير ناجحه', { timeOut: 1000 });
+
+                                    }
+
+
+                                });
+
+                            }
+
+                        },
+
+                        fail: function (xhr, msg, errorThrown) {
+                            toastr.error('عمليه غير ناجحه', { timeOut: 1000 });
+
+                        },
+                        error: function (xhr, statusText, errorThrown) {
+                            toastr.error('عمليه غير ناجحه', { timeOut: 1000 });
+
+                        }
+
+
+                    });
+        }
+
+    });
+
+
+
+     
+    })
+
+
+
+    function ConfirmDeleteReturnItem() {
+
+        var transactionID = $("#TransactionID").val();
+        $.ajax({
+
+            url: "@Url.Action("ConfirmDeleteFinshItem", "ReturnItem")",
+            data: { ID: transactionID, Key: guidreturn.toString() },
+            type: "POST",
+            success: function (rs) {
+                if (rs.alert.type) {
+
+                    $("#Totalx").val(parseInt( $("#Totalx").val()) + parseInt(oldtotal));
+                    $("#deletetransaction").modal("hide");
+                    $("#item").DataTable().ajax.reload()
+                     $("#item").DataTable().ajax.reload(
+                         function () {
+                             if (!$('#item').DataTable().data().any()) {
+                                 $("#additemaaa").prop("disabled", false)
+
+                             }
+                         });
+                    showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+                }
+
+            }
+        })
+
+    }
+    function Editreturnitem(transactionid) {
+
+        var quantity = $("#quantitytxt_" + transactionid).val();
+        var NoItem = $("#itemnotxt_" + transactionid).val();
+
+        if (quantity == "") {
+
+            if (quantity == "") {
+                $("#quantityer_" + transactionid).show()
+            }
+            if (NoItem == "") {
+                $("#itemnotxt_"+ transactionid).show()
+
+            }
+
+            return false
+        }
+
+
+        else {
+
+
+            Totalx =parseInt( $("#Totalx").val()) + parseInt(oldtotal);
+            $.ajax({
+
+
+                url: "@Url.Action("EditFinishItem", "ReturnItem")",
+                data: { ID: transactionid, Key: guidreturn.toString(), quantity: quantity, TransactioID: StockTransactioID, NoItem: NoItem ,Total:Totalx},
+                type: "GET",
+
+                success: function (rs) {
+                    if (rs.alert.type) {
+
+
+                        $("#Totalx").val(Totalx+oldtotal)
+                        $("#Totalx").val(Totalx - (NoItem * quantity))
+                        $("#addreturnitem").prop("disabled", false)
+                        $("#item").DataTable().ajax.reload()
+                        showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+
+                    }
+                    else {
+                        showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+                    }
+
+
+                }
+            })
+        }
+
+    }
+
+
+
+    function savereturnitem() {
+
+        var Quantity = $("#Weight").val();
+        var expiredtyp = $("#expiredtyp").val();
+
+        if (Quantity == "" || expiredtyp == "") {
+
+            if (Quantity == "") {
+                $("#Quantityerror").show()
+
+            }
+            if (expiredtyp == "") {
+                $("#expiredtyperror").show()
+
+            }
+
+            return false
+        }
+        else {
+            debugger
+            Totalx =parseInt( $("#Totalx").val())
+            $.ajax({
+
+                url: "@Url.Action("SaveExpiredItem", "expireditem")",
+                data: { Key: guidreturn.toString(), Quantity: Quantity,TransactioID:StockTransactioID,expiredtypid:expiredtyp,Total:Totalx,Demondorderdetailsid:demondorderdetailsid,fromstockid:FromStockID},
+                type: "post",
+
+                success: function (rs) {
+
+
+                    if (rs.alert.type) {
+                       $("#Totalx").val(Totalx-Quantity)
+                        $("#item").DataTable().ajax.reload()
+
+                         $("#item").DataTable().ajax.reload(
+                             function () {
+                                 $('#addreturnitem').trigger('click');
+                             });
+
+                        showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+                    }
+                    else {
+                        showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+                    }
+
+                }
+            })
+        }
+        }
+
+    function saveexpiredinvoice(rs) {
+        debugger;
+        if (rs.alert.type) {
+
+            $("#expiredcontent").html(rs.data)
+            //$("#Add").css("display", "none")
+            showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+            AddTOstockreturn();
+
+        }
+        else {
+            $("#expiredcontent").html(rs.data)
+            showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+        }
+    }
+</script>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+

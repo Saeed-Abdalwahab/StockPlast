@@ -1,0 +1,218 @@
+﻿@model StockPortal.ViewModel.DemondOrderVM
+
+@{
+    ViewBag.Title = "تعديل امرشغل";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var errormsg = "";
+    var successmsg = "";
+    if (ViewBag.errorMsg != null)
+    {
+        errormsg = (string)ViewBag.errorMsg;
+    }
+    if(ViewBag.success!=null)
+    {
+        successmsg = (string)ViewBag.success;
+    }
+}
+@Styles.Render("~/Content/jquery")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/Content/vendors/bootstrap/dist/js/bootstrap.min.js")
+@Scripts.Render("~/Content/chosenJavaScript")
+@Styles.Render("~/Content/chosenCSS")
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //$(".SafeCSS").chosen({
+        //    width: '100%',
+        //    no_results_text: "لايوجد مخزن بهذا الاسم",
+        //    search_contains: true
+        //});
+              $(".CustCss").chosen({
+            width: '100%',
+            no_results_text: "لايوجد عميل بهذا الاسم",
+            search_contains: true
+        });
+
+    });
+
+    function Showdddd(selectedTab) {
+        if (selectedTab == 'detials') { document.getElementById('IfDecision').src = "../DemondOrderDetails/Index?demOrdId="+@Html.ValueFor(model => model.demoOrd_id); }
+    }
+
+    function resizeIframe(obj) {
+        obj.style.height = obj.contentWindow.document.body.scrollHeight+ 200 + 'px';
+    }
+</script>
+
+
+<style>
+    .AnchorDecision {
+        background: #767272 none repeat scroll 0 0;
+        border-radius: 5px;
+        color: white;
+        display: inline-block;
+        margin-bottom: 3px;
+        margin-top: 3px;
+        padding-left: 3px;
+        padding-right: 3px;
+        text-align: center;
+        box-shadow: 2px 5px 10px #888888;
+        border: 1px solid black;
+        font-size: 16px;
+        cursor: pointer;
+        /*cursor: hand;*/
+    }
+</style>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>أمر الشغل</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.demoOrd_id)
+
+
+        <div class="form-group">
+            <div class="col-md-1">
+                العميل
+            </div>
+            <div class="col-md-5">
+                @Html.DropDownListFor(x => x.cust_id, ViewBag.Customers as SelectList, "حدد اسم العميل ", htmlAttributes: new { @class = "form-control CustCss validateAlways", style = "visibility: hidden;position: absolute;display:inline !important" })
+                @Html.ValidationMessageFor(model => model.cust_id, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-1">
+                الخزينه
+            </div>
+            <div class="col-md-5">
+
+                @Html.EditorFor(model => model.SafeName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.HiddenFor(x=>x.safe_id)
+                @Html.ValidationMessageFor(model => model.safe_id, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.demoOrd_serailNum, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-5">
+                @Html.EditorFor(model => model.demoOrd_serailNum, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.demoOrd_serailNum, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.demoOrd_date, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-5">
+                @Html.EditorFor(model => model.demoOrd_date, new { htmlAttributes = new { @class = "form-control", @Value = ViewBag.demOrderDate } })
+                @Html.ValidationMessageFor(model => model.demoOrd_date, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.demoOrd_notes, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-5">
+                @Html.EditorFor(model => model.demoOrd_notes, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.demoOrd_notes, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.demoOrd_deposit, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-5">
+                @Html.EditorFor(model => model.demoOrd_deposit, new { htmlAttributes = new { @class = "form-control", type = "number", min = ".1" } })
+                @Html.ValidationMessageFor(model => model.demoOrd_deposit, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-10"></div>
+            <div class="col-md-2">
+                <input type="submit" value="تعديل" class="btn btn-default" style="width:100%" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div id="divDesciconTabs" style="margin-top: 10px; border: 1px solid gray; padding-right: 5px; padding-left: 5px; padding-bottom: 2px; border-radius: 4px; background: rgb(225, 225, 225) none repeat scroll 0 0">
+                <a class="AnchorDecision" onclick="Showdddd('detials')">أسماء امر الشغل</a>
+            </div>
+        </div>
+        <div class="form-group">
+            <div id="divDesciconFrame" class="frameWrapContent" style=" border-radius: 4px; margin-top: 5px; background-color: rgb(243, 243, 243)">
+                <iframe id="IfDecision" class="iframeContent" style="width: 100%; border-radius: 4px" onload="resizeIframe(this)"></iframe>
+            </div>
+        </div>
+
+    </div>
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/toastr.min.js"></script>
+
+    <script type="text/javascript">
+    $(document).ready(function () {
+            @*$("option[value='@Model.safe_id']").attr('selected','selected');*@
+        var ErrorMsg = '@errormsg';
+        var Sucess = '@successmsg';
+            if (ErrorMsg != '') {
+
+                toastr.error('', ErrorMsg, { timeOut: 3000 });
+                $("span[data-valmsg-for='safe_id']").html('<span id="safe_id-error" class="">* مطلوب</span>');
+        }
+        if (Sucess != '') {
+            toastr.Sucess('', Sucess, { timeOut: 3000 });
+
+        }
+
+
+        Showdddd('detials');
+            $(function () {
+                $('#demoOrd_date').datepicker({
+                    dateFormat: 'yy/mm/dd',
+                    minView: 2,
+                });
+
+
+            });
+    });
+
+
+     $("#demoOrd_deposit").change(function () {
+         var Value = $(this).val();
+         if (Value != '' && parseInt($("#safe_id").val()) < 0) {
+
+                    $("#safe_id").addClass("input-validation-error");
+                    $("#safe_id").attr("data-val", "true");
+                    $("#safe_id").attr("aria-describedby", "safe_id-error");
+                    $("#safe_id").attr("data-val-required", "* مطلوب");
+                    $("#safe_id").css({ "visibility": "hidden", "position": "absolute", "display": "inline !important" });
+                    $("#safe_id").css("display", "");
+                    $("span[data-valmsg-for='safe_id']").removeClass("field-validation-valid");
+                    $("span[data-valmsg-for='safe_id']").addClass("field-validation-error");
+                    $("span[data-valmsg-for='safe_id']").html('<span id="safe_id-error" class="">* مطلوب</span>');
+
+                }
+                else {
+                    $("#safe_id").removeClass("input-validation-error");
+                    $("#safe_id").removeAttr("data-val");
+                    $("#safe_id").removeAttr("aria-describedby");
+                    $("#safe_id").removeAttr("data-val-required");
+                    $("#safe_id").css({ "visibility": "", "position": "", "display": "" });
+                    $("#safe_id").css("display", "none");
+                    $("span[data-valmsg-for='safe_id']").removeClass("field-validation-error");
+                    $("span[data-valmsg-for='safe_id']").addClass("field-validation-valid");
+                    $("span[data-valmsg-for='safe_id']").html("");
+
+
+                }
+            });
+            //$("option[value='']").attr("disabled", "disabled");
+            $("#cust_id").css("display", "");
+            $("#safe_id").removeAttr("data-val-required");
+            $("#safe_id").removeAttr("data-val-number");
+            $("#safe_id").removeClass("input-validation-error");
+
+        $("#SafeName").attr("ReadOnly", "ReadOnly")
+        $("#demoOrd_deposit").attr("ReadOnly", "ReadOnly")
+
+
+    </script>
+
+}

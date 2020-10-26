@@ -1,0 +1,273 @@
+﻿@model StockViewModel.MaterialTypeVM
+
+@{
+    ViewBag.Title = "نوع الخامه";
+}
+<link href="~/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+@section styles{
+    <style>
+        .modal-body {
+            height: auto;
+        }
+    </style>
+}
+<h3 class="center">انواع الخامات</h3>
+
+@*Creat apopup Modal For Add And Edit*@
+<div class="modal fade" id="MyModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="#" class="close" data-dismiss="modal">&times;</a>
+                <h4 id="Modaltitle"></h4>
+            </div>
+            <div class="modal-body" style="height:138px">
+                <form id="form">
+
+                    @Html.HiddenFor(m => m.mat_id, new { @id = "Materialtypid" })
+                    <div class="form-group">
+                        @Html.Label("نوع الخامة", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(m => m.mat_name, new { @class = "form-control col-md-10", @placeholder = "نوع الخامة" })
+                            @Html.ValidationMessageFor(model => model.mat_name, "", new { @class = "text-danger" })
+
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="form-group">
+                    <div class="col-md-2">
+
+                        <a href="#" class="btn btn-block btn-primary" id="saveMaterialTypRecord">حفظ</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="container" style="margin-top:3%">
+    <button class="btn btn-primary" onclick="Addnewmaterialtyp(0)">أضافه نوع خامه جديد</button>
+    <table class="table table-striped" id="MaterialTypeTable">
+        <thead>
+            <tr>
+                <th>م</th>
+                <th>الخامه</th>
+                <th>تعديل</th>
+                <th>حذف</th>
+            </tr>
+        </thead>
+
+
+    </table>
+</div>
+
+
+@section scripts
+{
+    <script src="~/DataTables/datatables.min.js"></script>
+    <script src="~/Scripts/toastr.min.js"></script>
+
+    <script>
+        //Function To Save in Data base
+        function Save() {
+            if ($("#form").valid()) {
+
+                var data = $("#form").serialize();
+                $.ajax({
+                    type: "post",
+                    url: '@Url.Action("Save","MaterialType")', 
+                    data: data,
+                    success: function () {
+                        $("#MaterialTypeTable").DataTable().ajax.reload();
+                        toastr.success('تم حفظ نوع الخامة بنجاح', 'اشعار', { timeOut: 4000 });
+                        if (data.split("&")[0] == "mat_id=0") {
+
+                            Addnewmaterialtyp(0);
+                        }
+                        else {
+                            $("#MyModal").modal("hide")
+                        }
+                    },
+                    fail: function () {
+                        toastr.error('الاسم مسجل بالفعل', 'حدث خطأ اثناء الاضافه برجاء المحاوله مره اخري ', { timeOut: 3000 });
+                    },
+                    error: function () {
+                        toastr.error('عمليه غير ناجحه', 'حدث خطأ اثناء الاضافه برجاء المحاوله مره اخري ', { timeOut: 3000 });
+                    }
+                });
+            }
+            else {
+                toastr.error('برجاء تحديد نوع الخامة', 'اشعار', { timeOut: 3000 });
+            }
+        }
+        //Show Popup To Add new One
+        function Addnewmaterialtyp(mat_id) {
+            $("#form")[0].reset();
+            $("#Modaltitle").html("إضافه نوع خامه جديد");
+            $("#Materialtypid").val("0");
+            $("#MyModal").modal()
+            $("#mat_name").focus();
+        }
+        //Show Popup To Edit  Hand Typ By Id
+
+        function EditMaterialType(mat_id) {
+            var url ='@Url.Action("GetMaterialbyid","MaterialType")' + '?id=' + mat_id; 
+            $("#Modaltitle").html("تعديل نوع الخامة");
+            $.ajax({
+                type: "GET",
+                url: url,
+                success: function (rs) {
+                    $("#MyModal").modal();
+                    $("#Materialtypid").val(rs.data.mat_id);
+                    $("#mat_name").val(rs.data.mat_name);
+                }
+            })
+        }
+        //Show Delet Msg Confirmation
+    function DeletMaterialTyp(mat_id) {
+        bootbox.confirm({
+            title: "عملية حذف ",
+            message: "هل انت متاكد من عملية الحذف ؟",
+            size: 'small',
+            buttons: {
+                cancel: {
+                    label: '<i class="fa fa-times"></i> رجوع',
+                    className: 'btn-info'
+                },
+                confirm: {
+                    label: '<i class="fa fa-check"></i> تاكيد',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function (result) {
+                if (result == true) {
+                    deleteRecord(mat_id)
+                }
+                else {
+                    return true;
+                }
+            }
+        });
+
+    }
+         function deleteRecord(id) {
+            $.ajax({
+                type: "post",
+                url: '@Url.Action("Delete","MaterialType")' + '?id=' + id,
+
+                success: function (respons) {
+                    if (respons.success) {
+
+                        toastr.success('تمت حذف  نوع الخامه', respons.msg, { timeOut: 3000 });
+            $("#MaterialTypeTable").DataTable().ajax.reload();                    }
+                    else {
+                    toastr.error('عمليه غير ناجحه','هناك بيانات معتمده علي هذاه الخامه  لايمكن الحذف حاليا ' ,{ timeOut: 1000 });
+
+                    }
+
+                },
+
+                fail: function (xhr, msg, errorThrown) {
+                    toastr.error('عمليه غير ناجحه', msg, { timeOut: 1000 });
+
+                },
+                error: function (xhr, statusText, errorThrown) {
+                    toastr.error('عمليه غير ناجحه','هناك بيانات معتمده علي هذا الامر  لايمكن حذفه حاليا ' ,{ timeOut: 1000 });
+                }
+
+
+            });
+
+        }
+        
+
+
+
+
+        $('#mat_name').on('keydown', function (e) {
+            if (e.which == 13) {
+                e.preventDefault();
+                Save();
+            }
+        });
+
+        //SaveChanges In DB
+        $("#saveMaterialTypRecord").click(function () {
+            Save();
+        });
+
+
+        //datatable function
+        $(document).ready(function () {
+            var t = $('#MaterialTypeTable').DataTable({
+                "ajax": {
+                    'url': '@Url.Action("GetMaterials","MaterialType")',
+                    'type': "GET"
+                },
+                "columns": [
+                    {
+                        "data": null, "render": function (data, type, full, meta) {
+                            return meta.row + 1;
+                        }
+                    },
+
+                    { "data": "mat_name" },
+                    {
+                        "data": "mat_id", "render": function (data) {
+                            return "<botton class='btn btn-primary ED' style='margin-top:3px' onclick='EditMaterialType(" + data + ")'><span class='glyphicon glyphicon-pencil'></span></botton>"
+                        }
+                    },
+                    {
+                        "data": "mat_id", "render": function (data) {
+                            return "<botton class='btn btn-danger ED' style='margin-top:3px' onclick='DeletMaterialTyp(" + data + ")'><span class='glyphicon glyphicon-trash'></span></botton>"
+                        }
+                    },
+
+
+                ],
+                "language": {
+                                     "sEmptyTable":     "ليست هناك بيانات متاحة في الجدول",
+	"sLoadingRecords": "جارٍ التحميل...",
+	"sProcessing":   "جارٍ التحميل...",
+	"sLengthMenu":   "أظهر _MENU_ مدخلات",
+	"sZeroRecords":  "لم يعثر على أية سجلات",
+	"sInfo":         "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+	"sInfoEmpty":    "يعرض 0 إلى 0 من أصل 0 سجل",
+	"sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+	"sInfoPostFix":  "",
+	"sSearch":       "ابحث:",
+	"sUrl":          "",
+	"oPaginate": {
+		"sFirst":    "الأول",
+		"sPrevious": "السابق",
+		"sNext":     "التالي",
+		"sLast":     "الأخير"
+	},
+	"oAria": {
+		"sSortAscending":  ": تفعيل لترتيب العمود تصاعدياً",
+		"sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+	}
+                },
+                info: false,
+
+            })
+            t.on('order.dt search.dt', function () {
+                t.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+
+        });
+
+    </script>
+}
+
+
+
+

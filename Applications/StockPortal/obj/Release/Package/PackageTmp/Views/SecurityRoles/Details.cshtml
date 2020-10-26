@@ -1,0 +1,205 @@
+﻿@model StockDB.Model.AspNetRole
+
+@{
+    ViewBag.Title = "صفحات المنظومة";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Styles.Render("~/Content/TreeView.css")
+
+<div class="">
+    <div class="page-title">
+        <div class="title_right">
+            <h3>@ViewBag.Title<small> - تفاصيل</small></h3>
+        </div>
+
+    </div><div class="ln_solidTitle"></div>
+    <div class="clearfix"></div>
+
+    <div class="row">
+
+        <div class="col-md-3 col-xs-12">
+            <div class="x_panel">
+                <div class="treeview">
+                    @if (ViewBag.SecurityModules != null)
+                    {
+
+                        var secureityModuleList = (List<StockDB.Model.AspNetModule>)ViewBag.SecurityModules;
+                        <ul>
+                            <li>
+                                <span class="collapse collapsible">&nbsp;</span>
+                                <span>
+                                    وحدات المنظومة
+                                </span>
+                                <ul>
+                                    @foreach (var item in secureityModuleList)
+                                    {
+                                        <li>
+                                            @{ var submenu = secureityModuleList.Count; }
+                                            @if (submenu > 0)
+                                            {
+                                                <span class="collapse collapsible">&nbsp;</span> @*collapsible*@
+                                            }
+                                            else
+                                            {
+                                                <span style="width: 15px; display: inline-block">&nbsp;</span>
+                                            }
+                                            <span>
+                                                @Html.ActionLink(@item.Name, "Index", "SecurityRoles", new { secModId = item.Id, secModName = item.Name }, null)
+                                            </span>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+                        </ul>
+
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9 col-xs-12">
+            <div class="x_title">
+                <h2>صفحات المنظومة التابعة لوحدة - @ViewBag.SelectedSecurityModuleName</h2>
+
+
+                <ul class="nav navbar-right panel_toolbox">
+                    <li>
+                        <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                    </li>
+
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+
+            <div class="x_content">
+  
+                <div class="form-horizontal form-label-left">
+                    <div class="item form-group">
+                        @Html.LabelFor(model => model.ArName, htmlAttributes: new {@class = "control-label col-md-3 col-sm-3 col-xs-12"})
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            @Html.DisplayFor(model => model.ArName)
+                        </div>
+                    </div>
+                    <div class="item form-group">
+                        @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            @Html.DisplayFor(model => model.Name)
+                        </div>
+                    </div>
+                    <div class="ln_solid"></div>
+                    <div class="form-group">
+                        <div class="col-md-6 col-md-offset-3">
+                            @Html.ActionLink("تعديل", "Edit", "SecurityRoles", new { id = Model.Id, secModId = ViewBag.SelectedSecurityModuleId, secModName = ViewBag.SelectedSecurityModuleName }, new { @class = "btn btn-default" })
+                            @Html.ActionLink("إلغاء", "Index", "SecurityRoles", new { secModId = ViewBag.SelectedSecurityModuleId, secModName = ViewBag.SelectedSecurityModuleName }, new { @class = "btn btn-default" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+@*@model TransportSecurityDB.AspNetRole
+
+    @{
+        ViewBag.Title = "Edit";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+
+    <h2>Edit</h2>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            <h4>AspNetRole</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => model.Id)
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.ArName, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.ArName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.ArName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.AspNetModuleId, "AspNetModuleId", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.DropDownList("AspNetModuleId", null, htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.AspNetModuleId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Save" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+    }
+
+    <div>
+        @Html.ActionLink("Back to List", "Index")
+    </div>*@
+
+
+
+
+
+
+@*@model TransportSecurityDB.AspNetRole
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>AspNetRole</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.AspNetModule.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.AspNetModule.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ArName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ArName)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>*@

@@ -1,0 +1,6 @@
+F:\ArmyTechProject\StockPlast\Stock\Libraries\ErrorLogging\bin\Debug\ErrorLogging.dll
+F:\ArmyTechProject\StockPlast\Stock\Libraries\ErrorLogging\bin\Debug\ErrorLogging.pdb
+F:\ArmyTechProject\StockPlast\Stock\Libraries\ErrorLogging\obj\Debug\ErrorLogging.csprojAssemblyReference.cache
+F:\ArmyTechProject\StockPlast\Stock\Libraries\ErrorLogging\obj\Debug\ErrorLogging.csproj.CoreCompileInputs.cache
+F:\ArmyTechProject\StockPlast\Stock\Libraries\ErrorLogging\obj\Debug\ErrorLogging.dll
+F:\ArmyTechProject\StockPlast\Stock\Libraries\ErrorLogging\obj\Debug\ErrorLogging.pdb

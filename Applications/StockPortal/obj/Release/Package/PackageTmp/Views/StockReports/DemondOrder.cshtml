@@ -1,0 +1,25 @@
+﻿@model dynamic
+@using ReportViewerForMvc;
+
+
+@{
+    ViewBag.Title = "تقرير امر شغل";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+
+
+<style>
+    iframe {
+        width: 100% !important;
+    }
+</style>
+
+
+@Html.ReportViewer(ViewBag.ReportViewer as Microsoft.Reporting.WebForms.ReportViewer, new { @class = "col-md-12" })
+
+<div style="text-align:left">
+    @Html.ActionLink("رجوع", "index", "DemondOrders", null, new { @class = "btn btn-primary" })
+</div>

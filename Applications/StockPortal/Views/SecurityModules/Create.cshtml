@@ -1,0 +1,53 @@
+﻿@model StockDB.Model.AspNetModule
+
+@{
+    ViewBag.Title = "وحدات المنظومة";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="">
+    <div class="page-title">
+        <div class="title_right">
+            <h3>@ViewBag.Title<small> - إنشاء جديد</small></h3> 
+        </div>
+
+    </div><div class="ln_solidTitle"></div>
+    <div class="clearfix"></div>
+
+    <div class="row">
+
+        <div class="col-md-12">
+            <div class="x_content">
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal form-label-left">
+
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="item form-group">
+                            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2 col-xs-12" })
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control col-md-7 col-xs-12" } })
+                                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="ln_solid"></div>
+                        <div class="form-group">
+                            <div class="col-md-6 col-md-offset-3">
+                                <input type="submit" value="حفظ" class="btn btn-default" />
+                                &nbsp;
+                                @Html.ActionLink("إلغاء", "Index", "SecurityModules", null, new { @class = "btn btn-default" })
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

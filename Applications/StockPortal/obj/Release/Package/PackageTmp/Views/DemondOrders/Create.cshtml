@@ -1,0 +1,184 @@
+﻿@model StockPortal.ViewModel.DemondOrderVM
+
+@{
+    ViewBag.Title = "إنشاء امر شغل";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var errormsg = "";
+    if (ViewBag.errorMsg != null)
+    {
+        errormsg = (string)ViewBag.errorMsg;
+    }
+}
+@Styles.Render("~/Content/jquery")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/Content/vendors/bootstrap/dist/js/bootstrap.min.js")
+@Scripts.Render("~/Content/chosenJavaScript")
+@Styles.Render("~/Content/chosenCSS")
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+
+
+<h2>إنشاء</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>أمر الشغل</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            <div class="col-md-1">
+                العميل
+            </div>
+            <div class="col-md-11">
+                @Html.DropDownListFor(x => x.cust_id, ViewBag.Customers as SelectList, "حدد اسم العميل ", htmlAttributes: new { @class = "form-control CustCss validateAlways", style = "visibility: hidden;position: absolute;display:inline !important" })
+                @Html.ValidationMessageFor(model => model.cust_id, "", new { @class = "text-danger" })
+            </div>
+
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.demoOrd_serailNum, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-5">
+                @Html.EditorFor(model => model.demoOrd_serailNum, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.demoOrd_serailNum, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.demoOrd_date, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-5">
+                @Html.EditorFor(model => model.demoOrd_date, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.demoOrd_date, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+
+            @Html.LabelFor(model => model.demoOrd_deposit, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-5">
+                @Html.EditorFor(model => model.demoOrd_deposit, new { htmlAttributes = new { @class = "form-control", type = "number", min = ".1" } })
+                @Html.ValidationMessageFor(model => model.demoOrd_deposit, "", new { @class = "text-danger" })
+            </div>
+            @Html.Label("الخزنه", htmlAttributes: new { @class = "control-label col-md-1" })
+
+            <div class="col-md-5">
+                @*@Html.DropDownList("safe_id", null, htmlAttributes: new { @class = "form-control" })*@
+                @Html.DropDownListFor(model => model.safe_id, (IEnumerable<SelectListItem>)ViewBag.safe_id, "-- اختر الخزنه -- ", htmlAttributes: new { @class = "form-control SafeCSS " })
+                @Html.ValidationMessageFor(model => model.safe_id, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.demoOrd_notes, htmlAttributes: new { @class = "control-label col-md-1" })
+            <div class="col-md-11">
+                @Html.EditorFor(model => model.demoOrd_notes, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.demoOrd_notes, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-10"></div>
+            <div class=" col-md-2">
+                <input type="submit" value="حفظ" class="btn btn-default" style="width:100%" />
+            </div>
+
+        </div>
+    </div>
+}
+
+<div class="modal fade bd-example-modal-lg" id="CustModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="cutModalBody" style="height:auto;overflow-y:hidden">
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/toastr.min.js"></script>
+
+    <script type="text/javascript">
+
+        function AddCustomer() {
+            $("#cutModalBody").html('<div style="width: auto;height:auto;text-align: center;"><i class="fa fa-spinner fa-spin" style="font-size: 300px;"></i></div>')
+            $("#CustModal").modal('show');
+            $("#cutModalBody").load("/Customers/RemotCreate");
+        }
+        $(document).ready(function () {
+
+            var ErrorMsg = '@errormsg';
+            if (ErrorMsg != '') {
+
+                toastr.error('', ErrorMsg, { timeOut: 3000 });
+                $("span[data-valmsg-for='safe_id']").html('<span id="safe_id-error" class="">* مطلوب</span>');
+            }
+
+
+            $(function () {
+                $('#demoOrd_date').datepicker({
+                    dateFormat: 'yy/mm/dd',
+                    minView: 2,
+                });
+
+
+            });
+
+
+
+            $("#demoOrd_deposit").change(function () {
+                var Value = $(this).val();
+                if (Value != '') {
+
+                    $("#safe_id").addClass("input-validation-error");
+                    $("#safe_id").attr("data-val", "true");
+                    $("#safe_id").attr("aria-describedby", "safe_id-error");
+                    $("#safe_id").attr("data-val-required", "* مطلوب");
+                    $("#safe_id").css({ "visibility": "hidden", "position": "absolute", "display": "inline !important" });
+                    $("#safe_id").css("display", "");
+                    $("span[data-valmsg-for='safe_id']").removeClass("field-validation-valid");
+                    $("span[data-valmsg-for='safe_id']").addClass("field-validation-error");
+                    $("span[data-valmsg-for='safe_id']").html('<span id="safe_id-error" class="">* مطلوب</span>');
+
+                }
+                else {
+                    $("#safe_id").removeClass("input-validation-error");
+                    $("#safe_id").removeAttr("data-val");
+                    $("#safe_id").removeAttr("aria-describedby");
+                    $("#safe_id").removeAttr("data-val-required");
+                    $("#safe_id").css({ "visibility": "", "position": "", "display": "" });
+                    $("#safe_id").css("display", "none");
+                    $("span[data-valmsg-for='safe_id']").removeClass("field-validation-error");
+                    $("span[data-valmsg-for='safe_id']").addClass("field-validation-valid");
+                    $("span[data-valmsg-for='safe_id']").html("");
+
+
+                }
+            });
+            $("option[value='']").attr("disabled", "disabled");
+            $("#cust_id").css("display", "");
+            $("#safe_id").removeAttr("data-val-required");
+            $("#safe_id").removeAttr("data-val-number");
+            $("#safe_id").removeClass("input-validation-error");
+
+
+            $(".SafeCSS").chosen({
+                width: '100%',
+                no_results_text: "لايوجد مخزن بهذا الاسم",
+                search_contains: true
+            });
+            $(".CustCss").chosen({
+                width: '100%',
+                no_results_text: '<input class="btn btn-info" type="button" value="إضافه عميل " onclick="AddCustomer()" />',
+                search_contains: true
+            });
+
+
+        });
+    </script>
+}

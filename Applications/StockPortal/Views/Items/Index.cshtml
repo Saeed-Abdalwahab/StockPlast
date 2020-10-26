@@ -1,0 +1,127 @@
+﻿@model IEnumerable<StockDB.Model.Item>
+
+@{
+    ViewBag.Title = "الاصناف";
+}
+    <link href="~/DataTables/datatables.css" rel="stylesheet" />
+
+<h2>كل الاصناف</h2>
+<p>
+    @Html.ActionLink("اضافه صنف", "Create")
+</p>
+<div id="Deletitemdiv" class="d-none">
+
+</div>
+<table class="table" id="Table">
+    <thead>
+        <tr>
+            <th>م</th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MatTypeId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ColorID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SerialNum)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Size)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Thickness)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PurchasingPrice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SellingPrice)
+            </th>
+
+            <th style="width: 62px"></th>
+        </tr>
+    </thead>
+    @{ var Counter = 0;}
+    @foreach (var item in Model)
+    {
+    Counter++;
+<tbody>
+    <tr>
+        <td>@Counter</td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Material_Type.mat_name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.color.color_name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.SerialNum)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Size)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Thickness)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PurchasingPrice)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.SellingPrice)
+        </td>
+
+        <td>
+            @Html.ActionLink("تعديل", "Edit", new { id = item.ID }) |
+            @Ajax.ActionLink("حذف", "Delete", "Items", null, null, null,
+    new { id = item.ID }, new AjaxOptions { HttpMethod = "GET", UpdateTargetId = "Deletitemdiv", InsertionMode = InsertionMode.Replace, OnSuccess = "$('.modal').modal('toggle')", OnFailure = "alert('Not available Details')" }, new { @class = "Detilslink" })
+
+        </td>
+    </tr>
+</tbody>
+    }
+
+</table>
+<script src="~/DataTables/datatables.min.js"></script>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $("#Table").DataTable({
+                         "columnDefs": [{
+                    "orderable": false,
+                    "targets": [9],
+
+                }],
+                    "language": {
+                                   "sEmptyTable":     "ليست هناك بيانات متاحة في الجدول",
+	"sLoadingRecords": "جارٍ التحميل...",
+	"sProcessing":   "جارٍ التحميل...",
+	"sLengthMenu":   "أظهر _MENU_ مدخلات",
+	"sZeroRecords":  "لم يعثر على أية سجلات",
+	"sInfo":         "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+	"sInfoEmpty":    "يعرض 0 إلى 0 من أصل 0 سجل",
+	"sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+	"sInfoPostFix":  "",
+	"sSearch":       "ابحث:",
+	"sUrl":          "",
+	"oPaginate": {
+		"sFirst":    "الأول",
+		"sPrevious": "السابق",
+		"sNext":     "التالي",
+		"sLast":     "الأخير"
+	},
+	"oAria": {
+		"sSortAscending":  ": تفعيل لترتيب العمود تصاعدياً",
+		"sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+	}
+                },
+            });
+        });
+    </script>
+}

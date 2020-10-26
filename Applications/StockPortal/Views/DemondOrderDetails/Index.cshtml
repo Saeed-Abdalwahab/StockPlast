@@ -1,0 +1,258 @@
+﻿@model IEnumerable<StockDB.Model.DemondOrderDetail>
+
+@{
+    ViewBag.Title = "اسماء الشغل";
+    Layout = "~/Views/Shared/_EmptyLayout.cshtml";
+}
+<link href="~/DataTables/DataTables-1.10.20/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<link href="~/DataTables/DataTables-1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+<link href="~/DataTables/DataTables-1.10.20/css/dataTables.foundation.min.css" rel="stylesheet" />
+<link href="~/DataTables/DataTables-1.10.20/css/dataTables.jqueryui.min.css" rel="stylesheet" />
+<link href="~/DataTables/DataTables-1.10.20/css/dataTables.semanticui.min.css" rel="stylesheet" />
+<link href="~/DataTables/DataTables-1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="~/DataTables/datatables.css" rel="stylesheet" />
+
+<style>
+    body {
+        background-color: white;
+    }
+</style>
+<style>
+
+
+
+    table tbody tr td {
+        text-align: center;
+    }
+
+    table thead tr th {
+        text-align: center;
+    }
+
+    .btn {
+        cursor: pointer;
+    }
+
+    .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter, .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_processing, .dataTables_wrapper .dataTables_paginate {
+        margin-right: 20px;
+    }
+
+    .dataTables_wrapper .dataTables_length {
+        padding-right: 140px;
+    }
+
+    .dataTables_wrapper .dataTables_paginate {
+        margin-right: 39%;
+    }
+
+    table.dataTable tbody th, table.dataTable tbody td {
+        padding: 0px;
+    }
+
+    @@media (min-width: 992px) {
+        .modal-lg {
+            width: 100%;
+        }
+    }
+
+    @@media (min-width: 768px) {
+        .modal-dialog {
+            width: 90%;
+        }
+    }
+
+    @@media (min-width: 768px) {
+        .modal-sm {
+            width: 300px;
+        }
+    }
+
+    .modal-body {
+        height: auto;
+    }
+</style>
+<h2>عرض أسماء امر الشغل</h2>
+@{
+    var demOrdIdVal = Request.Params["demOrdId"];
+}
+
+<p>
+    @Html.ActionLink("إضافة اسم امر شغل", "Create", new { demOrdId = demOrdIdVal })
+</p>
+<div id="DeletShaplonDiv" class="d-none">
+
+</div>
+<table id="Table" class="table">
+    <thead>
+        <tr>
+            <th>
+                م
+            </th>
+            <th>
+                @Html.DisplayName("السريل")
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Item.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HandTypeId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Hand_Count)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Hand_Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.demondQuantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ActualQuantity)
+
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.size)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.colorcount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.colorname)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Selling_Price)
+            </th>
+             <th>
+                @Html.DisplayNameFor(model => model.HandColorID)
+            </th>
+
+            <th style="width:46px"></th>
+        </tr>
+    </thead>
+    @{ var counter = 0;}
+    <tbody>
+        @foreach (var item in Model)
+        {
+            counter++;
+        <tr>
+            <td>@counter</td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Shaplona.shap_name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HandType.HandType_name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Hand_Count)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Hand_Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.demondQuantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ActualQuantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.size)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.colorcount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.colorname)
+            </td>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.Selling_Price)
+            </td><td>
+                @Html.DisplayFor(modelItem => item.color.color_name)
+            </td>
+
+                 <td>
+
+                     @{
+                         if (item.status == (int)PlasticStatic.Enums.demondorderdetailstatus.Completed)
+                         {
+                             <span>تم الانتهاء من العمل</span>
+                         }
+                         else if (item.status == (int)PlasticStatic.Enums.demondorderdetailstatus.SaleingProcess)
+                         {
+                             <span>اثناء البيع</span>
+
+                         }
+                         else if (item.status == (int)PlasticStatic.Enums.demondorderdetailstatus.Underconstruction)
+                         {
+                             <span>اثناء العمل</span>
+
+                         }
+                         else if (item.status == (int)PlasticStatic.Enums.demondorderdetailstatus.Delivery)
+                         {
+                             <span>تم البيع</span>
+
+                         }
+                         else if (item.status == (int)PlasticStatic.Enums.demondorderdetailstatus.Duringdelivery)
+                         {
+                             <span>اثناء التسليم</span>
+
+                         }
+                         else
+                         {
+                             @Html.ActionLink("تعديل", "Edit", new { id = item.demoOrdDet_id })
+                             <span>|</span>
+                             @Ajax.ActionLink("حذف", "Delete", "DemondOrderDetails", null, null, null, new { id = item.demoOrdDet_id }, new AjaxOptions { HttpMethod = "GET", UpdateTargetId = "DeletShaplonDiv", InsertionMode = InsertionMode.Replace, OnSuccess = " $('#DeletShaplonDiv .modal').modal('toggle');", OnFailure = "alert('لا يمكن حذف امر الشغل')" }, new { @class = "Detilslink" })
+
+                         }
+
+                     }
+                 </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+@section scripts{
+    <script src="~/DataTables/datatables.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#Table").DataTable({
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": [11],
+
+                }],
+                "language": {
+                                     "sEmptyTable":     "ليست هناك بيانات متاحة في الجدول",
+	"sLoadingRecords": "جارٍ التحميل...",
+	"sProcessing":   "جارٍ التحميل...",
+	"sLengthMenu":   "أظهر _MENU_ مدخلات",
+	"sZeroRecords":  "لم يعثر على أية سجلات",
+	"sInfo":         "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+	"sInfoEmpty":    "يعرض 0 إلى 0 من أصل 0 سجل",
+	"sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+	"sInfoPostFix":  "",
+	"sSearch":       "ابحث:",
+	"sUrl":          "",
+	"oPaginate": {
+		"sFirst":    "الأول",
+		"sPrevious": "السابق",
+		"sNext":     "التالي",
+		"sLast":     "الأخير"
+	},
+	"oAria": {
+		"sSortAscending":  ": تفعيل لترتيب العمود تصاعدياً",
+		"sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+	}
+                },
+            });
+        });
+    </script>
+
+}
+

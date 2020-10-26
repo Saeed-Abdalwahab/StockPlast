@@ -1,0 +1,184 @@
+﻿@model StockDB.Model.AspNetRole
+
+@{
+    ViewBag.Title = "صفحات المنظومة";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Styles.Render("~/Content/TreeView.css")
+
+<div class="">
+    <div class="page-title">
+        <div class="title_right">
+            <h3>@ViewBag.Title<small> - إنشاء جديد</small></h3>
+        </div>
+
+    </div><div class="ln_solidTitle"></div>
+    <div class="clearfix"></div>
+
+    <div class="row">
+
+        <div class="col-md-3 col-xs-12">
+            <div class="x_panel">
+                <div class="treeview">
+                    @if (ViewBag.SecurityModules != null)
+                    {
+
+                        var secureityModuleList = (List<StockDB.Model.AspNetModule>)ViewBag.SecurityModules;
+                        <ul>
+                            <li>
+                                <span class="collapse collapsible">&nbsp;</span>
+                                <span>
+                                    وحدات المنظومة
+                                </span>
+                                <ul>
+                                    @foreach (var item in secureityModuleList)
+                                    {
+                                        <li>
+                                            @{ var submenu = secureityModuleList.Count; }
+                                            @if (submenu > 0)
+                                            {
+                                                <span class="collapse collapsible">&nbsp;</span> @*collapsible*@
+                                            }
+                                            else
+                                            {
+                                                <span style="width: 15px; display: inline-block">&nbsp;</span>
+                                            }
+                                            <span>
+                                                @Html.ActionLink(@item.Name, "Index", "SecurityRoles", new { secModId = item.Id, secModName = item.Name }, null)
+                                            </span>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+                        </ul>
+
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9 col-xs-12">
+            <div class="x_title">
+                <h2>صفحات المنظومة التابعة لوحدة - @ViewBag.SelectedSecurityModuleName</h2>
+
+
+                <ul class="nav navbar-right panel_toolbox">
+                    <li>
+                        <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                    </li>
+
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+
+            <div class="x_content">
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal form-label-left">
+
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @*<div class="item form-group">
+                            @Html.LabelFor(model => model.Id, htmlAttributes: new { @class = "control-label col-md-3 col-sm-3 col-xs-12" })
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                @Html.EditorFor(model => model.Id, new { htmlAttributes = new { @class = "form-control col-md-7 col-xs-12" } })
+                                @Html.ValidationMessageFor(model => model.Id, "", new { @class = "text-danger" })
+                            </div>
+                        </div>*@
+                        <div class="item form-group">
+                            @Html.LabelFor(model => model.ArName, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2 col-xs-12" })
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                @Html.EditorFor(model => model.ArName, new { htmlAttributes = new { @class = "form-control col-md-7 col-xs-12" } })
+                                @Html.ValidationMessageFor(model => model.ArName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="item form-group">
+                            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2 col-sm-2 col-xs-12" })
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control col-md-7 col-xs-12" } })
+                                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="item form-group">
+                            @Html.LabelFor(model => model.AspNetModuleId, "وحدة المنظومة", htmlAttributes: new { @class = "control-label col-md-2 col-sm-2 col-xs-12" })
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                @Html.DropDownList("AspNetModuleId", null, new { @class = "form-control col-md-7 col-xs-12", @disabled = "disabled" })
+                                @*@Html.Hidden("hdnAspNetModuleId", Convert.ToInt32(ViewBag.SelectedSecurityModuleId))*@
+                                <input type="Hidden" value="@ViewBag.SelectedSecurityModuleId" id="hdnSelectedSecurityModuleId" name="hdnSelectedSecurityModuleId"/>
+                                <input type="Hidden" value="@ViewBag.SelectedSecurityModuleName" id="hdnSelectedSecurityModuleName" name="hdnSelectedSecurityModuleName" />
+
+                                @Html.ValidationMessageFor(model => model.AspNetModuleId, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="ln_solid"></div>
+                        <div class="form-group">
+                            <div class="col-md-6 col-md-offset-3">
+                                <input type="submit" value="حفظ" class="btn btn-default" />
+                                &nbsp;
+                                @Html.ActionLink("إلغاء", "Index", "SecurityRoles", new { secModId = ViewBag.SelectedSecurityModuleId, secModName = ViewBag.SelectedSecurityModuleName }, new { @class = "btn btn-default" })
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+@*@using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            <h4>AspNetRole</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.LabelFor(model => model.Id, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Id, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Id, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.ArName, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.ArName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.ArName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.AspNetModuleId, "AspNetModuleId", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.DropDownList("AspNetModuleId", null, htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.AspNetModuleId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Create" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+    }
+
+    <div>
+        @Html.ActionLink("Back to List", "Index")
+    </div>*@

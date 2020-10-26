@@ -1,0 +1,348 @@
+﻿
+@model StockViewModel.PurchaseInvoiceViewModel
+@{
+   
+    var ToStockID = Model != null ? Model.ID : -1;
+}
+
+@using (Html.BeginForm("Save", "ReturnToStock",FormMethod.Post))
+{
+
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal col-md-12">
+
+        @Html.Hidden("ID", ToStockID)
+       
+
+        @Html.HiddenFor(x=>x.demondordid,new { id="demondorderidReturnitm"})
+        @Html.HiddenFor(x=>x.FromStockID,new { id="fromstockidReturnitm"})
+        @Html.HiddenFor(x=>x.SupId,new { id="SupIdReturnitm"})
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group col-md-6">
+            @Html.Label("رقم الاذن", htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.EditorFor(model => model.InvoiceSerial, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.InvoiceSerial, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group col-md-6">
+            @Html.Label("تاريخ الاذن", htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.EditorFor(model => model.InvoiceDate, new { htmlAttributes = new { @class = "form-control", @autocomplete = "off" } })
+                @Html.ValidationMessageFor(model => model.InvoiceDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.Notes, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.EditorFor(model => model.Notes, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Notes, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group col-md-6">
+            @Html.LabelFor(model => model.StoreName, htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.DropDownListFor(x=>x.StoreId, ViewBag.rawStoreId as SelectList, htmlAttributes: new { @class = "form-control", name = "StoreId" })
+                @Html.ValidationMessageFor(model => model.StoreId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group col-md-6">
+            @Html.Label("كميه المرتجع", htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.EditorFor(model => model.Weight, new { htmlAttributes = new { @class = "form-control",id="Totalreturned",min="0",type="number" } })
+                @Html.ValidationMessageFor(model => model.Weight, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group col-md-6">
+            @Html.Label("المورد", htmlAttributes: new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.DropDownListFor(x=>x.itemsupid,ViewBag.supliers as SelectList, htmlAttributes: new { @class = "form-control", name = "itemsubid" })
+
+                @Html.ValidationMessageFor(model => model.itemsupid, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    <div class="clearfix" style="margin-bottom:44px;"></div>
+    <div class="col col-md-12">
+        
+        <div class="form-group col-md-6" style="margin-top:70px">
+            <input type="submit" class="btn btn-default" value="حفظ الفاتورة" />
+            @*<button type="button" class="btn btn-default" onclick="cancelsavereturned()">الغاء</button>*@
+        </div>
+    </div>
+
+
+}
+
+<!-- -------------- Start  Popup Of  delete transaction----------------------- -->
+<div class="modal fade" id="deletetransaction" role="dialog" style="z-index:-1">
+    <div class="modal-dialog modal-sm">
+
+        <div class="modal-content" style="padding:20px">
+            <div class="modal-body" id="datatransaction">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-default" onclick="ConfirmDeleteReturnItem()">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- -------------- End  Popup Of  delete transaction----------------------- -->
+
+
+<script>
+
+ 
+    var oldtotal;
+    $(document).ready(function () {
+
+        $("#FromStockID").val(FromStockID)
+        $("#demondordid").val(demondorderdetailsid)
+
+        $("#addreturnitem").click(function () {
+
+            var Htm = '<tr> <td></td>'
+            Htm += '<td>' + expiredtyp + expiredtyperror + '</td>';
+            Htm += '<td>' + Quantity + Quantityerror + '</td>';
+            Htm += "<td><button type='button' class='btn btn-default'  onclick='savereturnitem()'><span class='glyphicon glyphicon-ok'></span></button><button class='btn btn-default'  onclick='cancelreturn()'><span class='glyphicon glyphicon-remove'></span></button></td>";
+
+            $("#item tbody").prepend(Htm)
+
+            $(this).prop("disabled", true)
+
+            $("#item tbody tr td .EDi").prop("disabled", true)
+
+        })
+
+        $("input[type='datetime']").datepicker({
+            dateFormat: 'yy/mm/dd',
+            minView: 2,
+        });
+    })
+
+
+    function edite(id) {
+
+        oldtotal = $("#quantitytxt_" + id).val() * $("#itemnotxt_" + id).val()
+
+
+        $("#quantitylbl_" + id).hide();
+        $("#quantitytxt_" + id).show();
+
+        $("#itemnolbl_" + id).hide();
+        $("#itemnotxt_" + id).show();
+
+        $("#edit_" + id).hide();
+        $("#delete_" + id).hide();
+        $("#save_" + id).show();
+        $("#cancel_" + id).show();
+
+        $("#item tbody tr td .EDi").prop("disabled", true)
+        $("#addreturnitem").prop("disabled", true)
+
+    }
+    function cancelreturn() {
+        $("#addreturnitem").prop("disabled", false)
+        $("#item tbody tr").eq(0).remove();
+        $("#item").DataTable().ajax.reload();
+
+    }
+    function cancelreturnedit() {
+        $("#addreturnitem").prop("disabled", false)
+        $("#item").DataTable().ajax.reload();
+
+    }
+    function deletefinshitem(transactionid) {
+
+          oldtotal = $("#quantitytxt_" + transactionid).val() * $("#itemnotxt_" + transactionid).val()
+         $.ajax({
+
+            url: "@Url.Action("DeleteFinshItem", "ReturnItem")",
+            data: { ID: transactionid},
+            type: "POST",
+
+            success: function (rs) {
+                    $("#datatransaction").html(rs)
+                    $("#deletetransaction").css("z-index", "9999999")
+                    $("#deletetransaction").modal("show")
+
+            }
+        })
+    }
+    function ConfirmDeleteReturnItem() {
+
+        var transactionID = $("#TransactionID").val();
+        $.ajax({
+
+            url: "@Url.Action("ConfirmDeleteFinshItem", "ReturnItem")",
+            data: { ID: transactionID },
+            type: "POST",
+            success: function (rs) {
+                if (rs.alert.type) {
+
+                    $("#Totalx").val(parseInt( $("#Totalx").val()) + parseInt(oldtotal));
+                    $("#deletetransaction").modal("hide");
+                    $("#item").DataTable().ajax.reload()
+                     $("#item").DataTable().ajax.reload(
+                         function () {
+                             if (!$('#item').DataTable().data().any()) {
+                                 $("#additemaaa").prop("disabled", false)
+
+                             }
+                         });
+                    showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+                }
+
+            }
+        })
+
+    }
+    function Editreturnitem(transactionid) {
+
+        var quantity = $("#quantitytxt_" + transactionid).val();
+        var NoItem = $("#itemnotxt_" + transactionid).val();
+
+        if (quantity == "") {
+
+            if (quantity == "") {
+                $("#quantityer_" + transactionid).show()
+            }
+            if (NoItem == "") {
+                $("#itemnotxt_"+ transactionid).show()
+
+            }
+
+            return false
+        }
+
+
+        else {
+
+
+            Totalx =parseInt( $("#Totalx").val()) + parseInt(oldtotal);
+            $.ajax({
+
+
+                url: "@Url.Action("EditFinishItem", "ReturnItem")",
+                data: { ID: transactionid, quantity: quantity, TransactioID: StockTransactioID, NoItem: NoItem ,Total:Totalx},
+                type: "GET",
+
+                success: function (rs) {
+                    if (rs.alert.type) {
+
+
+                        $("#Totalx").val(Totalx+oldtotal)
+                        $("#Totalx").val(Totalx - (NoItem * quantity))
+                        $("#addreturnitem").prop("disabled", false)
+                        $("#item").DataTable().ajax.reload()
+                        showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+
+                    }
+                    else {
+                        showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+                    }
+
+
+                }
+            })
+        }
+
+    }
+
+
+
+    function savereturnitem() {
+
+        var Quantity = $("#Weight").val();
+        var expiredtyp = $("#expiredtyp").val();
+
+        if (Quantity == "" || expiredtyp == "") {
+
+            if (Quantity == "") {
+                $("#Quantityerror").show()
+
+            }
+            if (expiredtyp == "") {
+                $("#expiredtyperror").show()
+
+            }
+
+            return false
+        }
+        else {
+            debugger
+            Totalx =parseInt( $("#Totalx").val())
+            $.ajax({
+
+                url: "@Url.Action("SaveExpiredItem", "expireditem")",
+                data: { Quantity: Quantity,TransactioID:StockTransactioID,expiredtypid:expiredtyp,Total:Totalx,Demondorderdetailsid:demondorderdetailsid,fromstockid:FromStockID},
+                type: "post",
+
+                success: function (rs) {
+
+
+                    if (rs.alert.type) {
+                       $("#Totalx").val(Totalx-Quantity)
+                        $("#item").DataTable().ajax.reload()
+
+                         $("#item").DataTable().ajax.reload(
+                             function () {
+                                 $('#addreturnitem').trigger('click');
+                             });
+
+                        showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+                    }
+                    else {
+                        showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+                    }
+
+                }
+            })
+        }
+        }
+    function AddTOstockreturn(ID) {
+
+        var demondorderdetails = $("#demondorderdetailsid").val();
+        $.ajax({
+
+            url: "@Url.Action("AddTOstockreturned", "ReturnToStock")",
+            data: { ToStockid: ID, FromStockid: FromStockID, demondorderdetailsid: demondorderdetails },
+            type: "Get",
+
+            success: function (rs) {
+                if (rs.alert.type) {
+                    $("#retuenedcontet").html(rs.data)
+                }
+                else {
+                    showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+                }
+
+
+            },
+        })
+    }
+    function savePurchaseInvoicereturn(rs) {
+        if (rs.alert.type) {
+
+            $("#expiredcontent").html(rs.data)
+            $("#Add").css("display", "none")
+            showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+
+        }
+        else {
+            $("#expiredcontent").html(rs.data)
+            showAlert(rs.alert.AlertType, rs.alert.ErrorMessage)
+        }
+    }
+</script>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+

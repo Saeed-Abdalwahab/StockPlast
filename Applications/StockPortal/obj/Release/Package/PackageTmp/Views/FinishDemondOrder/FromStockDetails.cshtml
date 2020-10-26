@@ -1,0 +1,92 @@
+﻿<link href="~/DataTables/datatables.min.css" rel="stylesheet" />
+
+
+<style>
+
+
+
+    table tbody tr td {
+        text-align: center;
+    }
+
+    table thead tr th {
+        text-align: center;
+    }
+
+    .btn {
+        cursor: pointer;
+    }
+
+    .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter, .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_processing, .dataTables_wrapper .dataTables_paginate {
+        margin-right: 20px;
+    }
+
+    .dataTables_wrapper .dataTables_length {
+        padding-right: 140px;
+    }
+
+    .dataTables_wrapper .dataTables_paginate {
+        margin-right: 39%;
+    }
+
+    table.dataTable tbody th, table.dataTable tbody td {
+        padding: 0px;
+    }
+
+    @@media (min-width: 992px) {
+        .modal-lg {
+            width: 100%;
+        }
+    }
+
+    @@media (min-width: 768px) {
+        .modal-dialog {
+            width: 90%;
+        }
+    }
+
+    @@media (min-width: 768px) {
+        .modal-sm {
+            width: 300px;
+        }
+    }
+
+    .modal-body {
+        height: auto;
+    }
+</style>
+
+
+
+@{
+    ViewBag.Title = "FromStockDetails";
+}
+
+
+@Html.AntiForgeryToken()
+<div id="con">
+    @Html.Partial("~/Views/FinishDemondOrder/_DemondOrderDetalis.cshtml")
+</div>
+
+
+
+<script src="~/DataTables/datatables.min.js"></script>
+
+<script>
+    function detailsdemondorder(FromID,Demondorderdetailsid) {
+
+        $.ajax({
+
+            url: "@Url.Action("DeliveryDemondOrder", "FinishDemondOrder")",
+            data: { FromStockID: FromID,demondorderdetailsid:Demondorderdetailsid },
+            type: "GET",
+
+            success: function (rs) {
+                if (rs) {
+
+                    $("#con").html(rs)
+                }
+            }
+        })
+    }
+</script>

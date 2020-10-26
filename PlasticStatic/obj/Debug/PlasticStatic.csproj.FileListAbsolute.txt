@@ -1,0 +1,6 @@
+F:\ArmyTechProject\StockPlast\Stock\PlasticStatic\bin\Debug\PlasticStatic.dll
+F:\ArmyTechProject\StockPlast\Stock\PlasticStatic\bin\Debug\PlasticStatic.pdb
+F:\ArmyTechProject\StockPlast\Stock\PlasticStatic\obj\Debug\PlasticStatic.csprojAssemblyReference.cache
+F:\ArmyTechProject\StockPlast\Stock\PlasticStatic\obj\Debug\PlasticStatic.csproj.CoreCompileInputs.cache
+F:\ArmyTechProject\StockPlast\Stock\PlasticStatic\obj\Debug\PlasticStatic.dll
+F:\ArmyTechProject\StockPlast\Stock\PlasticStatic\obj\Debug\PlasticStatic.pdb

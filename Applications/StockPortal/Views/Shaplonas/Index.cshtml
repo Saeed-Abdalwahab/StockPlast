@@ -1,0 +1,120 @@
+﻿@model IEnumerable<StockDB.Model.Shaplona>
+
+@{
+    ViewBag.Title = "السريل";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/DataTable/datatables.min.css" rel="stylesheet" />
+<h2>سريل</h2>
+<br />
+
+<p>
+    @Html.ActionLink("اضافه سريل جديد", "Create")
+</p>
+<div id="Details" class="d-none">
+
+</div>
+<div id="DeletShaplonDiv" class="d-none">
+
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>م</th>
+            <th>
+                رقم السريل
+            </th>
+            <th>
+                اسم العميل
+            </th>
+            <th>
+                اسم السريل
+            </th>
+
+            <th>
+                تاريخ الدخول
+            </th>
+
+            <th>
+                تاريخ الخروج
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    @{ var Counter = 0;}
+    <tbody>
+        @foreach (var item in Model)
+        {
+            Counter++;
+            <tr>
+                <td>@Counter</td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ShapSerial)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Customer.cust_name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.shap_name)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.shap_startDate)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.shap_endDate)
+                </td>
+                <td>
+                    @Ajax.ActionLink("عرض الصورة", "Details", "Shaplonas", null, null, null,
+                  new { id = item.shap_id }, new AjaxOptions { HttpMethod = "GET", UpdateTargetId = "Details", InsertionMode = InsertionMode.Replace, OnSuccess = "$('#Details .modal').modal('toggle')", OnFailure = "alert('لا يوجد صورة للعرض برجاء اضافه صورة')" }, new { @class = "Detilslink" }) |
+
+                    @Html.ActionLink("تعديل", "Edit", new { id = item.shap_id }) |
+                    @Ajax.ActionLink("حذف", "Delete", "Shaplonas", null, null, null,
+            new { id = item.shap_id }, new AjaxOptions { HttpMethod = "GET", UpdateTargetId = "DeletShaplonDiv", InsertionMode = InsertionMode.Replace, OnSuccess = " $('#DeletShaplonDiv .modal').modal('toggle');", OnFailure = "alert('Not available Details')" }, new { @class = "Detilslink" })
+
+
+                </td>
+            </tr>
+        }
+    </tbody>
+
+</table>
+@section scripts{
+    <script src="~/DataTables/datatables.min.js"></script>
+
+    <script>
+
+        $(document).ready(function () {
+            var table = $("table").DataTable({
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": [6],
+                }],
+                "language": {
+                    "sEmptyTable": "ليست هناك بيانات متاحة في الجدول",
+                    "sLoadingRecords": "جارٍ التحميل...",
+                    "sProcessing": "جارٍ التحميل...",
+                    "sLengthMenu": "أظهر _MENU_ مدخلات",
+                    "sZeroRecords": "لم يعثر على أية سجلات",
+                    "sInfo": "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+                    "sInfoEmpty": "يعرض 0 إلى 0 من أصل 0 سجل",
+                    "sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+                    "sInfoPostFix": "",
+                    "sSearch": "ابحث:",
+                    "sUrl": "",
+                    "oPaginate": {
+                        "sFirst": "الأول",
+                        "sPrevious": "السابق",
+                        "sNext": "التالي",
+                        "sLast": "الأخير"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": تفعيل لترتيب العمود تصاعدياً",
+                        "sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+                    }
+                },
+            });
+        });
+    </script>
+}

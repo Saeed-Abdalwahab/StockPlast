@@ -1,0 +1,197 @@
+﻿@model StockDB.Model.Safe
+@{
+    ViewBag.Title = "تقرير الخزينه";
+}
+
+<link href="~/DataTables/datatables.min.css" rel="stylesheet" />
+
+
+<style>
+
+    table tbody {
+        line-height: 4;
+    }
+
+        table tbody tr td {
+            text-align: center;
+        }
+
+    table thead tr th {
+        text-align: center;
+    }
+
+
+
+    .btn {
+        cursor: pointer;
+    }
+
+    .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter, .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_processing, .dataTables_wrapper .dataTables_paginate {
+        margin-right: 20px;
+    }
+
+    .dataTables_wrapper .dataTables_length {
+        padding-right: 140px;
+    }
+
+    .dataTables_wrapper .dataTables_paginate {
+        margin-right: 39%;
+        margin-top: 2%;
+    }
+
+    table.dataTable tbody th, table.dataTable tbody td {
+        padding: 0px;
+    }
+
+    @@media (min-width: 992px) {
+        .modal-lg {
+            width: 100%;
+        }
+    }
+
+    @@media (min-width: 768px) {
+        .modal-dialog {
+            width: 90%;
+        }
+    }
+
+    @@media (min-width: 768px) {
+        .modal-sm {
+            width: 300px;
+        }
+    }
+
+    .modal-body {
+        height: auto;
+    }
+
+    .nav-tabs > li {
+        cursor: pointer;
+    }
+</style>
+
+<div class="text-center">
+    <h3 class="center info">(@Model.safe_name) تقرير الخزينة</h3>
+</div>
+
+<fieldset style="border:1px solid #DDD">
+    <div style="margin-top:0px;padding-bottom:20px;">
+        <table id="Table" class="display table-responsive-md" style="width:100%;">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>م</th>
+                    <th>الخزينة</th>
+                    <th>توع العملية</th>
+                    <th>جهة الوصول</th>
+                    <th>التاريخ</th>
+                    <th>المبلغ</th>
+
+                </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="6" style="text-align:center">الاجمالي</th>
+                    <th style="text-align:center"></th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</fieldset>
+
+
+@section scripts
+{
+    <script src="~/DataTables/datatables.min.js"></script>
+    <script src="~/Scripts/toastr.min.js"></script>
+
+    <script>
+
+        $(document).ready(function () {
+            var Table = $('#Table').DataTable({
+                "ajax": {
+                    'url': '@Url.Action("GetReport","SafeReport")' +"?SafeID="+"@Model.safe_id", 
+                    'type': "GET"
+                },
+                "columns": [
+                    {
+                        "data": null, "render": function (data, type, full, meta) {
+                            return meta.row + 1;
+                        }
+                    },
+
+                    { "data": "ActualyValue", visible: false, orderable: false },
+                    { "data": "SafeName" },
+                    { "data": "OperationType" },
+                    { "data": "OperationFor" },
+                    { "data": "Date" },
+                    { "data": "MoneyValue" },
+
+
+
+                ],
+                "footerCallback": function (row, data, start, end, display) {
+                    debugger
+                    var api = this.api(), data;
+
+                    var intVal = function (i) {
+
+                        return typeof i === 'string' ?
+                            i.replace(/[\$,]/g, '') * 1 :
+                            typeof i === 'number' ?
+                                i : 0;
+                    };
+
+                    totalfornoitem = api
+                        .column(1, { page: 'current' })
+                        .data()
+                        .reduce(function (a, b) {
+
+                            return intVal(a) + intVal(b);
+                        }, 0);
+
+
+
+                    $(api.column(6).footer()).html(
+                        totalfornoitem.toFixed(2) + ' ' + 'جنية'
+                    );
+
+                },
+
+                "language": {
+                    "sEmptyTable": "ليست هناك بيانات متاحة في الجدول",
+                    "sLoadingRecords": "جارٍ التحميل...",
+                    "sProcessing": "جارٍ التحميل...",
+                    "sLengthMenu": "أظهر _MENU_ مدخلات",
+                    "sZeroRecords": "لم يعثر على أية سجلات",
+                    "sInfo": "إظهار _START_ إلى _END_ من أصل _TOTAL_ مدخل",
+                    "sInfoEmpty": "يعرض 0 إلى 0 من أصل 0 سجل",
+                    "sInfoFiltered": "(منتقاة من مجموع _MAX_ مُدخل)",
+                    "sInfoPostFix": "",
+                    "sSearch": "ابحث:",
+                    "sUrl": "",
+                    "oPaginate": {
+                        "sFirst": "الأول",
+                        "sPrevious": "السابق",
+                        "sNext": "التالي",
+                        "sLast": "الأخير"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": تفعيل لترتيب العمود تصاعدياً",
+                        "sSortDescending": ": تفعيل لترتيب العمود تنازلياً"
+                    }
+                },
+                info: false,
+
+            })
+            //Table.on('order.dt search.dt', function () {
+            //    t.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+            //        cell.innerHTML = i + 1;
+            //    });
+            //}).draw();
+
+        });
+
+    </script>
+}

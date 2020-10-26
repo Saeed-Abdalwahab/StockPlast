@@ -1,0 +1,132 @@
+﻿@model PagedList.IPagedList<StockDB.Model.AspNetRole>
+@using PagedList.Mvc;
+
+@{
+    ViewBag.Title = "صفحات المنظومة";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Styles.Render("~/Content/TreeView.css")
+
+<div class="">
+    <div class="page-title">
+        <div class="title_right">
+            <h3>@ViewBag.Title</h3>
+        </div>
+
+    </div><div class="ln_solidTitle"></div>
+    <div class="clearfix"></div>
+
+    <div class="row">
+        <div class="col-md-3 col-xs-12">
+            <div class="x_panel">
+                <div class="treeview">
+                    @if (ViewBag.SecurityModules != null)
+                    {
+
+                        var secureityModuleList = (List<StockDB.Model.AspNetModule>)ViewBag.SecurityModules;
+                        <ul>
+                            <li>
+                                <span class="collapse collapsible">&nbsp;</span>
+                                <span>
+                                    وحدات المنظومة
+                                </span>
+                                <ul>
+                                    @foreach (var item in secureityModuleList)
+                                    {
+                                        <li>
+                                            @{ var submenu = secureityModuleList.Count; }
+                                            @if (submenu > 0)
+                                            {
+                                                <span class="collapse collapsible">&nbsp;</span> @*collapsible*@
+                                            }
+                                            else
+                                            {
+                                                <span style="width: 15px; display: inline-block">&nbsp;</span>
+                                            }
+                                            <span>
+                                                @Html.ActionLink(@item.Name, "Index", "SecurityRoles", new { secModId = item.Id, secModName = item.Name }, null)
+                                            </span>
+                                        </li>
+                                                }
+                                </ul>
+                            </li>
+                        </ul>
+
+                                                }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9 col-xs-12">
+
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>صفحات المنظومة التابعة لوحدة - @ViewBag.SelectedSecurityModuleName</h2>
+
+
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li>
+                            <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                        </li>
+
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+
+                <div class="x_content">
+                    <h2>
+                        <p>
+                            @Html.ActionLink("إنشاء جديد", "Create", "SecurityRoles", new { secModId = @ViewBag.SelectedSecurityModuleId, secModName = @ViewBag.SelectedSecurityModuleName }, new { @class = "btn btn-default" })
+                        </p>
+                    </h2>
+
+                    <table class="table table-striped">
+
+                        <tr>
+                            
+                            <th>إسم الصفحة</th>
+                            <th>كود الصفحة</th>
+                            <th></th>
+                        </tr>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ArName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Name)
+                                </td>
+                                <td>
+                                    @Html.ActionLink("تعديل", "Edit", "SecurityRoles", new { id = item.Id, secModId = @ViewBag.SelectedSecurityModuleId, secModName = @ViewBag.SelectedSecurityModuleName }, null) |
+                                    @*@Html.ActionLink("تفاصيل", "Details", "SecurityRoles", new { id = item.Id, secModId = @ViewBag.SelectedSecurityModuleId, secModName = @ViewBag.SelectedSecurityModuleName }, null) |*@
+                                    @Html.ActionLink("حذف", "Delete", "SecurityRoles", new { id = item.Id, secModId = @ViewBag.SelectedSecurityModuleId, secModName = @ViewBag.SelectedSecurityModuleName }, null)
+                                </td>
+                            </tr>
+
+                        }
+                    </table>
+                    <br />
+                    صفحة @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) من @Model.PageCount
+                    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, secModId = @ViewBag.SelectedSecurityModuleId, secModName = @ViewBag.SelectedSecurityModuleName }))
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@* Here We need some Jquery code for make this treeview collapsible
+    @section Scripts{
+        <script>
+            $(document).ready(function () {
+                $(".treeview li>ul").css('display', 'none'); // Hide all 2-level ul
+                $(".collapsible").click(function (e) {
+                    e.preventDefault();
+                    $(this).toggleClass("collapse expand");
+                    $(this).closest('li').children('ul').slideToggle();
+                });
+            });
+        </script>
+    }*@
